@@ -28,3 +28,6 @@ To install the -synth_runner- package
 . net install synth_runner, from(<path/to/installation/files>)
 Or to get updates
 . net install <package>, from(https://raw.github.com/bquistorff/synth_runner/master/) replace
+
+To cleanup after usage
+$ rm *.gph *.eps
