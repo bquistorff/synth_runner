@@ -1,0 +1,24 @@
+d 'synth_runner': module
+d
+d   Automation for multiple Synthetic Control estimations. 
+d
+d Version 1.0
+d
+d Distribution-Date: 01dec2015
+d Requires: -synth- from SSC
+d
+d Author: Brian Quistorff
+d Support: email bquistorff@gmail.com
+d
+d KW: Synthetic Controls Methodology
+d
+d 
+f calc_RMSPE.ado
+f effect_graphs.ado
+f pval_graphs.ado
+f single_treatment_graphs.ado
+f synth_runner.ado
+f synth_wrapper.ado
+f synth_runner.sthlp
+
+
