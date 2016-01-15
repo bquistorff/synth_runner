@@ -26,3 +26,5 @@ As a pre-requisite, the -synth- package needs to be installed. (The 'all' option
 
 To install the -synth_runner- package
 . net install synth_runner, from(<path/to/installation/files>)
+Or to get updates
+. net install <package>, from(https://raw.github.com/bquistorff/synth_runner/master/) replace
