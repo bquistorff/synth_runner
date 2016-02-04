@@ -1,7 +1,7 @@
 *! version 1.0 Brian Quistorff <bquistorff@gmail.com>
 *! Automates the process of conducting many synthetic control estimations
 * Todo: 
-* test max_lead. Note CGNP13 define lead1 as contemporaneous (rather than lead0)
+* test max_lead.
 * don't overwrite those mata variables (though I do warn)
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
@@ -25,7 +25,7 @@ program synth_runner, eclass
 	tempvar ever_treated tper_var0 tper_var lead event max_lead_per_unit min_lead_per_unit
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
-		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef
+		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl
 	tempfile ind_file agg_file out_e
 		
 	qui bys `pvar': egen `tper_var0' = min(`tvar') if `D'
@@ -183,6 +183,7 @@ program synth_runner, eclass
 	di "Conducting inference."
 	*Raw Estimates
 	mata: do_effect_avgs = get_all_avgs(do_effects_p)
+	mata: st_numscalar("`n_pl'", rows(do_effect_avgs))
 	mata: st_matrix("`pvals'", get_p_vals(tr_effect_avg, do_effect_avgs))
 	mat colnames `pvals' = `leadlist'
 	if "`ci'"!=""{
@@ -219,6 +220,7 @@ program synth_runner, eclass
 	ereturn matrix treat_control = `out_ef'
 	
 	*Inference stats
+	ereturn scalar n_pl = `n_pl'
 	mat `p2' = `pvals'[2,1...]
 	mat rownames `p2' = `D'
 	ereturn matrix pvals = `p2'
@@ -308,7 +310,7 @@ program cleanup_and_convert_to_diffs
 	
 	keep `depvar' `pvar' `tvar'
 	qui merge 1:1 `pvar' `tvar' using `dta', keep(match using) nogenerate
-	gen long lead = `tvar'-`tper_var'+1
+	gen long lead = `tvar'-`tper_var'+1 // CGNP13 define lead1 as contemporaneous (rather than lead0)
 	gen effect = `depvar'-`depvar'_synth
 	if "`trends'"!=""{
 		gen effect_scaled = `depvar'_scaled-`depvar'_scaled_synth

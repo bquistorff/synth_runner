@@ -33,10 +33,12 @@ tempfile keepfile
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), ///
 	trunit(3) trperiod(`tper') keep(`keepfile') 
 ereturn list
+di (e(pval_joint_post_t)*e(n_pl)+1)/(e(n_pl)+1) //p-value if truly random
 mat li e(treat_control)
-
 merge 1:1 state year using `keepfile', nogenerate
 gen cigsale_synth = cigsale-effect
+
+
 
 single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(`tper') ///
 	raw_gname(cigsale1_raw) effects_gname(cigsale1_effects) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
@@ -56,6 +58,8 @@ tempfile keepfile2
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, ///
 	trunit(3) trperiod(`tper') trends training_propr(`=13/18') pre_limit_mult(10) keep(`keepfile2')
 ereturn list
+di "Proportion of control units that have a higher RMSPE than the treated unit in the validtion period:"
+di round(`e(avg_val_rmspe_p)', 0.001)
 mat li e(treat_control)
 merge 1:1 state year using `keepfile2', nogenerate
 gen cigsale_scaled_synth = cigsale_scaled - effect_scaled
@@ -83,12 +87,14 @@ pval_graphs , pvals_gname(cigsale3_pval) pvals_t_gname(cigsale3_pval_t)
 }
 
 *Save the named graphs to disk
+if 1{
 qui graph dir, memory
 local grphs "`r(list)'"
 foreach gname of local grphs{
 	if "`gname'"=="Graph" continue //these are unnamed ones
 	qui graph save `gtype' "`gname'.gph", replace
 	qui graph export "`gname'.eps", name(`gname') replace
+}
 }
 
 cap noisily log close

@@ -16,8 +16,8 @@
 {opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit}({it:#}) {opt trp:eriod}({it:#}) {opt d:}(varname) {opt tre:nds} {opt pre_limit_mult:}({it:real>=1}) {opt training_propr}(real) {opt k:eep}({it:file}) {opt rep:lace} {opt ci} {opt pvals1s} {it:synthsettings} ]
 
 {p 4 4 2}
-Dataset must be declared as a (balanced) panel dataset using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
-Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. It requires the installation of {cmd:synth} (available in SSC). Auxiliary commands for generating graphs post-estimation are shown in the examples down below.
+Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
+Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. Auxiliary commands for generating graphs post-estimation are shown in the examples down below.
  
 
 {title:Description}
@@ -58,7 +58,7 @@ This allows for multiple units to undergo treatment, possibly at different times
 {cmd: pre_limit_mult({it:real>=1})} will not include placebo effects in the pool for inference if the match quality of that control (pre-treatment RMSPE) is greater than {it:pre_limit_mult} times the match quality of the treated unit.
 
 {p 4 8 2}
-{cmd: training_propr}(0<={it:real}<=1) instructs {cmd:synth_runner} to automatically generate the outcome predictors (the user then includes the desired ones in predictorvars). The default (0) is to not generate any. 
+{cmd: training_propr}(0<={it:real}<=1) instructs {cmd:synth_runner} to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in predictorvars). 
 If set to a number greater than 0, then that initial proportion of the pre-treatment period is used as a training period with the rest being the validation period. 
 Outcome predictors for every time in the training period will be added to the {cmd:synth} commands. Diagnostics of the fit for the validation period will be outputted. 
 If the value is between 0 and 1, there will be at least one training period and at least one validation period. 
@@ -78,7 +78,7 @@ results. This is only allowed if there is a single period in which unit(s) enter
 {p 8 17 15}
 {cmd:{it:panelvar}:}{p_end}
 {p 12 12 15}
-A variable that contains the respective panel unit (from the {cmd: tsset} panel unit variable ({it:panelvar})}.{p_end}
+A variable that contains the respective panel unit (from the {cmd: tsset} panel unit variable {it:panelvar}).{p_end}
 
 {p 8 17 15}
 {cmd:{it:timevar}:}{p_end}
@@ -88,7 +88,7 @@ A variable that contains the respective time period (from the {cmd: tsset} panel
 {p 8 17 15}
 {cmd:lead:}{p_end}
 {p 12 12 15}
-A variable that contains the respective time period relative to the treatment period.{p_end}
+A variable that contains the respective time period relative to the treatment period. Lead=1 specifies the first period of treatment.{p_end}
 
 {p 8 17 15}
 {cmd:effect:}{p_end}
@@ -127,7 +127,7 @@ If the match was done on trends, this is the difference between the unit's (scal
 {title:Saved Results}
 
 {p 4 8 2}
-By default, {cmd:synth_runner} returns the following scalars and matrices.  
+{cmd:synth_runner} returns the following scalars and matrices.  
 
 {p 8 8 2}
 {cmd: e(treat_control) :}{p_end}
@@ -138,6 +138,11 @@ A matrix with the average treatment outcome (centered around treatment) and the 
 {cmd: e(b):}{p_end}
 {p 10 10 2}
 A vector with the per-period effects (unit's actual outcome minus the outcome of its synthetic control) for post-treatment periods.
+
+{p 8 8 2}
+{cmd: e(n_pl):}{p_end}
+{p 10 10 2}
+The number of placebo averages used for comparison. For single treatment setups, this can be used to calculate purely randomized p-values.
 
 {p 8 8 2}
 {cmd: e(pvals):}{p_end}
@@ -162,12 +167,12 @@ The proportion of placebos that have a ratio of post-treatment RMSPE over pre-tr
 {p 8 8 2}
 {cmd: e(avg_pre_rmspe_p):}{p_end}
 {p 10 10 2}
-The proportion of placebos that have a pre-treatment RMSPE at least as large as the average of the treated units. A measure of fit. Bad if significant.
+The proportion of placebos that have a pre-treatment RMSPE at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 
 {p 8 8 2}
 {cmd: e(avg_val_rmspe_p):}{p_end}
 {p 10 10 2}
-When specifying {cmd:training_propr}, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit. Bad if significant.
+When specifying {cmd:training_propr}, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 
 {title:Examples}
 

@@ -18,7 +18,7 @@ This package of deliverables contains the following files
 
 == Writeup ==
 - _README.txt (this file)
-- IDB_synth.pdf 
+- synth_runner.pdf 
 
 INSTALLATION
 As a pre-requisite, the -synth- package needs to be installed. (The 'all' option is necessary to install the 'smoking' dataset used in further examples.)
