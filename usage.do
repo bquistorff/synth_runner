@@ -92,7 +92,7 @@ qui graph dir, memory
 local grphs "`r(list)'"
 foreach gname of local grphs{
 	if "`gname'"=="Graph" continue //these are unnamed ones
-	qui graph save `gtype' "`gname'.gph", replace
+	qui graph save `gname' "`gname'.gph", replace
 	qui graph export "`gname'.eps", name(`gname') replace
 }
 }

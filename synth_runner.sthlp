@@ -13,11 +13,11 @@
 {title:Syntax}
 
 {p 6 8 2}
-{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit}({it:#}) {opt trp:eriod}({it:#}) {opt d:}(varname) {opt tre:nds} {opt pre_limit_mult:}({it:real>=1}) {opt training_propr}(real) {opt k:eep}({it:file}) {opt rep:lace} {opt ci} {opt pvals1s} {it:synthsettings} ]
+{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit}({it:#}) {opt trp:eriod}({it:#}) {opt d:}(varname) {opt tre:nds} {opt pre_limit_mult:}({it:real>=1}) {opt training_propr}(real) {opt k:eep}({it:file}) {opt rep:lace} {opt ci} {opt pvals1s} {opt n_pl_avgs:}({it:string}) {it:synthsettings} ]
 
 {p 4 4 2}
 Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
-Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. Auxiliary commands for generating graphs post-estimation are shown in the examples down below.
+Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. Auxiliary commands for generating graphs post-estimation are shown in the examples below.
  
 
 {title:Description}
@@ -43,10 +43,10 @@ See {help synth:{it:synth}} and Abadie and Gardeazabal (2003) and Abadie, Diamon
 For specifying the unit and time-period of treatment, there are two methods. Exactly one of these is required.
 
 {p 4 8 2}
-{cmd:trunit}({it:#}) and {cmd:trperiod}({it:#}). This syntax (used by {cmd:synth}) can be used when there is a single unit entering treatment.
+{cmd:trunit(}{it:#}{cmd:)} and {cmd:trperiod(}{it:#}{cmd:)}. This syntax (used by {cmd:synth}) can be used when there is a single unit entering treatment.
 
 {p 4 8 2}
-{cmd:d}(varname). The {cmd:d} variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else. 
+{cmd:d(}varname{cmd:)}. The {cmd:d} variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else. 
 This allows for multiple units to undergo treatment, possibly at different times.
 
 {title:Options}
@@ -55,10 +55,10 @@ This allows for multiple units to undergo treatment, possibly at different times
 {cmd: trends} will force {cmd:synth} to match on the trends in the outcome variable. It does this by scaling each unit's outcome variable so that it is 1 in the last pre-treatment period.
 
 {p 4 8 2}
-{cmd: pre_limit_mult({it:real>=1})} will not include placebo effects in the pool for inference if the match quality of that control (pre-treatment RMSPE) is greater than {it:pre_limit_mult} times the match quality of the treated unit.
+{cmd: pre_limit_mult(}{it:real>=1}{cmd:)} will not include placebo effects in the pool for inference if the match quality of that control (pre-treatment RMSPE) is greater than {it:pre_limit_mult} times the match quality of the treated unit.
 
 {p 4 8 2}
-{cmd: training_propr}(0<={it:real}<=1) instructs {cmd:synth_runner} to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in predictorvars). 
+{cmd: training_propr(}0<={it:real}<=1{cmd:)} instructs {cmd:synth_runner} to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in predictorvars). 
 If set to a number greater than 0, then that initial proportion of the pre-treatment period is used as a training period with the rest being the validation period. 
 Outcome predictors for every time in the training period will be added to the {cmd:synth} commands. Diagnostics of the fit for the validation period will be outputted. 
 If the value is between 0 and 1, there will be at least one training period and at least one validation period. 
@@ -118,6 +118,12 @@ If the match was done on trends, this is the difference between the unit's (scal
 {p 4 8 2}
 {cmd:replace} replaces the dataset specified in 
 {cmd:keep(}{it:filename}{cmd:)} if it already exists.
+
+{p 4 8 2}
+{cmd: n_pl_avgs(}{it:string}{cmd:)} controls the number of placebo averages to compute for inference. The total possible grows exponentially with the number of treated events.
+If omitted, the default behavior is cap the number of averages computed at 1,000,000 and if the total is more than that to sample (with replacement) the full distribution. 
+The option {cmd: n_pl_avgs(}{it:all}{cmd:)} can be used to override this behavior and compute all the possible averages. 
+The option {cmd: n_pl_avgs(}{it:#}{cmd:)} can be used to specify a specific number less than the total number of averages possible.
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information. 
@@ -229,9 +235,11 @@ Abadie, A., Diamond, A., and Hainmueller, J. 2010. Synthetic Control Methods for
 Abadie, A. and Gardeazabal, J. 2003. Economic Costs of Conflict: A Case Study of the Basque Country. {it: American Economic Review} 93(1): 113-132.
 
 {p 4 8 2}
-Cavallo, E., Galiani, S., Noy, I., and Pantano, J. Catastrophic natural disasters and economic growth. {it: Review of Economics and Statistics}, 95(5):1549–1561, Dec 2013.
+Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural disasters and economic growth. {it: Review of Economics and Statistics}, 95(5):1549–1561, Dec 2013.
 
 {title:Authors}
 
-      Brian Quistorff, bquistorff@gmail.com
+      Brian Quistorff, bquistorff@gmail.com (corresponding author)
+      University of Maryland
+      Sebastian Galiani
       University of Maryland

@@ -7,9 +7,10 @@ program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
 	syntax anything, [D(string) ci pvals1s TREnds training_propr(real 0) max_lead(numlist min=1 max=1 int)  ///
 		Keep(string) REPlace TRPeriod(numlist min=1 max=1 int) TRUnit(numlist min=1 max=1 int) pre_limit_mult(string) ///
-		COUnit(string) FIGure resultsperiod(string) *]
+		COUnit(string) FIGure resultsperiod(string) n_pl_avgs(string) *]
 	gettoken depvar cov_predictors : anything
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
+	
 	_assert "`d'`trperiod'`trunit'"!="", msg("Must specify treatment units and time periods (d() or trperiod() and trunit())")
 	_assert "`d'"=="" | "`trperiod'`trunit'"=="" , msg("Can't specify both d() and {trperiod(), trunit()}")
 	if "`d'"==""{
@@ -17,15 +18,17 @@ program synth_runner, eclass
 		gen byte `D' = (`pvar'==`trunit' & `tvar'>=`trperiod')
 	}
 	else local D "`d'"
+	
 	_assert "`counit'"=="", msg("counit() option not allowed. Non-treated units are assumed to be controls. Remove units that are neither controls nor treatments before invoking.")
 	_assert "`figure'"=="", msg("figure option not allowed.")
 	_assert "`resultsperiod'"=="", msg("resultsperiod() option not allowed. Use max_lead()")
 	if "`pre_limit_mult'"=="" local pre_limit_mult .
+	_assert ("`n_pl_avgs'"=="" | "`n_pl_avgs'"=="all" | real("`n_pl_avgs'")!=.), msg("-, n_pl_avgs()- must be blank, a number, or all")
 	
 	tempvar ever_treated tper_var0 tper_var lead event max_lead_per_unit min_lead_per_unit
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
-		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl
+		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used
 	tempfile ind_file agg_file out_e
 		
 	qui bys `pvar': egen `tper_var0' = min(`tvar') if `D'
@@ -68,7 +71,7 @@ program synth_runner, eclass
 	qui levelsof `pvar', local(units)
 	qui levelsof `pvar' if `ever_treated'==1, local(tr_units)
 	
-	di "Estimating the treatment effects"
+	di as result "Estimating the treatment effects"
 	local num_tr_units : list sizeof tr_units
 	mat `tr_pre_rmspes' = J(`num_tr_units',1,.)
 	mat `tr_post_rmspes' = J(`num_tr_units',1,.)
@@ -123,6 +126,7 @@ program synth_runner, eclass
 	local rep 1
 	local nloops = cond(`pre_limit_mult'==., `num_tpers',`num_tr_units')
 	local num_reps = `nloops'*`num_do_units'
+	scalar `n_pl' = 1
 	forval i=1/`nloops'{
 		if `pre_limit_mult'==.{
 			local tper = `uniq_trs'[`i',1]
@@ -164,6 +168,7 @@ program synth_runner, eclass
 		mata: do_post_rmspe_t_base`i' = do_post_rmspe_base`i' :/ do_pre_rmspe_base`i'
 		if `training_propr'>0 mata: do_val_rmspe_base`i' = st_matrix("`do_val_rmspes'")
 		forval j=1/`times'{
+			scalar `n_pl' = `n_pl'*rowsof(`do_post_rmspes')
 			mata: do_effects_p[`do_aggs_i',1]    = &do_effect_base`i'
 			mata: do_pre_rmspes_p[`do_aggs_i',1] = &do_pre_rmspe_base`i'
 			mata: do_t_effects_p[`do_aggs_i',1]  = &do_t_effect_base`i'
@@ -180,39 +185,85 @@ program synth_runner, eclass
 	}
 	restore
 	
-	di "Conducting inference."
+	local num_steps = cond(`training_propr'>0,6,5)
+	local default_max_n_pl 1000000 //1000000
+	if "`n_pl_avgs'"==""{
+		if `default_max_n_pl'<`n_pl'{
+			scalar `n_pl_used' = `default_max_n_pl'
+			di _n "The number of placebo averages (`=`n_pl'') is more than the default max (`default_max_n_pl')" _continue
+			di " so switching to a random sample of `default_max_n_pl'. To override use -, n_pl_avgs()-."
+		}
+		else {
+			scalar `n_pl_used' = `n_pl'
+		}
+	}
+	else {
+		if "`n_pl_avgs'"=="all"    scalar `n_pl_used' =     `n_pl'
+		else /* specified #*/ scalar `n_pl_used' = min(`n_pl', `n_pl_avgs')
+		
+		if `n_pl_used'>`default_max_n_pl'{
+			di _n "The number of placebo averages used (`=`n_pl_used'') is more than the default max (`default_max_n_pl') so computation will be slow. "
+			if "`ci'"!=""{
+				di " Additionally, with option -, ci- the whole distribution must be saved which can cause memory issues."
+				di " Consider omitting -, ci- and/or -, n_pl_avgs()-." _n
+			}
+			else {
+				di " Consider omitting -, n_pl_avgs()-." _n
+			}
+		}
+	}
+	local marg_draws = cond(`n_pl_used'!=`n_pl', `n_pl_used',.)
+	di _n "Conducting inference: `num_steps' steps, and " `n_pl_used' " placebo averages"
+
 	*Raw Estimates
-	mata: do_effect_avgs = get_all_avgs(do_effects_p)
-	mata: st_numscalar("`n_pl'", rows(do_effect_avgs))
-	mata: st_matrix("`pvals'", get_p_vals(tr_effect_avg, do_effect_avgs))
-	mat colnames `pvals' = `leadlist'
 	if "`ci'"!=""{
+		di "Step 1 (3 substeps): a..." _continue
+		mata: do_effect_avgs = get_avgs(do_effects_p, `marg_draws')
+		di " b..." _continue
+		mata: st_matrix("`pvals'", get_p_vals(tr_effect_avg, do_effect_avgs))
+		di " c..." _continue
 		mata: st_matrix("`CI'", get_CIs(tr_effect_avg, do_effect_avgs, strtoreal(st_global("S_level"))))
 		mat rownames `CI' = ll ul
 		mat colnames `CI' = `leadlist'
 	}
-	mata: do_post_rmspe_avgs = get_all_avgs(do_post_rmspes_p)
-	mata: st_numscalar("`pval_post_RMSPE'", get_p_vals(mean(tr_post_rmspes), do_post_rmspe_avgs)[1,1])
+	else {
+		di "Step 1..." _continue
+		mata: st_matrix("`pvals'", get_p_val_full(tr_effect_avg, do_effects_p, `marg_draws'))
+	}
+	mat colnames `pvals' = `leadlist'
+	di " Finished"
 	
-	*Pseudo t-stas
-	mata: st_matrix("`pvals_t'", get_p_vals(tr_t_effect_avg, get_all_avgs(do_t_effects_p)))
+	di "Step 2..." _continue
+	mata: st_numscalar("`pval_post_RMSPE'", get_p_val_full(mean(tr_post_rmspes), do_post_rmspes_p, `marg_draws')[1,1])
+	di " Finished"
+	
+	*Pseudo t-stats
+	di "Step 3..." _continue
+	mata: st_matrix("`pvals_t'", get_p_val_full(tr_t_effect_avg, do_t_effects_p, `marg_draws'))
 	mat colnames `pvals_t' = `leadlist'
-	mata: st_numscalar("`pval_post_RMSPE_t'", get_p_vals(tr_post_rmspes_t_avg, get_all_avgs(do_post_rmspes_t_p))[1,1])
+	di " Finished"
+	
+	di "Step 4..." _continue
+	mata: st_numscalar("`pval_post_RMSPE_t'", get_p_val_full(tr_post_rmspes_t_avg, do_post_rmspes_t_p, `marg_draws')[1,1])
+	di " Finished"
 	
 	*Diagnostics
-	mata: do_pre_rmspe_avgs = get_all_avgs(do_pre_rmspes_p)
-	mata: st_numscalar("`pval_pre_RMSPE'", get_p_vals(mean(tr_pre_rmspes), do_pre_rmspe_avgs)[1,1])
+	di "Step 5..." _continue
+	mata: st_numscalar("`pval_pre_RMSPE'", get_p_val_full(mean(tr_pre_rmspes), do_pre_rmspes_p, `marg_draws')[1,1])
+	di " Finished"
 	*Validation period RMSPE
 	if `training_propr'>0{
-		mata: st_numscalar("`pval_val_RMSPE'", get_p_vals(mean(st_matrix("`tr_val_rmspes'")), get_all_avgs(do_val_rmspes_p))[1,1])
+		di "Step 6..." _continue
+		mata: st_numscalar("`pval_val_RMSPE'", get_p_val_full(mean(st_matrix("`tr_val_rmspes'")), do_val_rmspes_p, `marg_draws')[1,1])
+		di " Finished"
 	}
 	
 	*Post output
-	di "Post-treatment results: Effects, p-values, p-values (psuedo t-stats)"
+	di _n "Post-treatment results: Effects, p-values, p-values (psuedo t-stats)"
 	mat `disp_mat' = (`estimates'', `pvals'[2,1...]',`pvals_t'[2,1...]')
 	mat colnames `disp_mat' = estimates pvals pvals_tstat
 	mat rownames `disp_mat' = `leadlist'
-	mat li `disp_mat'
+	matlist `disp_mat'
 	*Effects
 	ereturn post `estimates'
 	*Could return avg_post_rmspe, avg_post_rmspe_t, estimates_t but these aren't very interpretable
@@ -221,6 +272,7 @@ program synth_runner, eclass
 	
 	*Inference stats
 	ereturn scalar n_pl = `n_pl'
+	ereturn scalar n_pl_used = `n_pl_used'
 	mat `p2' = `pvals'[2,1...]
 	mat rownames `p2' = `D'
 	ereturn matrix pvals = `p2'
@@ -252,8 +304,8 @@ program cleanup_mata
 	syntax , num_tpers(int) [ warn]
 
 	local plain_mata_objs = "do_effect_avgs tr_pre_rmspes tr_post_rmspes do_post_rmspes_t_p " + ///
-		"tr_t_effect_avg do_pre_rmspes_p do_effects_p do_pre_rmspe_avgs tr_effect_avg " + ///
-		"do_val_rmspes_p tr_effects do_t_effects_p do_post_rmspes_p do_post_rmspe_avgs tr_post_rmspes_t_avg"
+		"tr_t_effect_avg do_pre_rmspes_p do_effects_p tr_effect_avg " + ///
+		"do_val_rmspes_p tr_effects do_t_effects_p do_post_rmspes_p tr_post_rmspes_t_avg"
 	foreach mata_obj of local plain_mata_objs{
 		mata: st_local("found", st_local("found")+(rows(direxternal("`mata_obj'"))?"yes":""))
 		mata: rmexternal("`mata_obj'")
@@ -266,7 +318,7 @@ program cleanup_mata
 			mata: rmexternal("`mata_obj'`i'")
 		}
 	}
-	if "`warn'"!="" & "`found'"!="" di as err "-synth_runner- will destroy mata objects: `plain_mata_objs', and numbered `per_tper_mata_objs'"
+	if "`warn'"!="" & "`found'"!="" di as err "-synth_runner- will overwrite mata objects (ignore if we didn't cleanup after a previous run): `plain_mata_objs'; and numbered `per_tper_mata_objs'"
 end
 
 
@@ -410,32 +462,7 @@ program _print_dots
 		timer off `timernum'
 		timer clear `timernum'
 		timer on `timernum'
-		exit 0
-	}
-	local start_point = min(5, `end')
-	if `curr'<`start_point' {
-		timer off `timernum'
-		qui timer list  `timernum'
-		local used `r(t`timernum')'
-		timer on `timernum'
-		if `used'>60 {
-			local remaining = `used'*(`end'/`curr'-1)
-			_format_time `= round(`remaining')', local(remaining_toprint)
-			_format_time `= round(`used')', local(used_toprint)
-			display "After `=`curr'-1': `used_toprint' elapsed, `remaining_toprint' est. remaining"
-		}
-		exit 0
-	}
-	if `curr'==`start_point' {
-		timer off `timernum'
-		qui timer list  `timernum'
-		local used `r(t`timernum')'
-		timer on `timernum'
-		local remaining = `used'*(`end'/`curr'-1)
-		_format_time `= round(`remaining')', local(remaining_toprint)
-		_format_time `= round(`used')', local(used_toprint)
-		display "After `=`curr'-1': `used_toprint' elapsed, `remaining_toprint' est. remaining"
-		
+
 		if `end'<`width'{
 			di "|" _column(`end') "|" _continue
 		}
@@ -445,9 +472,7 @@ program _print_dots
 			di "`header'" _continue
 		}
 		di " Total: `end'"
-		forval i=1/`start_point'{
-			di "." _continue
-		}
+		di "." _continue
 		exit 0
 	}
 	
@@ -498,16 +523,16 @@ mata:
 // the possible randomizations (usually with bootstraps you add one to the denominator).
 real matrix get_p_vals(real rowvector tr_avg, real matrix do_avgs){
 	T1 = cols(tr_avg)
-	N_PL = rows(do_avgs)
+	n_avgs = rows(do_avgs)
 
 	pvals_s = J(2,T1,.)
 	for(t=1; t<=T1; t++){
 		if(sign(tr_avg[1,t])>0)
-			pvals_s[1,t] = sum(    tr_avg[1,t] :<=    do_avgs[.,t] )/N_PL
+			pvals_s[1,t] = sum(    tr_avg[1,t] :<=    do_avgs[.,t] )/n_avgs
 		else
-			pvals_s[1,t] = sum(    tr_avg[1,t] :>=    do_avgs[.,t] )/N_PL
+			pvals_s[1,t] = sum(    tr_avg[1,t] :>=    do_avgs[.,t] )/n_avgs
 		
-		pvals_s[2,t] =   sum(abs(tr_avg[1,t]):<=abs(do_avgs[.,t]))/N_PL //more common approach
+		pvals_s[2,t] =   sum(abs(tr_avg[1,t]):<=abs(do_avgs[.,t]))/n_avgs //more common approach
 		//pvals_s[2,t] = pvals_s[1,t]:*2 //Ficher 2-sided p-vals
 	}
 	return(pvals_s)
@@ -532,18 +557,18 @@ real matrix get_p_vals(real rowvector tr_avg, real matrix do_avgs){
  */
 real matrix get_CIs(real rowvector tr_avg, real matrix do_avgs, real scalar level){
 	T1 = cols(tr_avg)
-	N_PL = rows(do_avgs)
+	n_avgs = rows(do_avgs)
 	CIs = J(2,T1,.)
 	//We might not have enough precision to get alpha, so figure out what we can get
 	alpha = (100-level)/100
-	p2min = 2/N_PL
+	p2min = 2/n_avgs
 	alpha_ind = max((1,round(alpha/p2min)))
 	alpha = alpha_ind * p2min
 	//Find the CIs
 	for(t=1;t<=T1; t++){
 		sorted = sort(do_avgs[.,t],1)
 		low_effect = sorted[alpha_ind]
-		high_effect = sorted[(N_PL+1)-alpha_ind]
+		high_effect = sorted[(n_avgs+1)-alpha_ind]
 		CIs[.,t] = (tr_avg[1,t] - high_effect\ tr_avg[1,t] - low_effect) 
 		//note that the "swap" (high_effect used to define lower bound)
 	}
@@ -551,7 +576,48 @@ real matrix get_CIs(real rowvector tr_avg, real matrix do_avgs, real scalar leve
 	//could return alpha too
 }
 
-real matrix get_all_avgs(pointer colvector do_aggs){
+/* get_avgs+get_p_vals but without keeping around all the do_avgs*/
+real matrix get_p_val_full(real rowvector tr_avg, pointer colvector do_aggs ,| real scalar n_draws){
+	G = rows(do_aggs)
+	T1 = cols(*do_aggs[1])
+	do_picks = ( J(G-1,1,1)\ 0 )
+	
+	avg_set = J(G   , T1,.)
+	bottoms = J(G, 1, 1)
+	tops = J(G, 1, .)
+	N_PL = 1
+	for(g=1; g<=G; g++){
+		J_g = rows(*do_aggs[g])
+		tops[g,1] = J_g
+		N_PL = N_PL*J_g
+	}
+	randomizing = (!missing(n_draws) & n_draws<N_PL)
+	n_avgs = (randomizing ? n_draws : N_PL )
+	pvals_s = J(2,T1,0)
+	//possibly faster to do if outside for (smart compilers can do this automatically)
+	for(i=1; i<=n_avgs; i++){
+		do_picks = (randomizing ? runiformint(1, 1, bottoms, tops) : inc_index(tops, do_picks))
+		for(g=1; g<=G; g++){
+			avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
+		}
+		do_avgs = mean(avg_set)
+		
+		for(t=1; t<=T1; t++){
+			if(sign(tr_avg[1,t])>0)
+				pvals_s[1,t] = pvals_s[1,t] + (    tr_avg[1,t] :<=    do_avgs[1,t] )
+			else
+				pvals_s[1,t] = pvals_s[1,t] + (    tr_avg[1,t] :>=    do_avgs[1,t] )
+			
+			pvals_s[2,t] =   pvals_s[2,t] + (abs(tr_avg[1,t]):<=abs(do_avgs[1,t])) //more common approach
+			//pvals_s[2,t] = pvals_s[1,t]:*2 //Ficher 2-sided p-vals
+		}
+	}
+	
+	pvals_s = (pvals_s :/n_avgs)
+	return(pvals_s)
+}
+
+real matrix get_avgs(pointer colvector do_aggs ,| real scalar n_draws){
 	G = rows(do_aggs)
 	T1 = cols(*do_aggs[1])
 	do_picks = ( J(G-1,1,1)\ 0 )
@@ -564,19 +630,36 @@ real matrix get_all_avgs(pointer colvector do_aggs){
 		tops[g,1] = J_g
 		N_PL = N_PL*J_g
 	}
-	do_avgs = J(N_PL, T1,.)
-	for(i=1; i<=N_PL; i++){
-		do_picks = inc_index(do_picks, tops) //could pick randomly if sampling (when full N_PL too big)
-		
-		for(g=1; g<=G; g++){
-			avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
+	randomizing = (!missing(n_draws) & n_draws<N_PL)
+	n_avgs = (randomizing ? n_draws : N_PL )
+	do_avgs = J(n_avgs, T1,.)
+
+	//cleaner to put if in loop, but that would probably be much slower
+	if(randomizing){
+		bottoms = J(G, 1, 1)
+		for(i=1; i<=n_avgs; i++){
+			do_picks = runiformint(1, 1, bottoms, tops)
+			
+			for(g=1; g<=G; g++){
+				avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
+			}
+			do_avgs[i,.] = mean(avg_set)
 		}
-		do_avgs[i,.] = mean(avg_set)
+	}
+	else {
+		for(i=1; i<=n_avgs; i++){
+			do_picks = inc_index(tops, do_picks)
+			
+			for(g=1; g<=G; g++){
+				avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
+			}
+			do_avgs[i,.] = mean(avg_set)
+		}
 	}
 	return(do_avgs)
 }
 
-real colvector inc_index(real colvector picks, real colvector tops){
+real colvector inc_index(real colvector tops, real colvector picks){
 	G = rows(picks)
 	for(g=G; g>=1; g--){
 		picks[g,1] = picks[g,1]+1
