@@ -583,7 +583,6 @@ real matrix get_p_val_full(real rowvector tr_avg, pointer colvector do_aggs ,| r
 	do_picks = ( J(G-1,1,1)\ 0 )
 	
 	avg_set = J(G   , T1,.)
-	bottoms = J(G, 1, 1)
 	tops = J(G, 1, .)
 	N_PL = 1
 	for(g=1; g<=G; g++){
@@ -596,7 +595,7 @@ real matrix get_p_val_full(real rowvector tr_avg, pointer colvector do_aggs ,| r
 	pvals_s = J(2,T1,0)
 	//possibly faster to do if outside for (smart compilers can do this automatically)
 	for(i=1; i<=n_avgs; i++){
-		do_picks = (randomizing ? runiformint(1, 1, bottoms, tops) : inc_index(tops, do_picks))
+		do_picks = (randomizing ? ran_index(tops) : inc_index(tops, do_picks))
 		for(g=1; g<=G; g++){
 			avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
 		}
@@ -636,9 +635,8 @@ real matrix get_avgs(pointer colvector do_aggs ,| real scalar n_draws){
 
 	//cleaner to put if in loop, but that would probably be much slower
 	if(randomizing){
-		bottoms = J(G, 1, 1)
 		for(i=1; i<=n_avgs; i++){
-			do_picks = runiformint(1, 1, bottoms, tops)
+			do_picks = ran_index(tops)
 			
 			for(g=1; g<=G; g++){
 				avg_set[g,.] = (*do_aggs[g,1])[do_picks[g,1],.]
@@ -657,6 +655,12 @@ real matrix get_avgs(pointer colvector do_aggs ,| real scalar n_draws){
 		}
 	}
 	return(do_avgs)
+}
+
+/* In Stata 14 could replace this with runiformint(1, 1, J(G, 1, 1), tops) */
+real colvector ran_index(real colvector tops, |real colvector picks){
+	G = rows(tops)
+	return(floor((runiform(G,1) :* tops)+J(G,1,1)))
 }
 
 real colvector inc_index(real colvector tops, real colvector picks){
