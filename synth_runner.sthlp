@@ -222,6 +222,26 @@ Example 3 - Multiple treatments at different time periods:{p_end}
 {p 8 8 2}
 We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. {p_end}
 
+{title:Citation of synth_runner}
+
+{p}{cmd:synth_runner} is not an official Stata command. It is a free contribution
+to the research community, like a paper. Please cite it as such: {p_end}
+
+{phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
+synthetic control estimation using synth, Mar 2015. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.1.
+{p_end}
+
+{p}And in bibtex format:{p_end}
+
+@Misc{QG15,
+  Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
+  Author = {Brian Quistorff and Sebastian Galiani},
+  Month  = {Mar},
+  Note   = {Version 1.1.1},
+  Year   = {2015},
+  Url    = {https://github.com/bquistorff/synth_runner}
+}
+
 {title:References}
 
 {p 4 8 2}
