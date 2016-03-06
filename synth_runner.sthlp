@@ -228,17 +228,17 @@ We extend Example 2 by considering a control state now to be treated (Georgia in
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Mar 2015. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.1.
+synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.1.
 {p_end}
 
 {p}And in bibtex format:{p_end}
 
-@Misc{QG15,
+@Misc{QG16,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
   Month  = {Mar},
   Note   = {Version 1.1.1},
-  Year   = {2015},
+  Year   = {2016},
   Url    = {https://github.com/bquistorff/synth_runner}
 }
 
