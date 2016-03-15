@@ -23,7 +23,7 @@ Variables specified in {it:depvar} and {it:predictorvars} must be numeric variab
 {title:Description}
 
 {p 4 4 2}
-{cmd:synth_runner} automates the process of running multiple synthetic controls estimations by {cmd:synth}. It will run placebo estimates in-space (estimations for the same treatment period but on all the control units). 
+{cmd:synth_runner} automates the process of running multiple synthetic control estimations by {cmd:synth}. It will run placebo estimates in-space (estimations for the same treatment period but on all the control units). 
 It will then provide inference (p-values) comparing the estimated main effect to the distribution of placebo effects. It handles the case where several units receive treatment, possible at different time periods. 
 If there are multiple treatment periods, then effects are centered around the treatment period so as to be comparable. 
 The maximum number of leads and lags that can be achieved in the data given the treated units are used for analysis.
