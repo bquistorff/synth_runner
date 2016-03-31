@@ -13,11 +13,13 @@
 {title:Syntax}
 
 {p 6 8 2}
-{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit}({it:#}) {opt trp:eriod}({it:#}) {opt d:}(varname) {opt tre:nds} {opt pre_limit_mult:}({it:real>=1}) {opt training_propr}(real) {opt k:eep}({it:file}) {opt rep:lace} {opt ci} {opt pvals1s} {opt n_pl_avgs:}({it:string}) {it:synthsettings} ]
+{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt k:eep(file)} {opt rep:lace} {opt ci} {opt pvals1s} 
+{opt n_pl_avgs:(string)} {it:synthsettings} ]
 
 {p 4 4 2}
 Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
-Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. Auxiliary commands for generating graphs post-estimation are shown in the examples below.
+Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. 
+Auxiliary commands for generating graphs post-estimation are shown in the examples below.
  
 
 {title:Description}
@@ -211,7 +213,8 @@ Example 2 - Same treatment, but a bit more complicated setup:{p_end}
 {phang}{stata effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
-Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we (a) specify the treated units/periods with a binary variable, (b) generate the outcome predictors automatically using the initial 13 periods of the pre-treatment era (the rest is the "validation" period), and (c) we match on trends.{p_end}
+Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we (a) specify the treated units/periods with a binary variable, 
+(b) generate the outcome predictors automatically using the initial 13 periods of the pre-treatment era (the rest is the "validation" period), and (c) we match on trends.{p_end}
 
 {p 4 8 2}
 Example 3 - Multiple treatments at different time periods:{p_end}
@@ -220,7 +223,8 @@ Example 3 - Multiple treatments at different time periods:{p_end}
 {phang}{stata effect_graphs , multi depvar(cigsale)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
-We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. {p_end}
+We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. 
+Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. {p_end}
 
 {title:Citation of synth_runner}
 
@@ -236,7 +240,7 @@ synthetic control estimation using synth, Mar 2016. {browse "https://github.com/
 @Misc{QG16,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = {Mar},
+  Month  = mar,
   Note   = {Version 1.1.1},
   Year   = {2016},
   Url    = {https://github.com/bquistorff/synth_runner}
