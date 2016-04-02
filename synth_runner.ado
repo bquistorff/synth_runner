@@ -10,6 +10,13 @@ program synth_runner, eclass
 		COUnit(string) FIGure resultsperiod(string) n_pl_avgs(string) *]
 	gettoken depvar cov_predictors : anything
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
+	* Stata's dta file operations (save/use/merge) will automatically add dta to extensionless files, so do that too.
+	if `"`keep'"'!=""{
+		_getfilename `"`keep'"'
+		if `=strpos(`"`r(filename)'"',".")'==0{
+			local keep `"`keep'.dta"'
+		}
+	}
 	
 	_assert "`d'`trperiod'`trunit'"!="", msg("Must specify treatment units and time periods (d() or trperiod() and trunit())")
 	_assert "`d'"=="" | "`trperiod'`trunit'"=="" , msg("Can't specify both d() and {trperiod(), trunit()}")

@@ -7,7 +7,7 @@ program single_treatment_graphs
 		[effect_var(string) raw_gname(string)  effects_gname(string) ///
 		do_color(string) effects_ylabels(string) effects_ymax(string) effects_ymin(string)]
 
-	if "`do_color'"=="" local do_color background
+	if "`do_color'"=="" local do_color bg
 	if "`effect_var'"=="" local effect_var effect
 	if "`raw_gname'"=="" local raw_gname raw
 	if "`effects_gname'"=="" local effects_gname effects

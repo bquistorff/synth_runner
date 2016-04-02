@@ -74,8 +74,8 @@ If treatment is not randomly assigned then these confidence intervals do not hav
 {cmd: pvals1s} outputs one-sided p-values in addition to the two-sided p-values.
 
 {p 4 8 2}
-{cmd:keep(}{it:filename}{cmd:)} saves a dataset with the 
-results. This is only allowed if there is a single period in which unit(s) enter treatment. It is easy to merge this in the initial dataset. If {cmd:keep(}{it:filename}{cmd:)} is specified, it will hold the following variables:
+{cmd:keep(}{it:filename}{cmd:)} saves a dataset with the results. If a file extension is omitted .dta is assumed. 
+This is only allowed if there is a single period in which unit(s) enter treatment. It is easy to merge this in the initial dataset. If {cmd:keep(}{it:filename}{cmd:)} is specified, it will hold the following variables:
 
 {p 8 17 15}
 {cmd:{it:panelvar}:}{p_end}
@@ -232,7 +232,7 @@ Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.1.
+synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.3.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -241,7 +241,7 @@ synthetic control estimation using synth, Mar 2016. {browse "https://github.com/
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
   Month  = mar,
-  Note   = {Version 1.1.1},
+  Note   = {Version 1.1.3},
   Year   = {2016},
   Url    = {https://github.com/bquistorff/synth_runner}
 }
