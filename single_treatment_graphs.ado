@@ -20,13 +20,17 @@ program single_treatment_graphs
 	local n_units : list sizeof units
 	local n_whole_chunks = int(`n_units'/10)
 	forval i=1/`n_whole_chunks'{
-		local n1 = (`i'-1)*10+1
-		local n2 = `i'*10
+		local ind1 = (`i'-1)*10+1
+		local ind2 = `i'*10
+		local n1 : word `ind1' of `units'
+		local n2 : word `ind2' of `units'
 		local raw_gline    "`raw_gline' (line `depvar'`n1'-`depvar'`n2' `tvar', lpattern(solid..) lcolor(`do_color'..))"
 		local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
 	}
-	local n1 = `n_whole_chunks'*10+1
-	local n2 = `n_units'
+	local ind1 = `n_whole_chunks'*10+1
+	local ind2 = `n_units'
+	local n1 : word `ind1' of `units'
+	local n2 : word `ind2' of `units'
 	local raw_gline    "`raw_gline' (line `depvar'`n1'-`depvar'`n2' `tvar', lpattern(solid..) lcolor(`do_color'..))"
 	local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
 

@@ -1,4 +1,4 @@
-*! version 1.0 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.1.4 Brian Quistorff <bquistorff@gmail.com>
 *! Automates the process of conducting many synthetic control estimations
 * Todo: 
 * test max_lead.

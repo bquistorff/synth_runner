@@ -2,10 +2,10 @@ d 'synth_runner': module
 d
 d   Automation for multiple Synthetic Control estimations. 
 d
-d Version 1.1.3
+d Version 1.1.4
 d (update version in synth_runner.sthlp also)
 d
-d Distribution-Date: 01apr2016
+d Distribution-Date: 17apr2016
 d Requires: -synth- from SSC
 d
 d Author: Brian Quistorff
