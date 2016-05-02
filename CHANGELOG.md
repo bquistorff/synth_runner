@@ -4,7 +4,13 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 ### Changed
- - Update docs
+
+## [1.1.4] - 2016-05-02
+### Fixed
+ - Issue with multiple treatment units/per_rmspe_mult
+ - Cleanup better after run
+### Changed
+ - Update docs and source code notes.
 
 ## [1.1.4] - 2016-04-18
 ### Fixed

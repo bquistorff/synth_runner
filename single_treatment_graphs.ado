@@ -55,6 +55,8 @@ program single_treatment_graphs
 	preserve
 	keep `tvar' `pvar' `effect_var'
 	qui reshape wide `effect_var', i(`tvar') j(`pvar') //easier in wide format
+	global ReS_Call
+	global ReS_jv2
 	*there is a graph option limit of 20 so limit the number per line
 	twoway `effect_gline'	(line `effect_var'`trunit' `tvar', lstyle(foreground..)), ///
 		xline(`=`trperiod'-1') name(`effects_gname', replace) ylabel(`effects_ylabels', nogrid) ///

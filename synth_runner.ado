@@ -5,9 +5,20 @@
 * don't overwrite those mata variables (though I do warn)
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
-	syntax anything, [D(string) ci pvals1s TREnds training_propr(real 0) max_lead(numlist min=1 max=1 int)  ///
-		Keep(string) REPlace TRPeriod(numlist min=1 max=1 int) TRUnit(numlist min=1 max=1 int) pre_limit_mult(string) ///
-		COUnit(string) FIGure resultsperiod(string) n_pl_avgs(string) *]
+	syntax anything, [ ///
+		D(varname) ///
+		ci ///
+		pvals1s ///
+		TREnds ///
+		training_propr(real 0) ///
+		max_lead(numlist min=1 max=1 int)  ///
+		Keep(string) ///
+		REPlace ///
+		TRPeriod(numlist min=1 max=1 int) ///
+		TRUnit(numlist min=1 max=1 int) ///
+		pre_limit_mult(numlist max=1 >0) ///
+		n_pl_avgs(string) ///
+		COUnit(string) FIGure resultsperiod(string) *]
 	gettoken depvar cov_predictors : anything
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
 	* Stata's dta file operations (save/use/merge) will automatically add dta to extensionless files, so do that too.
@@ -26,6 +37,7 @@ program synth_runner, eclass
 	}
 	else local D "`d'"
 	
+	//catch options not allowed to be sent to -synth-
 	_assert "`counit'"=="", msg("counit() option not allowed. Non-treated units are assumed to be controls. Remove units that are neither controls nor treatments before invoking.")
 	_assert "`figure'"=="", msg("figure option not allowed.")
 	_assert "`resultsperiod'"=="", msg("resultsperiod() option not allowed. Use max_lead()")
@@ -44,15 +56,15 @@ program synth_runner, eclass
 	preserve
 	qui keep if !mi(`tper_var')
 	collapse (first) `tper_var', by(`pvar')
+	sort `tper_var' `pvar'
 	mkmat `pvar' `tper_var', matrix(`trs')
 	contract `tper_var'
+	sort `tper_var'
 	mkmat `tper_var' _freq, matrix(`uniq_trs')
 	local num_tpers = rowsof(`uniq_trs')
 	restore
-	if `num_tpers'>1{
-		_assert "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
-	}
-	cleanup_mata , num_tpers(`num_tpers') warn
+	_assert `num_tpers'==1 | "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
+	cleanup_mata , tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult') warn
 	
 	qui gen `lead' = `tvar' - `tper_var'+1 
 	if "`max_lead'"==""{
@@ -96,14 +108,17 @@ program synth_runner, eclass
 		mat `tr_pre_rmspes'[`g',1] = e(pre_rmspe)
 		mat `tr_post_rmspes'[`g',1] = e(post_rmspe)
 		if `training_propr'>0{
-			calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') local(val_rmspe)
+			calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
+				local(val_rmspe)
 			mat `tr_val_rmspes'[`g',1] = `val_rmspe'
 		}
 		add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
-			tper(`tper') unit(`tr_unit') depvar(`depvar') pre_rmspe(`=`tr_pre_rmspes'[`g',1]') post_rmspe(`=`tr_post_rmspes'[`g',1]')
+			tper(`tper') unit(`tr_unit') depvar(`depvar') pre_rmspe(`=`tr_pre_rmspes'[`g',1]') ///
+			post_rmspe(`=`tr_post_rmspes'[`g',1]')
 		restore
 	}
-	cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') min_lead(`min_lead') out_effect_full(`out_ef') max_lead(`max_lead') depvar(`depvar') `trends' tper_var(`tper_var')
+	cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') min_lead(`min_lead') ///
+		out_effect_full(`out_ef') max_lead(`max_lead') depvar(`depvar') `trends' tper_var(`tper_var')
 	if "`keep'"!="" qui copy `agg_file' `keep', `replace'
 	load_dta_to_mata, dta(`out_e') mata_var(tr_effects)
 	mata: tr_effect_avg = mean(tr_effects)
@@ -131,19 +146,12 @@ program synth_runner, eclass
 	local do_aggs_i 1
 	*Be smart about not redoing matches at the same time.
 	local rep 1
-	local nloops = cond(`pre_limit_mult'==., `num_tpers',`num_tr_units')
-	local num_reps = `nloops'*`num_do_units'
+	local num_reps = `num_tpers'*`num_do_units'
 	scalar `n_pl' = 1
-	forval i=1/`nloops'{
-		if `pre_limit_mult'==.{
-			local tper = `uniq_trs'[`i',1]
-			local times =`uniq_trs'[`i',2]
-		}
-		else {
-			local tper = `trs'[`i',2]
-			local times = 1
-			local pre_rmspe_max = `pre_limit_mult'*`tr_pre_rmspes'[`i',1]
-		}
+	forval i=1/`num_tpers'{
+		local tper = `uniq_trs'[`i',1]
+		local times =`uniq_trs'[`i',2]
+
 		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') ///
 			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
 		
@@ -152,22 +160,27 @@ program synth_runner, eclass
 		mat `do_val_rmspes' = J(`num_do_units',1,.)
 		
 		cap erase `agg_file'
+		local j = 0
 		foreach unit of local do_units{
 			_print_dots `rep++' `num_reps'
-			local j : list posof "`unit'" in do_units
+			local ++j
 			qui synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
 				trunit(`unit') trperiod(`tper') keep(`ind_file') replace `trends'
+			local pre_rmspe = e(pre_rmspe)
 			mat `do_pre_rmspes'[`j',1] = e(pre_rmspe)
 			mat `do_post_rmspes'[`j',1] = e(post_rmspe)
 			if `training_propr'>0{
-				calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') local(val_rmspe)
+				calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
+					local(val_rmspe)
 				mat `do_val_rmspes'[`j',1] = `val_rmspe'
 			}
 			add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
-				tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`=`do_pre_rmspes'[`j',1]') post_rmspe(`=`do_post_rmspes'[`j',1]')
+				tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`pre_rmspe') ///
+				post_rmspe(`=`do_post_rmspes'[`j',1]')
 		}
 		
-		cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') depvar(`depvar') tper_var(`tper_var') `trends' max_lead(`max_lead') pre_rmspe_max(`pre_rmspe_max')
+		cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') depvar(`depvar') ///
+			tper_var(`tper_var') `trends' max_lead(`max_lead')
 		load_dta_to_mata, dta(`out_e') mata_var(do_effect_base`i')
 		mata: do_pre_rmspe_base`i' = st_matrix("`do_pre_rmspes'")
 		mata: do_t_effect_base`i' = do_effect_base`i' :/ (do_pre_rmspe_base`i'*J(1,`max_lead',1))
@@ -175,13 +188,26 @@ program synth_runner, eclass
 		mata: do_post_rmspe_t_base`i' = do_post_rmspe_base`i' :/ do_pre_rmspe_base`i'
 		if `training_propr'>0 mata: do_val_rmspe_base`i' = st_matrix("`do_val_rmspes'")
 		forval j=1/`times'{
-			scalar `n_pl' = `n_pl'*rowsof(`do_post_rmspes')
-			mata: do_effects_p[`do_aggs_i',1]    = &do_effect_base`i'
-			mata: do_pre_rmspes_p[`do_aggs_i',1] = &do_pre_rmspe_base`i'
-			mata: do_t_effects_p[`do_aggs_i',1]  = &do_t_effect_base`i'
-			mata: do_post_rmspes_p[`do_aggs_i',1]= &do_post_rmspe_base`i'
-			mata: do_post_rmspes_t_p[`do_aggs_i',1]= &do_post_rmspe_t_base`i'
-			if `training_propr'>0 mata: do_val_rmspes_p[`do_aggs_i',1] = &do_val_rmspe_base`i'
+			local j_suff ""
+			if `pre_limit_mult'!=.{
+				local j_suff "_`j'"
+				local pre_rmspe_max = `pre_limit_mult'*`tr_pre_rmspes'[`do_aggs_i',1]
+				mata: good_enough_ind = (do_pre_rmspe_base`i':<=`pre_rmspe_max')
+				mata: do_effect_base`i'`j_suff' = select(do_effect_base`i',good_enough_ind)
+				mata: do_pre_rmspe_base`i'`j_suff' = select(do_pre_rmspe_base`i',good_enough_ind)
+				mata: do_t_effect_base`i'`j_suff' = select(do_t_effect_base`i',good_enough_ind)
+				mata: do_post_rmspe_base`i'`j_suff' = select(do_post_rmspe_base`i',good_enough_ind)
+				mata: do_post_rmspe_t_base`i'`j_suff' = select(do_post_rmspe_t_base`i',good_enough_ind)
+				if `training_propr'>0 mata: do_val_rmspe_base`i'`j_suff' = select(do_val_rmspe_base`i',good_enough_ind)
+			}
+
+			mata: st_numscalar("`n_pl'", st_numscalar("`n_pl'")*rows(do_effect_base`i'`j_suff'))
+			mata: do_effects_p[`do_aggs_i',1]    = &do_effect_base`i'`j_suff'
+			mata: do_pre_rmspes_p[`do_aggs_i',1] = &do_pre_rmspe_base`i'`j_suff'
+			mata: do_t_effects_p[`do_aggs_i',1]  = &do_t_effect_base`i'`j_suff'
+			mata: do_post_rmspes_p[`do_aggs_i',1]= &do_post_rmspe_base`i'`j_suff'
+			mata: do_post_rmspes_t_p[`do_aggs_i',1]= &do_post_rmspe_t_base`i'`j_suff'
+			if `training_propr'>0 mata: do_val_rmspes_p[`do_aggs_i',1] = &do_val_rmspe_base`i'`j_suff'
 			local ++do_aggs_i
 		}
 	}
@@ -304,11 +330,11 @@ program synth_runner, eclass
 		ereturn scalar avg_val_rmspe_p = `pval_val_RMSPE'
 	}
 	
-	cleanup_mata, num_tpers(`num_tpers')
+	cleanup_mata, tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult')
 end
 
 program cleanup_mata
-	syntax , num_tpers(int) [ warn]
+	syntax , tr_table(name) pre_limit_mult(string) [ warn ]
 
 	local plain_mata_objs = "do_effect_avgs tr_pre_rmspes tr_post_rmspes do_post_rmspes_t_p " + ///
 		"tr_t_effect_avg do_pre_rmspes_p do_effects_p tr_effect_avg " + ///
@@ -318,11 +344,26 @@ program cleanup_mata
 		mata: rmexternal("`mata_obj'")
 	}
 	
+	if `pre_limit_mult'!=.{
+		mata: st_local("found", st_local("found")+(rows(direxternal("good_enough_ind"))?"yes":""))
+		mata: rmexternal("good_enough_ind")
+	}
+	
+	local num_tpers = rowsof(`tr_table')
 	local per_tper_mata_objs "do_post_rmspe_t_base do_effect_base do_t_effect_base do_pre_rmspe_base do_post_rmspe_base do_val_rmspe_base"
 	forval i=1/`num_tpers'{
 		foreach mata_obj of local per_tper_mata_objs{
 			mata: st_local("found", st_local("found")+(rows(direxternal("`mata_obj'`i'"))?"yes":""))
 			mata: rmexternal("`mata_obj'`i'")
+		}
+		if `pre_limit_mult'!=.{
+			local times =`tr_table'[`i',2]
+			forval j=1/`times'{
+				foreach mata_obj of local per_tper_mata_objs{
+					mata: st_local("found", st_local("found")+(rows(direxternal("`mata_obj'`i'_`j'"))?"yes":""))
+					mata: rmexternal("`mata_obj'`i'_`j'")
+				}
+			}
 		}
 	}
 	if "`warn'"!="" & "`found'"!="" di as err "-synth_runner- will overwrite mata objects (ignore if we didn't cleanup after a previous run): `plain_mata_objs'; and numbered `per_tper_mata_objs'"
@@ -331,7 +372,8 @@ end
 
 
 program gen_time_locals
-	syntax , tper(int) prop(real) depvar(string) outcome_pred_loc(string) ntraining_loc(string) nvalidation_loc(string)
+	syntax , tper(int) prop(real) depvar(string) outcome_pred_loc(string) ntraining_loc(string) ///
+		nvalidation_loc(string)
 	get_returns timevar=r(timevar) tmin=r(tmin) : qui tsset
 
 	if `prop'==0 exit
@@ -362,9 +404,9 @@ end
 *takes a synth keep() file and makes it into "effects" diffs (or pseudo t-stats)
 * standardizes lengths and then makes wide.
 program cleanup_and_convert_to_diffs
-	syntax, dta(string) out_effect(string) depvar(string) tper_var(string) max_lead(int) [out_effect_full(string) trends min_lead(int -1) pre_rmspe_max(string)] 
+	syntax, dta(string) out_effect(string) depvar(string) tper_var(string) max_lead(int) ///
+		[out_effect_full(string) trends min_lead(int -1) pre_rmspe_max(numlist max=1 >0)] 
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
-	if "`pre_rmspe_max'"=="" local pre_rmspe_max .
 	preserve
 	
 	keep `depvar' `pvar' `tvar'
@@ -393,8 +435,6 @@ program cleanup_and_convert_to_diffs
 	qui compress
 	qui save `dta', replace
 	
-	if `pre_rmspe_max'!=. drop if pre_rmspe>`pre_rmspe_max'
-	
 	if "`trends'"!=""{ //now the main effect is the scaled one
 		drop effect
 		rename effect_scaled effect
@@ -403,6 +443,9 @@ program cleanup_and_convert_to_diffs
 	keep `pvar' lead effect
 	qui drop if lead > `max_lead' | lead < 1 /*`min_lead'*/ //for now just deal in post-periods (would have to rework to split matrices)
 	qui reshape wide effect, i(`pvar') j(lead)
+	//don't leave around globals from our reshape
+	global ReS_Call
+	global ReS_jv2
 	drop `pvar' //for now don't need
 	qui compress
 	qui save `out_effect', replace
@@ -410,7 +453,8 @@ end
 
 *Compiles up the keep() files from synth
 program add_keepfile_to_agg
-	syntax , keep(string) aggfile(string) depvar(string) tper_var(string) tper(int) unit(int) pre_rmspe(real) post_rmspe(real)
+	syntax , keep(string) aggfile(string) depvar(string) tper_var(string) tper(int) ///
+		unit(int) pre_rmspe(real) post_rmspe(real)
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
 	preserve
 	
