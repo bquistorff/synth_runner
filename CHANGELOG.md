@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file per [Keep a 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Fixed
+ - Recover gracefully (and report on) optimization errors by donors.
+ - Update docs.
 
 ## [1.1.4] - 2016-05-02
 ### Fixed

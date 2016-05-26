@@ -178,6 +178,11 @@ The proportion of placebos that have a ratio of post-treatment RMSPE over pre-tr
 The proportion of placebos that have a pre-treatment RMSPE at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 
 {p 8 8 2}
+{cmd: e(failed_opt_targets):}{p_end}
+{p 10 10 2}
+If there are failures of {cmd:synth} when estimating on the donors, {cmd:synth_runner} will drop those from calculations, but they will be noted in {cmd:e(failed_opt_targets)} for inspection by the user.
+
+{p 8 8 2}
 {cmd: e(avg_val_rmspe_p):}{p_end}
 {p 10 10 2}
 When specifying {cmd:training_propr}, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit. Concerning if significant.
@@ -225,6 +230,16 @@ Example 3 - Multiple treatments at different time periods:{p_end}
 {p 8 8 2}
 We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. 
 Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. {p_end}
+
+{title:Development}
+
+{p}If you encounter a bug in the program, please ensure your are running the most recent version from the {browse "https://github.com/bquistorff/synth_runner/":GitHub site}.
+If the problem persists, see if the bug has been previously reported at {browse "https://github.com/bquistorff/synth_runner/issues":https://github.com/bquistorff/synth_runner/issues}. 
+If not, file a new 'issue' there and list (a) the steps causing the problem (with output) and (b) the version of {cmd:synth_runner} used (found from {cmd:which synth_runner}).{p_end}
+
+{p}Contributions may also be made via a pull request from the GitHub page.{p_end}
+
+{p}To be notified of new releases, subscribe to notifications of {browse "https://github.com/bquistorff/synth_runner/issues/1":this issue} .{p_end}
 
 {title:Citation of synth_runner}
 

@@ -47,7 +47,8 @@ program synth_runner, eclass
 	tempvar ever_treated tper_var0 tper_var lead event max_lead_per_unit min_lead_per_unit
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
-		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used
+		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used ///
+		failed_opt_targets
 	tempfile ind_file agg_file out_e
 		
 	qui bys `pvar': egen `tper_var0' = min(`tvar') if `D'
@@ -96,7 +97,6 @@ program synth_runner, eclass
 	mat `tr_post_rmspes' = J(`num_tr_units',1,.)
 	mat `tr_val_rmspes' = J(`num_tr_units',1,.)
 	forval g=1/`num_tr_units'{
-		if `num_tr_units'>5  _print_dots `g' `num_tr_units'
 		local tr_unit = `trs'[`g',1]
 		local tper    = `trs'[`g',2]
 		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') ///
@@ -107,6 +107,7 @@ program synth_runner, eclass
 			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends'
 		mat `tr_pre_rmspes'[`g',1] = e(pre_rmspe)
 		mat `tr_post_rmspes'[`g',1] = e(post_rmspe)
+		if `num_tr_units'>5  _print_dots `g' `num_tr_units'
 		if `training_propr'>0{
 			calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
 				local(val_rmspe)
@@ -162,21 +163,34 @@ program synth_runner, eclass
 		cap erase `agg_file'
 		local j = 0
 		foreach unit of local do_units{
-			_print_dots `rep++' `num_reps'
-			local ++j
-			qui synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
+			cap synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
 				trunit(`unit') trperiod(`tper') keep(`ind_file') replace `trends'
-			local pre_rmspe = e(pre_rmspe)
-			mat `do_pre_rmspes'[`j',1] = e(pre_rmspe)
-			mat `do_post_rmspes'[`j',1] = e(post_rmspe)
-			if `training_propr'>0{
-				calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
-					local(val_rmspe)
-				mat `do_val_rmspes'[`j',1] = `val_rmspe'
+			if _rc==1 error 1
+			if _rc==0 {
+				_print_dots `rep++' `num_reps'
+				local ++j
+				local pre_rmspe = e(pre_rmspe)
+				mat `do_pre_rmspes'[`j',1] = e(pre_rmspe)
+				mat `do_post_rmspes'[`j',1] = e(post_rmspe)
+				if `training_propr'>0{
+					calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
+						local(val_rmspe)
+					mat `do_val_rmspes'[`j',1] = `val_rmspe'
+				}
+				add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
+					tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`pre_rmspe') ///
+					post_rmspe(`=`do_post_rmspes'[`j',1]')
 			}
-			add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
-				tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`pre_rmspe') ///
-				post_rmspe(`=`do_post_rmspes'[`j',1]')
+			else {
+				_print_dots `rep++' `num_reps' x
+				mat `failed_opt_targets' = nullmat(`failed_opt_targets') \ (`tper', `unit') 
+			}
+		}
+		if `j'!=`num_do_units'{ //there was an error, so matrix not full
+			mat `do_pre_rmspes'  = `do_pre_rmspes'[1..`j',1]
+			mat `do_post_rmspes' = `do_post_rmspes'[1..`j',1]
+			mat `do_val_rmspes'  = `do_val_rmspes'[1..`j',1]
+			local failed_o = 1
 		}
 		
 		cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') depvar(`depvar') ///
@@ -323,6 +337,11 @@ program synth_runner, eclass
 	}
 	ereturn scalar pval_joint_post = `pval_post_RMSPE'
 	ereturn scalar pval_joint_post_t = `pval_post_RMSPE_t'
+	
+	if "`failed_o'"=="1"{
+		mat colnames `failed_opt_targets' = tper unit
+		ereturn matrix failed_opt_targets = `failed_opt_targets'
+	}
 	
 	*Diagnostics stats
 	ereturn scalar avg_pre_rmspe_p = `pval_pre_RMSPE'
@@ -492,10 +511,12 @@ program get_returns
 end
 
 program _print_dots
-    version 12
-	args curr end
+	version 12
+	args curr end char
 	
 	if `c(noisily)'==0 exit 0 //only have one timer going at at time.
+	
+	if "`char'"=="" local char "."
 	
 	local timernum 13
 	if "$PRINTDOTS_WIDTH"=="" local width 50
@@ -523,7 +544,7 @@ program _print_dots
 			di "`header'" _continue
 		}
 		di " Total: `end'"
-		di "." _continue
+		di "`char'" _continue
 		exit 0
 	}
 	
@@ -536,14 +557,14 @@ program _print_dots
 			timer on `timernum'
 			local remaining = `used'*(`end'/`curr'-1)
 			_format_time `= round(`remaining')', local(remaining_toprint)
-			display ". `used_toprint' elapsed. `remaining_toprint' remaining"
+			display "`char' `used_toprint' elapsed. `remaining_toprint' remaining"
 		}
 		else{
 			di "| `used_toprint' elapsed. "
 		}
 	}
 	else{
-		di "." _continue
+		di "`char'" _continue
 	}
 end
 

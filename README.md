@@ -24,3 +24,10 @@ For Stata version <13, use the "Download ZIP" button above, unzip to a directory
 ```Stata
 . net install parallel, from(full_local_path_to_files) replace
 ```
+
+
+Development
+=======
+If you think you've encountered a bug, try installing the latest version. If it still persists see if an existing issue notes this problem. If the problem is new, file a new issue and list your version of Stata, synth_runner (from `which synth_runner`), the steps that produce the problem and the output.
+
+You can be notified of new releases by subscribing to notifications of [this issue](https://github.com/bquistorff/synth_runner/issues/1).
