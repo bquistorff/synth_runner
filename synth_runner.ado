@@ -1,10 +1,15 @@
-*! version 1.1.4 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.1.5 Brian Quistorff <bquistorff@gmail.com>
 *! Automates the process of conducting many synthetic control estimations
 * Todo: 
 * test max_lead.
 * don't overwrite those mata variables (though I do warn)
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
+	if "`1'" == "version"{
+		synth_runner_version
+		exit
+	}
+	
 	syntax anything, [ ///
 		D(varname) ///
 		ci ///
@@ -19,6 +24,7 @@ program synth_runner, eclass
 		pre_limit_mult(numlist max=1 >0) ///
 		n_pl_avgs(string) ///
 		COUnit(string) FIGure resultsperiod(string) *]
+		
 	gettoken depvar cov_predictors : anything
 	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
 	* Stata's dta file operations (save/use/merge) will automatically add dta to extensionless files, so do that too.
@@ -68,11 +74,21 @@ program synth_runner, eclass
 	cleanup_mata , tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult') warn
 	
 	qui gen `lead' = `tvar' - `tper_var'+1 
-	if "`max_lead'"==""{
-		qui bys `pvar': egen `max_lead_per_unit' = max(`lead')
-		qui summ `max_lead_per_unit', meanonly
-		local max_lead = r(min) //max lead with common support
+	
+	qui bys `pvar': egen `max_lead_per_unit' = max(`lead')
+	qui summ `max_lead_per_unit', meanonly
+	local max_lead_avail = r(min) //max lead with common support
+
+	if "`max_lead'"!=""{
+		if `max_lead'>`max_lead_avail'{
+			di "You specified a max_lead longer than is available in the data. Reducing to max possible."
+			local max_lead =`max_lead_avail'
+		}
 	}
+	else{
+		local max_lead =`max_lead_avail'
+	}
+	
 	qui bys `pvar': egen `min_lead_per_unit' = min(`lead')
 	qui summ `min_lead_per_unit', meanonly
 	local min_lead = r(max) //min lead with common support
@@ -350,6 +366,15 @@ program synth_runner, eclass
 	}
 	
 	cleanup_mata, tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult')
+end
+
+program def synth_runner_version, rclass
+	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
+	di as result "version" as text " 1.1.5 "
+	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
+	di as result "author" as text " Brian Quistorff [cre,aut]"
+	
+	return local version = "1.1.5"
 end
 
 program cleanup_mata

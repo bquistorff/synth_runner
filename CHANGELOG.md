@@ -3,9 +3,13 @@ All notable changes to this project will be documented in this file per [Keep a 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+
+## [1.1.5]
 ### Fixed
  - Recover gracefully (and report on) optimization errors by donors.
+ - Recover (and say why) from a too low max_lead.
  - Update docs.
+ - Allow checking version programmatically.
 
 ## [1.1.4] - 2016-05-02
 ### Fixed

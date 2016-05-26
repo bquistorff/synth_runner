@@ -20,6 +20,7 @@
 Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
 Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. 
 Auxiliary commands for generating graphs post-estimation are shown in the examples below.
+Finally, the version of the package can be found by running {cmd:synth_runner version} and checking {cmd:r(version)} (or viewing the displayed output).
  
 
 {title:Description}
@@ -278,7 +279,7 @@ Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural di
 
 {title:Authors}
 
-      Brian Quistorff, bquistorff@gmail.com (corresponding author)
+      Brian Quistorff, bquistorff@gmail.com (corresponding author, see Development section for reportings bugs)
       University of Maryland
       Sebastian Galiani
       University of Maryland
