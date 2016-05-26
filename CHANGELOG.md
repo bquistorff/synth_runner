@@ -3,12 +3,12 @@ All notable changes to this project will be documented in this file per [Keep a 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
-### Changed
 
 ## [1.1.4] - 2016-05-02
 ### Fixed
  - Issue with multiple treatment units/per_rmspe_mult
  - Cleanup better after run
+
 ### Changed
  - Update docs and source code notes.
 
@@ -20,6 +20,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
  - allow keep files without file extensions 
  - make graphs look better on older Stata's
+
 ### Changed
  - Fixed typos in documentation
 
@@ -34,6 +35,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [1.1.0] - 2016-03-01
 ### Added
  - Only use lots of memory when computing CI. By default if # of placebo averages is very large, do a random sample.
+
 ### Changed
  - Update docs
 
