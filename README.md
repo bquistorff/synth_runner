@@ -22,7 +22,7 @@ To install the -synth_runner- package with Stata v13 or greater
 For Stata version <13, use the "Download ZIP" button above, unzip to a directory, and then replace the above `net install` with
 
 ```Stata
-. net install parallel, from(full_local_path_to_files) replace
+. net install synth_runner, from(full_local_path_to_files) replace
 ```
 
 
