@@ -1,4 +1,4 @@
-*! version 1.1.5 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.1.6 Brian Quistorff <bquistorff@gmail.com>
 *! Automates the process of conducting many synthetic control estimations
 * Todo: 
 * test max_lead.
@@ -119,8 +119,12 @@ program synth_runner, eclass
 			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
 		preserve
 		qui drop if `ever_treated' & `pvar'!=`tr_unit'
-		qui synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
+		cap synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
 			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends'
+		if _rc{
+			di as err "Error estimating treatment effect for unit `tr_unit'"
+			error _rc
+		}
 		mat `tr_pre_rmspes'[`g',1] = e(pre_rmspe)
 		mat `tr_post_rmspes'[`g',1] = e(post_rmspe)
 		if `num_tr_units'>5  _print_dots `g' `num_tr_units'
@@ -370,11 +374,11 @@ end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.1.5 "
+	di as result "version" as text " 1.1.6 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.1.5"
+	return local version = "1.1.6"
 end
 
 program cleanup_mata

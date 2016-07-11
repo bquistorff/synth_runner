@@ -4,6 +4,10 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
 
+## [1.1.6]
+### Fixed
+ - Recover more gracefully from errors when estimating treatment effects.
+
 ## [1.1.5]
 ### Fixed
  - Recover gracefully (and report on) optimization errors by donors.

@@ -248,7 +248,7 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.5.
+synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.6.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -257,7 +257,7 @@ synthetic control estimation using synth, Mar 2016. {browse "https://github.com/
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
   Month  = mar,
-  Note   = {Version 1.1.5},
+  Note   = {Version 1.1.6},
   Year   = {2016},
   Url    = {https://github.com/bquistorff/synth_runner}
 }
