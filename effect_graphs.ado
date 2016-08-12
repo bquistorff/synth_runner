@@ -2,7 +2,7 @@
 *! Produces an 'effect' and 'treatment vs control' graphs
 program effect_graphs
 	version 12 //haven't tested on earlier versions
-	syntax [, multi depvar_lbl(string) trunit(string) trperiod(string) depvar(string) ///
+	syntax [, multi depvar_lbl(string) trunit(string) trperiod(string) depvar(string) trlinediff(real -1) ///
 		depvar_synth(string) effect_var(string) effect_gname(string) tc_gname(string)]
 	preserve
 	
@@ -37,6 +37,6 @@ program effect_graphs
 		ytitle("Effect - `depvar_lbl'")
 
 	twoway (line `depvar' `tvar') (line `depvar_synth' `tvar'), ///
-		xline(`=`trperiod'-1') name(`tc_gname', replace) ytitle("`depvar_lbl'") ///
+		xline(`=`trperiod'+`trlinediff'') name(`tc_gname', replace) ytitle("`depvar_lbl'") ///
 			legend(order(1 "Treated" 2 "Synthetic Control"))
 end

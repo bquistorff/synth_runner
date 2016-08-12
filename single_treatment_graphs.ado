@@ -1,10 +1,9 @@
 *! version 1.0 Brian Quistorff <bquistorff@gmail.com>
 *! Produces graphs for all units: raw outcome data, and effects
-*! Only possible with settings where 1 period of treatment
 program single_treatment_graphs
 	version 12 //haven't tested on earlier versions
 	syntax , depvar(string) trperiod(int) trunit(string) ///
-		[effect_var(string) raw_gname(string)  effects_gname(string) ///
+		[effect_var(string) raw_gname(string)  effects_gname(string) trlinediff(real -1) ///
 		do_color(string) effects_ylabels(string) effects_ymax(string) effects_ymin(string)]
 
 	if "`do_color'"=="" local do_color bg
@@ -59,7 +58,7 @@ program single_treatment_graphs
 	global ReS_jv2
 	*there is a graph option limit of 20 so limit the number per line
 	twoway `effect_gline'	(line `effect_var'`trunit' `tvar', lstyle(foreground..)), ///
-		xline(`=`trperiod'-1') name(`effects_gname', replace) ylabel(`effects_ylabels', nogrid) ///
+		xline(`=`trperiod'+`trlinediff'') name(`effects_gname', replace) ylabel(`effects_ylabels', nogrid) ///
 			legend(order(`=`n_units'+1' "Treated" 1 "Donors")) ytitle("Effects - `ylbl'")
 	if "`effects_ymax'"!="" gr_edit .plotregion1.yscale.curmax=`effects_ymax'
 	if "`effects_ymin'"!="" gr_edit .plotregion1.yscale.curmin=`effects_ymin'

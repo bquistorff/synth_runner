@@ -1,5 +1,5 @@
 {smcl}
-{* 01dec2015}{...}
+{* 05aug2016}{...}
 {cmd:help synth_runner} 
 {hline}
 
@@ -129,7 +129,7 @@ The option {cmd: n_pl_avgs(}{it:all}{cmd:)} can be used to override this behavio
 The option {cmd: n_pl_avgs(}{it:#}{cmd:)} can be used to specify a specific number less than the total number of averages possible.
 
 {p 4 8 2}
-{cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information. 
+{cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.
 
 {synoptline}
 
@@ -159,9 +159,9 @@ The number of placebo averages used for comparison. For single treatment setups,
 A vector of the proportions of placebo effects that are at least as large as the main effect for each post-treatment period.
 
 {p 8 8 2}
-{cmd: e(pvals_t):}{p_end}
+{cmd: e(pvals_std):}{p_end}
 {p 10 10 2}
-A vector of the proportions of placebo pseudo t-statistics (unit's effect divided by its pre-treatment RMSPE) that are at least as large as the main pseudo t-statistic for each post-treatment period.
+A vector of the proportions of placebo standardized effects that are at least as large as the main standardized effect for each post-treatment period.
 
 {p 8 8 2}
 {cmd: e(pval_joint_post):}{p_end}
@@ -169,7 +169,7 @@ A vector of the proportions of placebo pseudo t-statistics (unit's effect divide
 The proportion of placebos that have a post-treatment RMSPE at least as large as the average for the treated units. 
 
 {p 8 8 2}
-{cmd: e(pval_joint_post_t):}{p_end}
+{cmd: e(pval_joint_post_std):}{p_end}
 {p 10 10 2}
 The proportion of placebos that have a ratio of post-treatment RMSPE over pre-treatment RMSPE at least as large as the average ratio for the treated units. 
 
@@ -190,8 +190,8 @@ When specifying {cmd:training_propr}, this is the proportion of placebos that ha
 
 {title:Examples}
 
-{p 4 8 2}
-Load Example Data from {cmd:synth}: This panel dataset contains information for 39 US States for the years 1970-2000
+{p 4 4 2}
+The following examples use data from the {cmd:synth} package. Ensure that {cmd:synth} was installed with ancillary files (e.g., {cmd:ssc install synth, all}). This panel dataset contains information for 39 US States for the years 1970-2000
 (see Abadie, Diamond, and Hainmueller (2010) for details).{p_end}
 {p 4 8 2}{stata sysuse smoking}{p_end}
 {p 4 8 2}{stata tsset state year}{p_end}
@@ -202,11 +202,12 @@ Example 1 - Reconstruct the initial {cmd:synth} example plus graphs:{p_end}
 {phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) keep(`keepfile')}{p_end}
 {phang}{stata "merge 1:1 state year using `keepfile', nogenerate"}{p_end}
 {phang}{stata gen cigsale_synth = cigsale-effect}{p_end}
-{phang}{stata single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
-{phang}{stata effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) effect_var(effect)}{p_end}
+{phang}{stata single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
+{phang}{stata effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
-In this example, {cmd:synth_runner} conducts all the estimations and inference. Since there was only a single treatment period we can save the output and merge it back into the dataset. Then we can create the various graphs.{p_end}
+In this example, {cmd:synth_runner} conducts all the estimations and inference. Since there was only a single treatment period we can save the output and merge it back into the dataset. Then we can create the various graphs. 
+Note the option {it:trlinediff} allows the offset of a vertical treatment line (default is -1). {p_end}
 
 {p 4 8 2}
 Example 2 - Same treatment, but a bit more complicated setup:{p_end}
@@ -248,7 +249,7 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Mar 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.1.6.
+synthetic control estimation using synth, Aug 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.2.0.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -256,8 +257,8 @@ synthetic control estimation using synth, Mar 2016. {browse "https://github.com/
 @Misc{QG16,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = mar,
-  Note   = {Version 1.1.6},
+  Month  = aug,
+  Note   = {Version 1.2.0},
   Year   = {2016},
   Url    = {https://github.com/bquistorff/synth_runner}
 }

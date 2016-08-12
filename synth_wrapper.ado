@@ -41,8 +41,8 @@ program synth_wrapper, eclass
 	ereturn scalar pre_rmspe = `pre_rmspe'
 	
 	*get the post_RMSPE
-	qui tsset
-	local tper_ind = `trperiod'-r(tmin)+1
+	local mat_periods : rownames e(Y_treated)
+	local tper_ind : list posof "`trperiod'" in mat_periods
 	local nper = rowsof(e(Y_treated))
 	calc_RMSPE , i_start(`tper_ind') i_end(`nper') local(post_rmspe)
 	ereturn scalar post_rmspe = `post_rmspe'

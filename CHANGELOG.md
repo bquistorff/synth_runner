@@ -2,7 +2,16 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [Unreleased]
+## [1.2.0]
+### Added
+ - A separate testing suite aside from usage.do.
+
+### Fixed
+ - Allowed for gaps in the time variable. The panel should still be strongly balanced with no missing values the units.
+
+### Changed
+ - Removed "pseudo t-statistic" nomenclature in favor of "standardized effect". This affected some return value names.
+ - Update docs.
 
 ## [1.1.6]
 ### Fixed

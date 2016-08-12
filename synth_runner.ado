@@ -1,8 +1,5 @@
-*! version 1.1.6 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.2.0 Brian Quistorff <bquistorff@gmail.com>
 *! Automates the process of conducting many synthetic control estimations
-* Todo: 
-* test max_lead.
-* don't overwrite those mata variables (though I do warn)
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
 	if "`1'" == "version"{
@@ -26,7 +23,7 @@ program synth_runner, eclass
 		COUnit(string) FIGure resultsperiod(string) *]
 		
 	gettoken depvar cov_predictors : anything
-	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
+	get_returns pvar=r(panelvar) tvar=r(timevar) bal=r(balanced): qui tsset
 	* Stata's dta file operations (save/use/merge) will automatically add dta to extensionless files, so do that too.
 	if `"`keep'"'!=""{
 		_getfilename `"`keep'"'
@@ -34,6 +31,8 @@ program synth_runner, eclass
 			local keep `"`keep'.dta"'
 		}
 	}
+	
+	_assert "`bal'"=="strongly balanced", msg("Panel must be strongly balanced. See -tsset-.")
 	
 	_assert "`d'`trperiod'`trunit'"!="", msg("Must specify treatment units and time periods (d() or trperiod() and trunit())")
 	_assert "`d'"=="" | "`trperiod'`trunit'"=="" , msg("Can't specify both d() and {trperiod(), trunit()}")
@@ -46,11 +45,11 @@ program synth_runner, eclass
 	//catch options not allowed to be sent to -synth-
 	_assert "`counit'"=="", msg("counit() option not allowed. Non-treated units are assumed to be controls. Remove units that are neither controls nor treatments before invoking.")
 	_assert "`figure'"=="", msg("figure option not allowed.")
-	_assert "`resultsperiod'"=="", msg("resultsperiod() option not allowed. Use max_lead()")
+	_assert "`resultsperiod'"=="", msg("resultsperiod() option not allowed. Use max_lead() or drop selected post-periods.")
 	if "`pre_limit_mult'"=="" local pre_limit_mult .
 	_assert ("`n_pl_avgs'"=="" | "`n_pl_avgs'"=="all" | real("`n_pl_avgs'")!=.), msg("-, n_pl_avgs()- must be blank, a number, or all")
 	
-	tempvar ever_treated tper_var0 tper_var lead event max_lead_per_unit min_lead_per_unit
+	tempvar ever_treated tper_var0 tper_var event
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
 		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used ///
@@ -73,11 +72,19 @@ program synth_runner, eclass
 	_assert `num_tpers'==1 | "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
 	cleanup_mata , tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult') warn
 	
-	qui gen `lead' = `tvar' - `tper_var'+1 
 	
-	qui bys `pvar': egen `max_lead_per_unit' = max(`lead')
-	qui summ `max_lead_per_unit', meanonly
-	local max_lead_avail = r(min) //max lead with common support
+	qui levelsof `tvar', local(tvar_vals)
+	local n_tvar_vals : list sizeof tvar_vals
+	
+	//Lead numbering. A bit weird as lead0 is last pre-treatment
+	qui summ `tper_var', meanonly
+	//qui gen `lead' = `tvar' - `tper_var'+1 
+	local min_trperiod = r(min)
+	local max_trperiod = r(max)
+	local min_trperiod_ind : list posof "`min_trperiod'" in tvar_vals
+	local max_trperiod_ind : list posof "`max_trperiod'" in tvar_vals
+	local min_lead = 1+(1-`min_trperiod_ind') //min lead (max lag) with common support.
+	local max_lead_avail = `n_tvar_vals' - `max_trperiod_ind' + 1
 
 	if "`max_lead'"!=""{
 		if `max_lead'>`max_lead_avail'{
@@ -88,10 +95,6 @@ program synth_runner, eclass
 	else{
 		local max_lead =`max_lead_avail'
 	}
-	
-	qui bys `pvar': egen `min_lead_per_unit' = min(`lead')
-	qui summ `min_lead_per_unit', meanonly
-	local min_lead = r(max) //min lead with common support
 	
 	forval lead=1/`max_lead'{
 		local leadlist "`leadlist' lead`lead'"
@@ -115,7 +118,7 @@ program synth_runner, eclass
 	forval g=1/`num_tr_units'{
 		local tr_unit = `trs'[`g',1]
 		local tper    = `trs'[`g',2]
-		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') ///
+		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
 			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
 		preserve
 		qui drop if `ever_treated' & `pvar'!=`tr_unit'
@@ -173,7 +176,7 @@ program synth_runner, eclass
 		local tper = `uniq_trs'[`i',1]
 		local times =`uniq_trs'[`i',2]
 
-		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') ///
+		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
 			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
 		
 		mat `do_pre_rmspes' = J(`num_do_units',1,.)
@@ -304,7 +307,7 @@ program synth_runner, eclass
 	mata: st_numscalar("`pval_post_RMSPE'", get_p_val_full(mean(tr_post_rmspes), do_post_rmspes_p, `marg_draws')[1,1])
 	di " Finished"
 	
-	*Pseudo t-stats
+	*Standardized effects
 	di "Step 3..." _continue
 	mata: st_matrix("`pvals_t'", get_p_val_full(tr_t_effect_avg, do_t_effects_p, `marg_draws'))
 	mat colnames `pvals_t' = `leadlist'
@@ -328,7 +331,7 @@ program synth_runner, eclass
 	*Post output
 	di _n "Post-treatment results: Effects, p-values, p-values (psuedo t-stats)"
 	mat `disp_mat' = (`estimates'', `pvals'[2,1...]',`pvals_t'[2,1...]')
-	mat colnames `disp_mat' = estimates pvals pvals_tstat
+	mat colnames `disp_mat' = estimates pvals pvals_std
 	mat rownames `disp_mat' = `leadlist'
 	matlist `disp_mat'
 	*Effects
@@ -346,17 +349,17 @@ program synth_runner, eclass
 	if "`ci'"!="" ereturn matrix ci = `CI'
 	mat `p2' = `pvals_t'[2,1...]
 	mat rownames `p2' = `D'
-	ereturn matrix pvals_t = `p2'
+	ereturn matrix pvals_std = `p2'
 	if "`pvals1s'"!=""{
 		mat `p1' = `pvals'[1,1...]
 		mat rownames `p1' = `D'
 		ereturn matrix pvals_1s = `p1'
 		mat `p1' = `pvals_t'[1,1...]
 		mat rownames `p1' = `D'
-		ereturn matrix pvals_t_1s = `p1'
+		ereturn matrix pvals_std_1s = `p1'
 	}
 	ereturn scalar pval_joint_post = `pval_post_RMSPE'
-	ereturn scalar pval_joint_post_t = `pval_post_RMSPE_t'
+	ereturn scalar pval_joint_post_std = `pval_post_RMSPE_t'
 	
 	if "`failed_o'"=="1"{
 		mat colnames `failed_opt_targets' = tper unit
@@ -374,11 +377,11 @@ end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.1.6 "
+	di as result "version" as text " 1.2.0 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.1.6"
+	return local version = "1.2.0"
 end
 
 program cleanup_mata
@@ -420,20 +423,23 @@ end
 
 
 program gen_time_locals
-	syntax , tper(int) prop(real) depvar(string) outcome_pred_loc(string) ntraining_loc(string) ///
+	syntax , tper(int) prop(real) depvar(string) tvar_vals(numlist) outcome_pred_loc(string) ntraining_loc(string) ///
 		nvalidation_loc(string)
-	get_returns timevar=r(timevar) tmin=r(tmin) : qui tsset
+	get_returns tvar=r(timevar) : tsset, noquery
+	local tper_ind : list posof "`tper'" in tvar_vals
+	local num_pre_per = `tper_ind'-1
 
 	if `prop'==0 exit
-	local ntraining = `tper'-`tmin'
+	local ntraining = `num_pre_per'
 	local nvalidation= 0
 	if(`prop'<1){
-		_assert `tper'-`tmin'>=2, msg("If training_propr<1 then need at least 2 periods pre-treatment for every treated unit")
-		local ntraining = clip(1,int(`prop'*`ntraining'),`ntraining'-1)
-		local nvalidation = `tper'-`tmin'-`ntraining'
+		_assert `num_pre_per'>=2, msg("If training_propr<1 then need at least 2 periods pre-treatment for every treated unit")
+		local ntraining = clip(1,int(`prop'*`num_pre_per'),`num_pre_per'-1)
+		local nvalidation = `num_pre_per'-`ntraining'
 	}
 	forval i=1/`ntraining'{
-		local olist = "`olist' `depvar'(`=`tmin'+`i'-1')"
+		local period : word `i' of `tvar_vals'
+		local olist = "`olist' `depvar'(`period')"
 	}
 	c_local `outcome_pred_loc' = "`olist'"
 	c_local `ntraining_loc' = `ntraining'
@@ -449,7 +455,7 @@ program load_dta_to_mata
 	mata: `mata_var'=st_data(.,.)
 end
 
-*takes a synth keep() file and makes it into "effects" diffs (or pseudo t-stats)
+*takes a synth keep() file and makes it into "effects" diffs (or standardized effects)
 * standardizes lengths and then makes wide.
 program cleanup_and_convert_to_diffs
 	syntax, dta(string) out_effect(string) depvar(string) tper_var(string) max_lead(int) ///
@@ -459,7 +465,14 @@ program cleanup_and_convert_to_diffs
 	
 	keep `depvar' `pvar' `tvar'
 	qui merge 1:1 `pvar' `tvar' using `dta', keep(match using) nogenerate
-	gen long lead = `tvar'-`tper_var'+1 // CGNP13 define lead1 as contemporaneous (rather than lead0)
+	
+	//generate leads. CGNP13 define lead1 as contemporaneous (rather than lead0)
+	//gen long lead = `tvar'-`tper_var'+1 //if time periods are only one apart
+	qui by `pvar': gen n_of_trperiod = _n if `tvar'==`tper_var'
+	qui by `pvar': egen n_of_trperiod_all = max(n_of_trperiod)
+	by `pvar': gen lead = _n - n_of_trperiod_all +1
+	drop n_of_trperiod n_of_trperiod_all
+	
 	gen effect = `depvar'-`depvar'_synth
 	if "`trends'"!=""{
 		gen effect_scaled = `depvar'_scaled-`depvar'_scaled_synth
