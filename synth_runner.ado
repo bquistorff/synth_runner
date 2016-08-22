@@ -49,6 +49,9 @@ program synth_runner, eclass
 	if "`pre_limit_mult'"=="" local pre_limit_mult .
 	_assert ("`n_pl_avgs'"=="" | "`n_pl_avgs'"=="all" | real("`n_pl_avgs'")!=.), msg("-, n_pl_avgs()- must be blank, a number, or all")
 	
+	cap synth
+	_assert _rc!=199, msg(`"-synth- must be installed (available from SSC, {stata "ssc install synth":ssc install synth})."')
+	
 	tempvar ever_treated tper_var0 tper_var event
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
