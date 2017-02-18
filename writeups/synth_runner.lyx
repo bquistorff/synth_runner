@@ -1,0 +1,3440 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\begin_preamble
+%Latex likes to make ligatures from ff, fi, fl which breaks text manipulation (searching and copying)
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+% link DOIs in references section
+\usepackage{doi}
+
+%underlining w/o messing up margins (like default \ulem package does)
+\usepackage{soul}
+
+\usepackage{accents} %nicer than \usepackage{harpoon} (the barb is too prominent), \overharpoonright (two high off the letter), and rightarrow,
+
+%Put all floats at the end. Options:
+%\usepackage[nolists]{endfloat}
+%Allow multiple floats per page at the end
+%\renewcommand{\efloatseparator}{\vfill}
+
+%harpoons are nicer (take up less verticle space than arrows) 
+%but they don't render visually in LyX, so code with arrows and convert at compile time
+\renewcommand{\overrightarrow}[1]{\accentset{\rightharpoonup}{#1}}
+\renewcommand{\overleftarrow}[1]{\accentset{\leftharpoonup}{#1}}
+
+%Preserve straight quotes (`') and don't have them changed in program listings.
+\usepackage{upquote}
+
+\DeclareMathOperator{\sgn}{sgn}
+\end_preamble
+\options round
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "beramono" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder false
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3.5cm
+\topmargin 3cm
+\rightmargin 3.5cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Not kept current
+\end_layout
+
+\end_inset
+
+The 
+\family typewriter
+synth_runner 
+\family default
+Package: Utilities to Automate Synthetic Control Estimation Using 
+\family typewriter
+synth
+\family default
+ (out of date!)
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Contact Author: 
+\begin_inset CommandInset href
+LatexCommand href
+name "Brian.Quistorff@microsoft.com"
+target "Brian.Quistorff@microsoft.com"
+type "mailto:"
+
+\end_inset
+
+.
+ We thank the Inter-American Development Bank for financial support.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Sebastian Galiani
+\begin_inset Newline newline
+\end_inset
+
+University of Maryland 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ Brian Quistorff
+\begin_inset Newline newline
+\end_inset
+
+Microsoft Research
+\end_layout
+
+\begin_layout Abstract
+The Synthetic Control Methodology 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "AG03,ADH10"
+
+\end_inset
+
+ allows for a data-driven approach to small-sample comparative studies.
+ 
+\family typewriter
+synth_runner
+\family default
+ automates the process of running multiple synthetic control estimations
+ using 
+\family typewriter
+synth
+\family default
+.
+ It conducts placebo estimates in-space (estimations for the same treatment
+ period but on all the control units).
+ Inference (
+\emph on
+
+\begin_inset Formula $p$
+\end_inset
+
+
+\emph default
+-values) is provided by comparing the estimated main effect to the distribution
+ of placebo effects.
+ It allows several units to receive treatment, possibly at different time
+ periods.
+ Automatically generating the outcome predictors and diagnostics by splitting
+ the pre-treatment into training and validation portions is allowed.
+ Additionally, it provides diagnostics to assess fit and generates visualization
+s of results.
+ 
+\begin_inset VSpace 0.8cm
+\end_inset
+
+
+\end_layout
+
+\begin_layout Abstract
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+noindent
+\end_layout
+
+\end_inset
+
+ Keywords: Synthetic Control Methodology, Randomization Inference
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Check: <snippet>
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Introduction
+\end_layout
+
+\begin_layout Standard
+The Synthetic Control Methodology (SCM) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "AG03,ADH10"
+
+\end_inset
+
+ is a data-driven approach to small-sample comparative case-studies for
+ estimating treatment effects.
+ Similar to a difference-in-differences design, SCM exploits the differences
+ in treated and untreated units across the event of interest.
+ However, in contrast to a difference-in-differences design, SCM does not
+ give all untreated units the same weight in the comparison.
+ Instead, it generates a weighted average of the untreated units that closely
+ matches the treated unit over the pre-treatment period.
+ Outcomes for this synthetic control are then projected into the post-treatment
+ period using the weights identified from the pre-treatment comparison.
+ This projection is used as the counterfactual for the treated unit.
+ Inference is conducted using placebo tests.
+\end_layout
+
+\begin_layout Standard
+Along with their paper, 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ released the 
+\family typewriter
+synth
+\family default
+ Stata command for single estimations.
+ The 
+\family typewriter
+synth_runner
+\family default
+ package builds on top of that command to help conduct multiple estimations,
+ inference, diagnostics, and generate visualizations of results.
+ 
+\family typewriter
+synth_runner
+\family default
+ is designed to accompany 
+\family typewriter
+synth
+\family default
+ but not supersede it.
+ For more details about single estimations (variable weights, observation
+ weights, covariate balance, and synthetic control outcomes when there are
+ multiple time periods) use 
+\family typewriter
+synth
+\family default
+ directly.
+\end_layout
+
+\begin_layout Section
+Synthetic Control Methodology
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ posit the following data-generating process.
+ Let 
+\begin_inset Formula $D_{jt}$
+\end_inset
+
+ be an indicator for treatment for unit 
+\begin_inset Formula $j$
+\end_inset
+
+ at time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Next, let the observed outcome variable 
+\begin_inset Formula $Y_{jt}$
+\end_inset
+
+ be the sum of a time-varying treatment effect 
+\begin_inset Formula $\alpha_{jt}D_{jt}$
+\end_inset
+
+ and the no-treatment counterfactual 
+\begin_inset Formula $Y_{jt}^{N}$
+\end_inset
+
+, which is specified using a factor model 
+\begin_inset Formula 
+\begin{align}
+Y_{jt} & =\alpha_{jt}D_{jt}+Y_{jt}^{N}\label{eq:factor-model}\\
+ & =\alpha_{jt}D_{jt}+(\delta_{t}+\mathbf{\theta}_{t}\mathbf{Z}_{j}+\mathbf{\lambda}_{t}\mathbf{\mu}_{j}+\varepsilon_{jt})\nonumber 
+\end{align}
+
+\end_inset
+
+where 
+\begin_inset Formula $\delta_{t}$
+\end_inset
+
+ is an unknown time factor, 
+\begin_inset Formula $\mathbf{Z}_{j}$
+\end_inset
+
+ is a 
+\begin_inset Formula $(r\times1)$
+\end_inset
+
+ vector of observed covariates unaffected by treatment, 
+\begin_inset Formula $\mathbf{\theta}_{t}$
+\end_inset
+
+ is a 
+\begin_inset Formula $(1\times r)$
+\end_inset
+
+ vector of unknown parameters, 
+\begin_inset Formula $\mathbf{\lambda}_{t}$
+\end_inset
+
+ is a 
+\begin_inset Formula $(1\times F)$
+\end_inset
+
+ vector of unknown factors, 
+\begin_inset Formula $\mathbf{\mu}_{j}$
+\end_inset
+
+ is a 
+\begin_inset Formula $(F\times1)$
+\end_inset
+
+ vector of unknown factor loadings, and the error 
+\begin_inset Formula $\varepsilon_{jt}$
+\end_inset
+
+ is independent across units and time with zero mean.
+ Letting the first unit be the treated unit, the treatment effect is estimated
+ by approximating the unknown 
+\begin_inset Formula $Y_{1t}^{N}$
+\end_inset
+
+ with a weighted average of untreated units 
+\begin_inset Formula 
+\begin{align*}
+\hat{\alpha}_{1t} & =Y_{1t}-\sum_{j\geq2}w_{j}Y_{jt}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Equation 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:factor-model"
+
+\end_inset
+
+ simplifies to the traditional fixed effects equation if 
+\begin_inset Formula $\mathbf{\lambda}_{t}\mathbf{\mu}_{j}=\phi_{j}$
+\end_inset
+
+.
+ The fixed effects model allows for unobserved heterogeneity that is only
+ time-invariant.
+ The factor model employed by SCM generalizes this to allow for the existence
+ of non-parallel trends between treated and untreated units after controlling
+ for observables.
+ 
+\end_layout
+
+\begin_layout Subsection
+Estimation
+\end_layout
+
+\begin_layout Standard
+To begin with, let there be a single unit that receives treatment.
+ Let 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+ be the number of pre-treatment periods of the 
+\begin_inset Formula $T$
+\end_inset
+
+ total periods.
+ Index units 
+\begin_inset Formula $\{1,...,J+1\}$
+\end_inset
+
+ such that the first unit is the treated unit and the others are 
+\begin_inset Quotes eld
+\end_inset
+
+donors
+\begin_inset Quotes erd
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\mathbf{Y}_{j}$
+\end_inset
+
+ be (
+\begin_inset Formula $T\times1$
+\end_inset
+
+) the vector of outcomes for unit 
+\begin_inset Formula $j$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{Y}_{0}$
+\end_inset
+
+ be the (
+\begin_inset Formula $T\times J$
+\end_inset
+
+) matrix of outcomes for all donors.
+ Let 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ be a 
+\begin_inset Formula $(J\times1)$
+\end_inset
+
+ observation-weight matrix 
+\begin_inset Formula $(w_{2},w_{3},...,w_{J+1})'$
+\end_inset
+
+ where 
+\begin_inset Formula $\sum_{j=2}^{J+1}w_{j}=1$
+\end_inset
+
+ and 
+\begin_inset Formula $w_{j}\geq0\ \forall j\in\{2,...,J+1\}$
+\end_inset
+
+.
+ A weighted average of donors over the outcome is constructed as 
+\begin_inset Formula $\mathbf{Y}_{0}\mathbf{W}$
+\end_inset
+
+.
+ Partition the outcome into pre-treatment and post-treatment vectors 
+\begin_inset Formula $\mathbf{Y}_{j}=(\overleftarrow{\mathbf{Y}}_{j}\backslash\overrightarrow{\mathbf{Y}}_{j})$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+ represent a set of 
+\begin_inset Formula $k$
+\end_inset
+
+ pre-treatment characteristics (
+\begin_inset Quotes eld
+\end_inset
+
+predictors
+\begin_inset Quotes erd
+\end_inset
+
+).
+ This includes 
+\begin_inset Formula $\mathbf{Z}$
+\end_inset
+
+ (the observed covariates above) and 
+\begin_inset Formula $M$
+\end_inset
+
+ linear combinations of 
+\begin_inset Formula $\overleftarrow{\mathbf{Y}}$
+\end_inset
+
+ so that 
+\begin_inset Formula $k=r+M$
+\end_inset
+
+.
+ Analogously, let 
+\begin_inset Formula $\mathbf{X}_{0}$
+\end_inset
+
+ be the 
+\begin_inset Formula $(k\times J)$
+\end_inset
+
+ matrix of donor predictors.
+ Let 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ be a 
+\begin_inset Formula $(k\times k)$
+\end_inset
+
+ variable-weight matrix indicating the relative significance of the predictor
+ variables.
+ 
+\end_layout
+
+\begin_layout Standard
+Given 
+\begin_inset Formula $\mathbf{Y}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+, estimation of SCM consists of finding the optimal weighting matrices 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+.
+ For a given 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+, 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ is picked to minimize the RMSPE of the predictor variables, 
+\begin_inset Formula $\left\Vert \mathbf{X}_{1}-\mathbf{X}_{0}\mathbf{W}\right\Vert _{\mathbf{V}}$
+\end_inset
+
+.
+ In this way, the treated unit and its synthetic control look similar along
+ dimensions that matter for predicting pre-treatment outcomes.
+ The inferential procedure is valid for any 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+, but 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ suggest that 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ be picked to minimize the prediction error of the pre-treatment outcome
+ between the treated unit the synthetic control.
+ Define distance measures 
+\begin_inset Formula $\left\Vert \mathbf{A}\right\Vert _{\mathbf{B}}=\sqrt{\mathbf{A}'\mathbf{B}\mathbf{A}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\left\Vert \mathbf{A}\right\Vert =\sqrt{\mathbf{A}'\textrm{cols}(\mathbf{A})^{-1}\mathbf{A}}$
+\end_inset
+
+.
+ 
+\begin_inset Formula $\left\Vert \overleftarrow{\mathbf{Y}}_{1}-\overleftarrow{\mathbf{Y}}_{0}\mathbf{W}\right\Vert $
+\end_inset
+
+ is then the pre-treatment root mean squared prediction error (RMSPE) with
+ a given weighted average of the control units.
+ Define this as 
+\begin_inset Formula $\overleftarrow{s}_{1}$
+\end_inset
+
+ and define 
+\begin_inset Formula $\overrightarrow{s}_{1}$
+\end_inset
+
+ as the post-treatment RMSPE.
+ 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ is then picked to minimize 
+\begin_inset Formula $\overleftarrow{s}_{1}$
+\end_inset
+
+ (note that 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ is a function of 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+If weights can be found such that the synthetic control matches the treated
+ unit in the pre-treatment period: 
+\begin_inset Formula 
+\begin{align}
+\left\Vert \overleftarrow{\mathbf{Y}}_{1}-\overleftarrow{\mathbf{Y}}_{0}\mathbf{W}\right\Vert = & \ 0=\left\Vert \mathbf{Z}_{1}-\mathbf{Z}_{0}\mathbf{W}\right\Vert 
+\end{align}
+
+\end_inset
+
+and 
+\begin_inset Formula $\sum_{t=1}^{T_{0}}\mathbf{\lambda}_{t}'\mathbf{\lambda}_{t}$
+\end_inset
+
+ is non-singular, then 
+\begin_inset Formula $\hat{\mathbf{\alpha}}_{1}$
+\end_inset
+
+ will have a bias that goes to zero as the number of pre-intervention periods
+ grows large relative to the scale of the 
+\begin_inset Formula $\varepsilon_{jt}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Inference
+\end_layout
+
+\begin_layout Standard
+After estimating the effect, statistical significance is determined by running
+ placebo tests.
+ Estimate the same model on each untreated unit, assuming it was treated
+ at the same time, to get a distribution of 
+\begin_inset Quotes eld
+\end_inset
+
+in-place
+\begin_inset Quotes erd
+\end_inset
+
+ placebo effects.
+ Disallow the actual treated unit from being considered for the synthetic
+ controls of these other units.
+ If the distribution of placebo effects yields many effects as large as
+ the main estimate, then it is likely that the estimated effect was observed
+ by chance.
+ This non-parametric, exact test has the advantage of not imposing any distribut
+ion on the errors.
+\end_layout
+
+\begin_layout Standard
+Suppose that the estimated effect for a particular post-treatment period
+ is 
+\begin_inset Formula $\hat{\alpha}_{1t}$
+\end_inset
+
+ and that the distribution of corresponding in-place placebos is 
+\begin_inset Formula $\hat{\alpha}_{1t}^{PL}=\{\hat{\alpha}_{jt}:j\neq1\}$
+\end_inset
+
+.
+ The two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-value is then 
+\begin_inset Formula 
+\begin{align*}
+p\textrm{-value} & =\Pr\left(|\hat{\alpha}_{1t}^{PL}|\geq|\hat{\alpha}_{1t}|\right)\\
+ & =\frac{\sum_{j\neq1}1(|\hat{\alpha}_{jt}|\geq|\hat{\alpha}_{1t}|)}{J}
+\end{align*}
+
+\end_inset
+
+and the one-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-values (for positive effects) are 
+\begin_inset Formula 
+\begin{align*}
+p\textrm{-value} & =\Pr\left(\hat{\alpha}_{1t}^{PL}\geq\hat{\alpha}_{1t}\right)
+\end{align*}
+
+\end_inset
+
+When treatment is randomized this becomes classical randomization inference
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+One may want to include 
+\begin_inset Formula $\hat{\alpha}_{1t}$
+\end_inset
+
+ in the comparison distribution as is common in randomization inference
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ does this
+\end_layout
+
+\end_inset
+
+.
+ This adds a one to the numerator and denominator of the 
+\begin_inset Formula $p$
+\end_inset
+
+-value fraction.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH15"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+, however, do not take this approach.
+ With multiple treatments, there would be several approaches to adding the
+ effects on the treated to the comparison distribution, so they are not
+ dealt with here
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Basically can you assign a treatment to a unit that already had it.
+\end_layout
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_inset
+
+.
+ If treatment is not randomly assigned, the 
+\emph on
+
+\begin_inset Formula $p$
+\end_inset
+
+
+\emph default
+-value still has the interpretation of being the proportion of control units
+ that have an estimated effect at least as large as that of the treated
+ unit.
+ Confidence intervals can be constructed by inverting the 
+\begin_inset Formula $p$
+\end_inset
+
+-values for 
+\begin_inset Formula $\hat{\alpha}_{1t}$
+\end_inset
+
+.
+ Care should be taken with these, however.
+ As noted by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH15"
+
+\end_inset
+
+, they do not have the standard interpretation when treatment is not considered
+ randomly assigned.
+\end_layout
+
+\begin_layout Standard
+To gauge the joint effect across all post-treatment periods 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ suggest using post-treatment RMSPE 
+\begin_inset Formula $\overrightarrow{s}_{1}$
+\end_inset
+
+.
+ In this case 
+\begin_inset Formula $\overrightarrow{s}_{1}$
+\end_inset
+
+ would be compared to the corresponding 
+\begin_inset Formula $\overrightarrow{s}_{1}^{PL}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The placebo effects may be quite large if those units where not matched
+ well in the pre-treatment period.
+ This would cause 
+\begin_inset Formula $p$
+\end_inset
+
+-values to be too conservative.
+ To control for this, one may want to adjust 
+\begin_inset Formula $\hat{\alpha}_{jt}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overrightarrow{s}_{j}$
+\end_inset
+
+ for the quality of the pre-treatment matches.
+ Adjustment can be achieved by two mechanisms:
+\end_layout
+
+\begin_layout Itemize
+Restricting the comparison set of control effects to only include those
+ that match well.
+ This is done by setting a multiple 
+\begin_inset Formula $m$
+\end_inset
+
+ and removing all placebos 
+\begin_inset Formula $j$
+\end_inset
+
+ with 
+\begin_inset Formula $\overleftarrow{s}_{j}>m\overleftarrow{s}_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Dividing all effects by the corresponding pre-treatment match quality 
+\begin_inset Formula $\overleftarrow{s}$
+\end_inset
+
+ to get standardized (studentized) measures: 
+\begin_inset Formula $\nicefrac{\hat{\alpha}_{jt}}{\overleftarrow{s_{j}}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\nicefrac{\overrightarrow{s}_{j}}{\overleftarrow{s}_{j}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Inference can then be conducted over four quantities (
+\begin_inset Formula $\hat{\alpha}_{jt},\overrightarrow{s}_{j},\nicefrac{\hat{\alpha}_{jt}}{\overleftarrow{s_{j}}},\nicefrac{\overrightarrow{s}_{j}}{\overleftarrow{s}_{j}}$
+\end_inset
+
+) and the comparison set can also be limited by the choice of 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Subsection
+Multiple Events
+\end_layout
+
+\begin_layout Standard
+The extension by 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ allows for more than one unit to experience treatment and at possibly different
+ times.
+ Index treated units 
+\begin_inset Formula $g\in\{1...G\}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $J$
+\end_inset
+
+ be those units that never undergo treatment
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+ft16 
+\begin_inset Quotes eld
+\end_inset
+
+The pool of control countries includes those that did not experience any
+ large disaster, including countries that experience disasters of lesser
+ magnitude.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+.
+ For a particular treatment 
+\begin_inset Formula $g$
+\end_inset
+
+, one can estimate an effect, say the first post-treatment period effect
+ 
+\begin_inset Formula $\hat{\alpha}_{g}$
+\end_inset
+
+ (one could use any of the four types discussed above).
+ We omit the 
+\begin_inset Formula $t$
+\end_inset
+
+ subscript as treatment dates may differ across events.
+ Over all the treatments, the average effect is 
+\begin_inset Formula $\bar{\alpha}=G^{-1}\sum_{g=1}^{G}\hat{\alpha}_{g}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+For each treatment 
+\begin_inset Formula $g$
+\end_inset
+
+ one generates a corresponding set of placebo effects 
+\begin_inset Formula $\hat{\alpha}_{g}^{PL}$
+\end_inset
+
+ where each untreated unit is thought of as entering treatment at the same
+ time as unit 
+\begin_inset Formula $g$
+\end_inset
+
+.
+ If two treated units have the same treatment period, then their placebo
+ sets will the be the same.
+\end_layout
+
+\begin_layout Standard
+Averaging over the treatments to obtain 
+\begin_inset Formula $\bar{\alpha}$
+\end_inset
+
+ smooths out noise in the estimate.
+ The same should be done in constructing 
+\begin_inset Formula $\bar{\alpha}^{PL}$
+\end_inset
+
+ the set of placebos against which the average treatment estimate is compared
+ for inference.
+ It should be constructed from all possible averages where a single placebo
+ is taken from each 
+\begin_inset Formula $\hat{\alpha}_{g}^{PL}$
+\end_inset
+
+.
+ There are 
+\begin_inset Formula $N_{\overline{PL}}=\prod_{g=1}^{G}J_{g}$
+\end_inset
+
+ such possible averages
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+The pool may be restricted by match quality.
+ If 
+\begin_inset Formula $J_{g}^{m}$
+\end_inset
+
+ is the number of controls that match as well as treated unit 
+\begin_inset Formula $g$
+\end_inset
+
+ for the same time period, then 
+\begin_inset Formula $N_{\overline{PL}}^{m}=\prod_{g=1}^{G}J_{g}^{m}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $i$
+\end_inset
+
+ index a selection where a single placebo effect is chosen from each treatment
+ placebo set.
+ Let 
+\begin_inset Formula $\bar{\alpha}^{PL(i)}$
+\end_inset
+
+ represents the average of that placebo selection.
+ Inference is now 
+\begin_inset Formula 
+\begin{align*}
+p\textrm{-value} & =\Pr\left(|\bar{\alpha}^{PL}|\geq|\bar{\alpha}|\right)\\
+ & =\frac{\sum_{i=1}^{N_{\overline{PL}}}1(|\bar{\alpha}^{PL(i)}|\geq|\bar{\alpha}|)}{N_{\overline{PL}}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Diagnostics
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ perform two basic checks to see if the synthetic control serves as a valid
+ counterfactual.
+ The first is to check if a weighted average of donors is able to approximate
+ the treated unit in the pre-treatment.
+ This should be satisfied if the treated unit lies within the convex hull
+ of the control units.
+ One can visually compare the difference in pre-treatment outcomes between
+ a unit and its synthetic control.
+ Additionally one could look at the distribution of pre-treatment RMSPE's
+ and see what proportion of control units have values at least as high as
+ that of the treated unit.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ discard several events from study as they can not be matched appropriately.
+\end_layout
+
+\begin_layout Standard
+Secondly, one can exclude some pre-treatment outcomes from the list of predictor
+s and see if the synthetic control matches well the treated unit in these
+ periods.
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+Note also that unless some pre-treatment outcome variables are dropped from
+ the set of predictors, all other covariate predictors are rendered redundant.
+ The optimization of 
+\begin_inset Formula $V$
+\end_inset
+
+ will put no weight on those additional predictors in terms of predicting
+ pre-treatment outcomes.
+ 
+\end_layout
+
+\end_inset
+
+ As this is still pre-treatment, the synthetic control should match well.
+ The initial section of the pre-treatment period is often designated the
+ 
+\begin_inset Quotes eld
+\end_inset
+
+training
+\begin_inset Quotes erd
+\end_inset
+
+ period with the later part being the 
+\begin_inset Quotes eld
+\end_inset
+
+validation
+\begin_inset Quotes erd
+\end_inset
+
+ period.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ set aside the first half of the pre-treatment period as the training period.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+: weights minimize RMSPE for whole pre-intervention period using variables
+ from training period 
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+"we will choose V such that the mean squared prediction error of the outcome
+ variable is minimized for the preintervention periods" 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+"In the actual implementation below, we match on the average value of the
+ covariates for the predisaster period and the first half of the predisaster
+ trajectory for GDP per capita" 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH15"
+
+\end_inset
+
+: weights minimize RMSPE in the validation period using variables from training
+ period.
+ Then synth uses those weights with variables for the validation periods.
+ This would require a change to synth (need to get un-rounded weights to
+ calculate synth controls) 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+NB: This isn't standard cross-validation (nothing is estimated ON the training
+ data) 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+The 
+\family typewriter
+synth_runner
+\family default
+ Package
+\end_layout
+
+\begin_layout Standard
+The 
+\family typewriter
+synth_runner
+\family default
+ package contains several tools to help conduct SCM estimation.
+ It requires the 
+\family typewriter
+synth
+\family default
+ package which can be obtained from the SSC archive.
+ The main program is 
+\family typewriter
+synth_runner
+\family default
+, which is outlined here.
+ Additionally, there are simple graphing utilities (
+\family typewriter
+effect_graphs
+\family default
+, 
+\family typewriter
+pval_graphs
+\family default
+, 
+\family typewriter
+single_treatment_graphs
+\family default
+) that show basic graphs.
+ These are explained in the following code examples and can be modified
+ easily.
+\end_layout
+
+\begin_layout Subsection
+Syntax
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+synth_runner 
+\family default
+\emph on
+depvar
+\emph default
+ 
+\emph on
+predictorvars
+\family typewriter
+\emph default
+ , [ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{tru}
+\end_layout
+
+\end_inset
+
+nit(
+\family default
+\emph on
+#
+\family typewriter
+\emph default
+) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{trp}
+\end_layout
+
+\end_inset
+
+eriod(
+\family default
+\emph on
+#
+\family typewriter
+\emph default
+) d(
+\family default
+\emph on
+varname
+\family typewriter
+\emph default
+) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{tre}
+\end_layout
+
+\end_inset
+
+nds pre_limit_mult
+\family default
+(
+\emph on
+real
+\emph default
+)
+\family typewriter
+ training_propr(
+\family default
+\emph on
+real
+\family typewriter
+\emph default
+) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{k}
+\end_layout
+
+\end_inset
+
+eep(
+\family default
+\emph on
+file
+\family typewriter
+\emph default
+) 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{rep}
+\end_layout
+
+\end_inset
+
+lace ci pvals1s
+\family default
+ max_lead(
+\emph on
+int
+\emph default
+)
+\family typewriter
+ n_pl_avgs
+\family default
+(
+\emph on
+string
+\emph default
+) 
+\family typewriter
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{par}
+\end_layout
+
+\end_inset
+
+
+\family default
+allel 
+\family typewriter
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+ul{det}
+\end_layout
+
+\end_inset
+
+
+\family default
+erministicout
+\family typewriter
+ 
+\family default
+\emph on
+synthsettings
+\family typewriter
+\emph default
+ ]
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+disable hyphenation for this paragraph
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Post-estimation graphing commands are shown in the examples below.
+ The syntax is similar to the 
+\family typewriter
+synth
+\family default
+ command.
+ New options include 
+\family typewriter
+d
+\family default
+, 
+\family typewriter
+trends
+\family default
+, 
+\family typewriter
+pre_limit_mult
+\family default
+, 
+\family typewriter
+training_propr
+\family default
+, 
+\family typewriter
+ci
+\family default
+, 
+\family typewriter
+pvals1s
+\family default
+, 
+\family typewriter
+n_pl_avgs
+\family default
+.
+ Options not explicitly matched will be passed to 
+\family typewriter
+synth
+\family default
+ as 
+\family typewriter
+synthsettings
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Settings
+\end_layout
+
+\begin_layout Standard
+Required Settings:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+depvar
+\family default
+ the outcome variable.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+predictorvars
+\family default
+ the list of predictor variables.
+ See 
+\family typewriter
+help synth
+\family default
+ help for more details.
+\end_layout
+
+\begin_layout Standard
+For specifying the unit and time period of treatment, there are two methods.
+ Exactly one of these is required.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+trunit(
+\family default
+\emph on
+#
+\family typewriter
+\emph default
+)
+\family default
+ and 
+\family typewriter
+trperiod(
+\family default
+\emph on
+#
+\family typewriter
+\emph default
+)
+\family default
+.
+ This syntax (used by 
+\family typewriter
+synth
+\family default
+) can be used when there is a single unit entering treatment.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+d(
+\family default
+\emph on
+varname
+\family typewriter
+\emph default
+)
+\family default
+.
+ The 
+\family typewriter
+d
+\family default
+ variable should be a binary variable which is 1 for treated units in treated
+ periods, and 0 everywhere else.
+ This allows for multiple units to undergo treatment, possibly at different
+ times.
+\end_layout
+
+\begin_layout Standard
+\noindent
+Options:
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+trends
+\family default
+ will force 
+\family typewriter
+synth
+\family default
+ to match on the trends in the outcome variable.
+ It does this by scaling each unit's outcome variable so that it is 1 in
+ the last pre-treatment period.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pre_limit_mult
+\family default
+(
+\begin_inset Formula $real\geq1$
+\end_inset
+
+) will not include placebo effects in the pool for inference if the match
+ quality of that control (pre-treatment RMSPE) is greater than 
+\emph on
+pre_limit_mult
+\emph default
+ times the match quality of the treated unit.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+training_propr(
+\begin_inset Formula $0\leq real\leq1$
+\end_inset
+
+)
+\family default
+ instructs 
+\family typewriter
+synth_runner
+\family default
+ to automatically generate the outcome predictors.
+ The default (0) is to not generate any (the user then includes the desired
+ ones in 
+\family typewriter
+predictorvars
+\family default
+).
+ If set to a number greater than 0, then that initial proportion of the
+ pre-treatment period is used as a training period with the rest being the
+ validation period.
+ Outcome predictors for every time in the training period will be added
+ to the 
+\family typewriter
+synth
+\family default
+ commands.
+ Diagnostics of the fit for the validation period will be outputted.
+ If the value is between 0 and 1, there will be at least one training period
+ and at least one validation period.
+ If it is set to 1, then all the pre-treatment period outcome variables
+ will be used as predictors.
+ This will make other covariate predictors redundant.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+ci
+\family default
+ outputs confidence intervals from randomization inference for raw effect
+ estimates.
+ These should only be used if the treatment is randomly assigned.
+ If treatment is not randomly assigned then these confidence intervals do
+ not have the standard interpretation.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pvals1s
+\family default
+ outputs one-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-values in addition to the two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-values.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+keep(
+\family default
+\emph on
+filename
+\family typewriter
+\emph default
+)
+\family default
+ saves a dataset with the results.
+ This is only allowed if there is a single period in which unit(s) enter
+ treatment.
+ It is easy to merge this in the initial dataset.
+ If 
+\family typewriter
+keep(
+\family default
+\emph on
+filename
+\family typewriter
+\emph default
+)
+\family default
+ is specified, it will hold the following variables:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+panelvar
+\family default
+\emph default
+ contains the respective panel unit (from the 
+\family typewriter
+tsset
+\family default
+ panel unit variable 
+\emph on
+panelvar
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+timevar
+\family default
+\emph default
+ contains the respective time period (from the 
+\family typewriter
+tsset
+\family default
+ panel time variable 
+\emph on
+timevar
+\emph default
+).
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+lead
+\family default
+ contains the respective time period relative to the treatment period.
+ 
+\begin_inset Formula $Lead=1$
+\end_inset
+
+ specifies the first period of treatment.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+effect
+\family default
+ contains the difference between the unit's outcome and its synthetic control
+ for that time period.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+pre_rmspe
+\family default
+ contains the pre-treatment match quality in terms of Root Mean Squared
+ Predictive Error.
+ It is constant for a unit.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+post_rmspe
+\family default
+ contains a measure of the post-treatment effect (jointly over all post-treatmen
+t time periods) in terms of Root Mean Squared Predictive Error.
+ It is constant for a unit.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+depvar
+\emph default
+_scaled
+\family default
+ (if the match was done on trends) is the unit's outcome variable normalized
+ so that its last pre-treatment period outcome is 1.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+effect_scaled
+\family default
+ (if the match was done on trends) is the difference between the unit's
+ scaled outcome and its scaled synthetic control for that time period.
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+
+\family typewriter
+replace
+\family default
+ replaces the dataset specified in 
+\family typewriter
+keep(
+\family default
+\emph on
+filename
+\family typewriter
+\emph default
+)
+\family default
+ if it already exists.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+n_pl_avgs(
+\family default
+\emph on
+string
+\family typewriter
+\emph default
+)
+\family default
+ controls the number of placebo averages to compute for inference.
+ The total possible grows exponentially with the number of treated events.
+ If omitted, the default behavior is cap the number of averages computed
+ at 1,000,000 and if the total is more than that to sample (with replacement)
+ the full distribution.
+ The option 
+\family typewriter
+n_pl_avgs(
+\family default
+\emph on
+all
+\family typewriter
+\emph default
+)
+\family default
+ can be used to override this behavior and compute all the possible averages.
+ The option 
+\family typewriter
+n_pl_avgs(
+\family default
+\emph on
+#
+\family typewriter
+\emph default
+)
+\family default
+ can be used to specify a specific number less than the total number of
+ averages possible.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+max_lead(
+\family default
+\emph on
+int
+\family typewriter
+\emph default
+)
+\family default
+ will limit the number of post-treatment periods analyzed.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+parallel
+\family default
+ will enable parallel processing if the 
+\family typewriter
+parallel
+\family default
+ command (at least version 1.18) is installed and configured.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+deterministicoutput
+\family default
+ eliminates displayed output that would vary depending on the machine (e.g.
+ timers and number of parallel clusters) so that log files can be easily
+ compared across runs.
+\end_layout
+
+\begin_layout Itemize
+
+\emph on
+synthsettings
+\emph default
+ pass-through options sent to 
+\family typewriter
+synth
+\family default
+.
+ See 
+\family typewriter
+help synth
+\family default
+ for more information.
+ The following which are disallowed: 
+\family typewriter
+counit
+\family default
+, 
+\family typewriter
+figure
+\family default
+, 
+\family typewriter
+resultsperiod
+\family default
+.
+\end_layout
+
+\begin_layout Subsection
+Saved Results
+\end_layout
+
+\begin_layout Standard
+
+\family typewriter
+synth_runner
+\family default
+ returns the following scalars and matrices: 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(treat_control)
+\family default
+ - A matrix with the average treatment outcome (centered around treatment)
+ and the average of the outcome of those units' synthetic controls for the
+ pre- and post-treatment periods.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(b)
+\family default
+ - A vector with the per-period effects (unit's actual outcome minus the
+ outcome of its synthetic control) for post-treatment periods.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(n_pl)
+\family default
+ - The number of placebo averages used for comparison.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For single treatment setups, this can be used to calculate purely randomized
+ p-values.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(pvals)
+\family default
+ - A vector of the proportions of placebo effects that are at least as large
+ as the main effect for each post-treatment period.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(pvals_std)
+\family default
+ - A vector of the proportions of placebo standardized effects that are
+ at least as large as the main standardized effect for each post-treatment
+ period.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(pval_joint_post)
+\family default
+ - The proportion of placebos that have a post-treatment RMSPE at least
+ as large as the average for the treated units.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(pval_joint_post_std)
+\family default
+- The proportion of placebos that have a ratio of post-treatment RMSPE over
+ pre-treatment RMSPE at least as large as the average ratio for the treated
+ units.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(avg_pre_rmspe_p)
+\family default
+ - The proportion of placebos that have a pre-treatment RMSPE at least as
+ large as the average of the treated units.
+ A measure of fit.
+ Concerning if significant.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+e(avg_val_rmspe_p)
+\family default
+ - When specifying 
+\family typewriter
+training_propr
+\family default
+, this is the proportion of placebos that have a RMSPE for the validation
+ period at least as large as the average of the treated units.
+ A measure of fit.
+ Concerning if significant.
+\end_layout
+
+\begin_layout Subsection
+Example Usage
+\end_layout
+
+\begin_layout Standard
+The following examples use a dataset from the 
+\family typewriter
+synth
+\family default
+ package.
+ Ensure that 
+\family typewriter
+synth
+\family default
+ was installed with ancillary files (e.g., 
+\family typewriter
+ssc install synth, all
+\family default
+).
+ This panel dataset contains information for 39 US States for the years
+ 1970-2000 (see 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH10"
+
+\end_inset
+
+ for details).
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ sysuse smoking
+\end_layout
+
+\begin_layout Plain Layout
+
+(Tobacco Sales in 39 US States)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ tsset state year 
+\end_layout
+
+\begin_layout Plain Layout
+
+     panel variable:  state (strongly balanced) 
+\end_layout
+
+\begin_layout Plain Layout
+
+      time variable:  year, 1970 to 2000 
+\end_layout
+
+\begin_layout Plain Layout
+
+              delta:  1 unit 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Example 1
+\end_layout
+
+\begin_layout Standard
+Reconstruct Example 1 from the 
+\family typewriter
+synth
+\family default
+ help file (note this is not the exact estimation strategy use in 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH10"
+
+\end_inset
+
+, but similar):
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ tempfile keepfile
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24
+ cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) keep(`keepf
+ile')
+\end_layout
+
+\begin_layout Plain Layout
+
+Estimating the treatment effects 
+\end_layout
+
+\begin_layout Plain Layout
+
+Estimating the possible placebo effects 
+\end_layout
+
+\begin_layout Plain Layout
+
+|                                    | Total: 38 
+\end_layout
+
+\begin_layout Plain Layout
+
+.....................................| 60.00s elapsed.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Conducting inference: 5 steps, and 38 placebo averages 
+\end_layout
+
+\begin_layout Plain Layout
+
+Step 1...
+ Finished 
+\end_layout
+
+\begin_layout Plain Layout
+
+Step 2...
+ Finished 
+\end_layout
+
+\begin_layout Plain Layout
+
+Step 3...
+ Finished 
+\end_layout
+
+\begin_layout Plain Layout
+
+Step 4...
+ Finished 
+\end_layout
+
+\begin_layout Plain Layout
+
+Step 5...
+ Finished
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+Post-treatment results: Effects, p-values, p-values (psuedo t-stats)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+            | estimates      pvals  pvals_std  
+\end_layout
+
+\begin_layout Plain Layout
+
+-------------+--------------------------------- 
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead1 | -7.887098   .1315789          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead2 | -9.693599   .1842105          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead3 |  -13.8027   .2105263          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead4 |   -13.344   .1315789          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead5 |  -17.0624   .1052632          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead6 |  -20.8943   .0789474          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead7 |  -19.8568   .1315789   .0263158  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead8 |  -21.0405   .1578947          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+      lead9 |  -21.4914   .1052632   .0263158  
+\end_layout
+
+\begin_layout Plain Layout
+
+     lead10 |  -19.1642   .1842105   .0263158  
+\end_layout
+
+\begin_layout Plain Layout
+
+     lead11 |   -24.554   .1052632          0  
+\end_layout
+
+\begin_layout Plain Layout
+
+     lead12 |  -24.2687   .1052632   .0263158 
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ merge 1:1 state year using `keepfile', nogenerate
+\end_layout
+
+\begin_layout Plain Layout
+
+(label state already defined)
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+   Result                           # of obs.
+ 
+\end_layout
+
+\begin_layout Plain Layout
+
+   ----------------------------------------- 
+\end_layout
+
+\begin_layout Plain Layout
+
+   not matched                             0 
+\end_layout
+
+\begin_layout Plain Layout
+
+   matched                             1,209   
+\end_layout
+
+\begin_layout Plain Layout
+
+   ----------------------------------------- 
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ gen cigsale_synth = cigsale-effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The program notes progress towards estimating prediction errors and for
+ conducting inference.
+ Results for post-treatment periods are shown by default.
+ In this example they are negative and significant by the standardized effect
+ measure indicating that the law it studied likely had a negative effect
+ on cigarette sales.
+ We then merge in the synthetic control results and construct the effect
+ variable.
+\end_layout
+
+\begin_layout Standard
+While some of the return values are matrices and can be best visualized,
+ some are scalars and easy to examine directly.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\ttfamily}"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ ereturn list 
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+scalars: 
+\end_layout
+
+\begin_layout Plain Layout
+
+              e(n_pl) =  38 
+\end_layout
+
+\begin_layout Plain Layout
+
+         e(n_pl_used) =  38 
+\end_layout
+
+\begin_layout Plain Layout
+
+   e(pval_joint_post) =  .1315789473684211 
+\end_layout
+
+\begin_layout Plain Layout
+
+ e(pval_joint_post_s 
+\end_layout
+
+\begin_layout Plain Layout
+
+   td)                =  0
+\end_layout
+
+\begin_layout Plain Layout
+
+   e(avg_pre_rmspe_p) =  .9210526315789474
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+macros: 
+\end_layout
+
+\begin_layout Plain Layout
+
+        e(properties) : "b"
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+matrices: 
+\end_layout
+
+\begin_layout Plain Layout
+
+                 e(b) :  1 x 12 
+\end_layout
+
+\begin_layout Plain Layout
+
+         e(pvals_std) :  1 x 12 
+\end_layout
+
+\begin_layout Plain Layout
+
+             e(pvals) :  1 x 12 
+\end_layout
+
+\begin_layout Plain Layout
+
+     e(treat_control) :  31 x 2 
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ //If truly random, can modify the p-value
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ di (e(pval_joint_post_std)*e(n_pl)+1)/(e(n_pl)+1)
+\end_layout
+
+\begin_layout Plain Layout
+
+.02564103
+\end_layout
+
+\end_inset
+
+The 
+\family typewriter
+e(pval_joint_post)
+\family default
+ lists the proportion of effects from control units that have post-treatment
+ RMSPE at least as great as the treated unit.
+ The return 
+\family typewriter
+e(pval_joint_post_std)
+\family default
+ lists the same, but scales all values by the relevant pre-treatment RMSPE.
+ The final measure is a diagnostic measure and it notes that the treated
+ unit was matched better than the majority of the control units.
+ If the treatment is considered truly at random them the true 
+\begin_inset Formula $p$
+\end_inset
+
+-value is a modification that adds one to the numerator and denominator
+ (in cases with a single treatment).
+ This is shown for the case of the ratio of post- to pre-treatment RMSPE.
+\end_layout
+
+\begin_layout Standard
+Next we create common synthetic control graphs.
+ The 
+\family typewriter
+single_treatment_graphs
+\family default
+ command creates the graphs in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:single_treatment_graphs"
+
+\end_inset
+
+ (which are easy to do when there is a single treatment).
+ The first graphs the outcome path of all units, which shows that the treated
+ unit was likely not on a parallel trend compared to the other states pre-treatm
+ent.
+ The second figure graphs the prediction differences for all units where
+ one can see that pre-treatment the differences are small and post-treatment
+ they are large, especially for the treated unit.
+ The 
+\family typewriter
+effect_graphs
+\family default
+ command creates the graphs in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:effect_graphs"
+
+\end_inset
+
+.
+ One plots the outcome for the unit and it's synthetic control while the
+ other plots the difference between the two (which for post-treatment is
+ the 
+\begin_inset Quotes eld
+\end_inset
+
+effect
+\begin_inset Quotes erd
+\end_inset
+
+).
+ The two previous graphing commands allow the option 
+\family typewriter
+trlinediff(real)
+\family default
+ that allows the user to offset a vertical treatment from the first treatment
+ period.
+ Likely options include values in the range from (first treatment period
+ - last post-treatment period) to 0 and the default value is -1.
+ The 
+\family typewriter
+pval_graphs
+\family default
+ command creates the graphs in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:pval_graphs"
+
+\end_inset
+
+.
+ These plot the 
+\begin_inset Formula $p$
+\end_inset
+
+-values per-period for post-treatment years for both raw effects, where
+ they are border-line significant, and standardized effects, where they
+ are significant.
+\begin_inset listings
+lstparams "basicstyle={\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1
+) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(
+1989) trlinediff(-1) effect_var(effect)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Graphs from 
+\family typewriter
+single_treatment_graphs
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:single_treatment_graphs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Outcome trends
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_raw.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effects
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_effects.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Graphs from 
+\family typewriter
+effect_graphs
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:effect_graphs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_effect.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Treatment vs Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_tc.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Graphs from 
+\family typewriter
+pval_graphs
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:pval_graphs"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\emph on
+\begin_inset Formula $p$
+\end_inset
+
+
+\emph default
+-values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_pval.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\emph on
+\begin_inset Formula $p$
+\end_inset
+
+
+\emph default
+-values (psuedo t-stats)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale1_pval_t.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Example 2
+\end_layout
+
+\begin_layout Standard
+Same treatment, but a bit more complicated setup:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ gen byte D = (state==3 & year>=1989)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ tempfile keepfile2
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24
+, trunit(3) trperiod(1989) trends training_propr(`=13/19') pre_limit_mult(10)
+ keep(`keepfile2')
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ merge 1:1 state year using `keepfile2', nogenerate
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ gen cigsale_scaled_synth = cigsale_scaled - effect_scaled
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ di "Proportion of control units that have a higher RMSPE than the treated
+ unit in the validtion period:"
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ di round(`e(avg_val_rmspe_p)', 0.001)
+\end_layout
+
+\begin_layout Plain Layout
+
+.842
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled)
+ trunit(3) trperiod(1989)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth)
+ effect_var(effect_scaled) trunit(3) trperiod(1989)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again there is a single treatment period, so output can be saved and merged
+ back into the dataset.
+ In this setting we (a) specify the treated units/periods with a binary
+ variable, (b) generate the outcome predictors automatically using the initial
+ 13 periods of the pre-treatment era (the rest is the "validation" period),
+ (c) we match on trends, and (d) we limit during inference control units
+ whose pre-treatment match quality more than 10 times worse than the match
+ quality of the corresponding treatment units.
+ Now that we have a training/validation period split there is a new diagnostic.
+ It shows that 84% of the control units have a worse match (a higher RMSPE)
+ during the validation period.
+ The graphing commands are equivalent.
+ The ones showing the range of effects and raw data are shown in Figure
+ 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:single_treatment_graphs2"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Graphs from 
+\family typewriter
+single_treatment_graphs
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:single_treatment_graphs2"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Outcome trends
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale2_raw.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effects
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale2_effects.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+Example 3
+\end_layout
+
+\begin_layout Standard
+Multiple treatments at different time periods:
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+.
+ gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ synth_runner cigsale beer(1984(1)1987) lnincome(1972(1)1987) retprice age15to24
+, d(D) trends training_propr(`=13/18')
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ effect_graphs , multi depvar(cigsale)
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We extend Example 2 by considering a control state now to be treated (Georgia
+ in addition to California).
+ No treatment actually happened in Georgia in 1987.
+ Now that we have several treatment periods we can not merge in a simple
+ file.
+ Some of the graphs (of 
+\family typewriter
+single_treatment_graphs
+\family default
+) can no longer be made.
+ The option 
+\emph on
+multi
+\emph default
+ is now passed to 
+\family typewriter
+effect_graphs
+\family default
+ and those are shown in Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:effect_graphs3"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Graphs from 
+\family typewriter
+effect_graphs
+\family default
+
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:effect_graphs3"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale3_effect.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Treatment vs Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename ../fig/eps/cigsale3_tc.eps
+	scale 50
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Standard
+The Synthetic Control Methodology (SCM) 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "AG03,ADH10"
+
+\end_inset
+
+ allows researchers to quantitatively estimate effects in many small sample
+ settings in a manner grounded by theory.
+ This article provides an overview of the theory of SCM and the 
+\family typewriter
+synth_runner
+\family default
+ package, which builds on the 
+\family typewriter
+synth
+\family default
+ package of 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+.
+ 
+\family typewriter
+synth_runner
+\family default
+ provides tools to help with the common tasks of estimating a synthetic
+ control model.
+ It automates the process of conducting in-place placebos and calculating
+ inference on the various possible measures.
+ Following 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ it (a) extends the initial estimation strategy to allow for multiple units
+ that receive treatment (at potentially different times), (b) allows for
+ matching on trends in the outcome variable rather than on the level, and
+ (c) automates the process of splitting pre-treatment periods into 
+\begin_inset Quotes eld
+\end_inset
+
+training
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+validation
+\begin_inset Quotes erd
+\end_inset
+
+ sections.
+ It also provides graphs of diagnostics, inference, and estimate effects.
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "../literature/_IDB_synth"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

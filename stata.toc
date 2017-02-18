@@ -1,4 +1,4 @@
 v 3
-d IDB_synth-directory
+d synth_runner-directory
 
 p synth_runner Automation for multiple Synthetic Control estimations. 

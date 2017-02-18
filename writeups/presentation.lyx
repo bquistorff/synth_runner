@@ -1,0 +1,3638 @@
+#LyX 2.2 created this file. For more info see http://www.lyx.org/
+\lyxformat 508
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+\usetheme{Warsaw}
+
+\setbeamercovered{transparent}
+
+%Handouts (to print multiple per page)
+%\usepackage{pgfpages}
+%\pgfpagesuselayout{2 on 1}[a4paper,border shrink=5mm]
+%\pgfpagesuselayout{4 on 1}[a4paper,landscape]
+
+%Handouts with note taking
+%\usepackage{handoutWithNotes}
+%\pgfpagesuselayout{4 on 1 with notes}[a4paper,border shrink=5mm]
+
+%\setbeameroption{show only notes}
+%\setbeameroption{show notes}
+
+%Latex likes to make ligatures from ff, fi, fl which breaks text manipulation (searching and copying)
+\usepackage{microtype}
+\DisableLigatures[f]{encoding = *, family = * }
+
+\usepackage{accents} %nicer than \usepackage{harpoon} (the barb is too prominent), \overharpoonright (two high off the letter), and rightarrow,
+%harpoons are nicer (take up less verticle space than arrows) 
+%but they don't render visually in LyX, so code with arrows and convert at compile time
+\renewcommand{\overrightarrow}[1]{\accentset{\rightharpoonup}{#1}}
+\renewcommand{\overleftarrow}[1]{\accentset{\leftharpoonup}{#1}}
+
+% link DOIs in references section
+\usepackage{doi}
+
+%% Put visual box around \input's (e.g. snippets, tables) for easier checking. (LaTeX will already complain if file doesn't exist.) Won't work if \begin{centering}...\end{centering} in inputted file.
+\let\oldinput\input
+%\renewcommand{\input}[1]{\fbox{\oldinput{#1}}} %uncomment this to turn on
+
+\usefonttheme[onlymath]{serif}
+
+%Preserve straight quotes (`') and don't have them changed in program listings.
+\usepackage{upquote}
+
+% Get the frame number total to be before appendix
+\def\insertpresentationendframe{\inserttotalframenumber}
+\g@addto@macro{\appendix}{\immediate\write\@auxout{\string\@writefile{nav}{\noexpand\headcommand{\noexpand\def\noexpand\insertpresentationendframe{\the\c@framenumber}}}}}
+\end_preamble
+\options compress,round
+\use_default_options false
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family rmdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 0
+\use_package mathdots 1
+\use_package mathtools 0
+\use_package mhchem 1
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plainnat
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 0
+\branch excluded
+\selected 0
+\filename_suffix 0
+\color #faf0e6
+\end_branch
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 2
+\tocdepth 2
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+To make handouts: 
+\end_layout
+
+\begin_layout Enumerate
+Add the option 
+\emph on
+handout
+\emph default
+ to the Document class to flattened overlays
+\end_layout
+
+\begin_layout Enumerate
+(for participants) Uncomment the appropriate section of the latex preamble
+ to print multiple slides per page
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+optionally have writing space on the right for note taking).
+\end_layout
+
+\end_deeper
+\begin_layout Enumerate
+(for instructor) Uncomment the appropriate section of the latex premable:
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+to print just the notes slides (might want to create a blank note for each).
+\end_layout
+
+\begin_layout Enumerate
+to print content and notes slides (then flip through to see which have notes).
+\end_layout
+
+\end_deeper
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Additional class options:
+\end_layout
+
+\begin_layout Plain Layout
+-compress (make a horizontal TOC in header)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Title
+The 
+\family typewriter
+synth_runner
+\family default
+ Package: Utilities to Automate Synthetic Control Estimation Using 
+\family typewriter
+synth
+\family default
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+synth_runner
+\family default
+ (
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+insertframenumber
+\end_layout
+
+\end_inset
+
+/
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+insertpresentationendframe
+\end_layout
+
+\end_inset
+
+)
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Author
+Sebastian
+\begin_inset space ~
+\end_inset
+
+Galiani 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ Brian
+\begin_inset space ~
+\end_inset
+
+Quistorff
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+Galiani Quistorff
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Institute
+Department of Economics
+\begin_inset Newline newline
+\end_inset
+
+University of Maryland, College Park
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+and
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Flex InstituteMark
+status collapsed
+
+\begin_layout Plain Layout
+2
+\end_layout
+
+\end_inset
+
+Department of Theoretical Philosophy
+\begin_inset Newline newline
+\end_inset
+
+University of Elsewhere
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Use the 
+\begin_inset Quotes eld
+\end_inset
+
+Institute mark
+\begin_inset Quotes erd
+\end_inset
+
+ inset (
+\family sans
+Insert\SpecialChar menuseparator
+Custom Insets\SpecialChar menuseparator
+InstituteMark
+\family default
+) only if there are several affiliations.
+\end_layout
+
+\begin_layout Itemize
+Keep it simple, no one is interested in your street address.
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+UMD
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+optional, but mostly needed
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Date
+IDB, April 2014
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Itemize
+Either use conference name or its abbreviation.
+ 
+\end_layout
+
+\begin_layout Itemize
+Not really informative to the audience, more for people (including yourself)
+ who are reading the slides online
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 1
+status open
+
+\begin_layout Plain Layout
+2016
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+optional, should be abbreviation of conference name
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset FormulaMacro
+\newcommand{\bcdot}{\raisebox{1pt}{\textbf{\large.}}}
+{\cdot}
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstset{columns=flexible} %keep program listing from inserting random spaces
+ around characters when copying from PDF
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Introduction
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset citation
+LatexCommand citet
+key "AG03"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ introduced Synthetic Control Methods (SCM), to identifying treatment effects
+ in case-studies.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ released 
+\family typewriter
+synth
+\family default
+ for Stata to perform a Synthetic Control estimation.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+With the help of the IDB, we have released 
+\family typewriter
+synth_runner
+\family default
+ to automate many of the tasks associated with these types of estimations
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Outline
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset CommandInset toc
+LatexCommand tableofcontents
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Synthetic Control Methods
+\end_layout
+
+\begin_layout Subsection
+Classic SCM
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Intuition
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset CommandInset citation
+LatexCommand citet
+key "AG03"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ introduced Synthetic Control Methods (SCM).
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Allows for estimating treatment effects even if treated unit is not on a
+ parallel time trend as the mean of the untreated units.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Constructs a counterfactual by finding a weighted average of non-treated
+ units that resembles the treated unit in the pre-treatment period.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+DGP for Synthetic Controls
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Synthetic Controls can be applied in multiple settings, but most common
+ setting where there are theoretical results is: 
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Units 
+\begin_inset Formula $\{1,...,J+1\}$
+\end_inset
+
+ with 1 being treated and 
+\begin_inset Formula $J$
+\end_inset
+
+ untread 
+\begin_inset Quotes eld
+\end_inset
+
+donors
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\begin_inset Formula $D_{jt}$
+\end_inset
+
+ is the treatment indicator.
+ 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+ pre-treatment periods and 
+\begin_inset Formula $T$
+\end_inset
+
+ total time periods.
+ Factor Model:
+\begin_inset Formula 
+\begin{align*}
+Y_{jt} & =\alpha_{jt}D_{jt}+Y_{jt}^{N}\\
+Y_{jt} & =\alpha_{jt}D_{jt}+(\mathbf{\theta}'_{t}\mathbf{Z}_{j}+\delta_{t}+\mathbf{\lambda}'_{t}\mathbf{\mu}_{j}+\varepsilon_{jt})
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula $\alpha_{jt}$
+\end_inset
+
+ are time-varying treatment effects, 
+\begin_inset Formula $Y_{jt}^{N}$
+\end_inset
+
+ is the no-treated counterfactual, 
+\begin_inset Formula $\mathbf{\theta}_{t}$
+\end_inset
+
+ are unknown parameters, 
+\begin_inset Formula $\mathbf{Z}_{j}$
+\end_inset
+
+ are observed unaffected covariates, 
+\begin_inset Formula $\delta_{t}$
+\end_inset
+
+ is an unknown time factor, 
+\begin_inset Formula $\mathbf{\lambda}_{t}$
+\end_inset
+
+ are unknown factors, 
+\begin_inset Formula $\mathbf{\mu}_{j}$
+\end_inset
+
+ are unknown factor loadings, and the error 
+\begin_inset Formula $\varepsilon_{jt}$
+\end_inset
+
+ is independent across units and time with zero mean.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Treatment can be correlated w/ unobserved factors, but not 
+\begin_inset Formula $\varepsilon_{jt}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+SC Estimator
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ be a weight vector over the other units such that 
+\begin_inset Formula $\mathbf{W}\geq\mathbf{0}$
+\end_inset
+
+ and 
+\begin_inset Formula $\sum_{j}w_{j}=1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Split pre-/post-treatment 
+\series bold
+
+\begin_inset Formula $\boldsymbol{Y}$
+\end_inset
+
+
+\series default
+ as 
+\begin_inset Formula $(\overleftarrow{\mathbf{Y}}\backslash\overrightarrow{\mathbf{Y}})$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Let 
+\begin_inset Formula $\mathbf{Y}_{0}$
+\end_inset
+
+ be the 
+\begin_inset Formula $(T\times J$
+\end_inset
+
+) matrix of outcomes for donors (similar for 
+\begin_inset Formula $\mathbf{Z}_{0},\overleftarrow{\mathbf{Y}},\overrightarrow{\mathbf{Y}}$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Suppose a 
+\begin_inset Formula $\mathbf{W}$
+\end_inset
+
+ can be found such that the synthetic control matches the treated unit in
+ pre-treatment: 
+\begin_inset Formula 
+\begin{align*}
+\overleftarrow{\mathbf{Y}}_{1} & =\overleftarrow{\mathbf{Y}}_{0}\mathbf{W}\\
+\mathbf{Z}_{1} & =\mathbf{Z}_{0}\mathbf{W}
+\end{align*}
+
+\end_inset
+
+and that 
+\begin_inset Formula $\sum_{t=1}^{T_{0}}\mathbf{\lambda}_{t}\mathbf{\lambda}_{t}'$
+\end_inset
+
+ is non-singular.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Estimate 
+\begin_inset Formula $\overrightarrow{\mathbf{Y}}_{1}^{N}$
+\end_inset
+
+ as 
+\begin_inset Formula $\overrightarrow{\mathbf{Y}}_{0}\mathbf{W}$
+\end_inset
+
+ so 
+\begin_inset Formula $\hat{\alpha}_{1}=\overrightarrow{\mathbf{Y}}_{1}-\overrightarrow{\mathbf{Y}}_{0}\mathbf{W}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Then 
+\begin_inset Formula $Bias(\hat{\mathbf{\alpha}})\rightarrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+ grows large relative to 
+\begin_inset Formula $\varepsilon_{it}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout NoteItem
+Synth authors don't use consistent (as it's not a root-n consistency).
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+SC Estimation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Let 
+\begin_inset Quotes eld
+\end_inset
+
+predictors
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\mathbf{X}$
+\end_inset
+
+ be comprised of 
+\begin_inset Formula $\mathbf{Z}$
+\end_inset
+
+ and some linear combinations of 
+\begin_inset Formula $\mathbf{\overleftarrow{\mathbf{Y}}}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Define 
+\begin_inset Formula $\left\Vert \mathbf{A}\right\Vert =\sqrt{\mathbf{A}cols(\mathbf{A})^{-1}\mathbf{A}}$
+\end_inset
+
+ and 
+\begin_inset Formula $\left\Vert \mathbf{A}\right\Vert _{\mathbf{V}}=\sqrt{\mathbf{A}\mathbf{V}^{-1}\mathbf{A}}$
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Formula $\left\Vert \mathbf{Y}_{1}-\mathbf{Y}_{0}\mathbf{W}\right\Vert =s_{1}$
+\end_inset
+
+ is the root mean squared prediction error (RMSPE).
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+As matching may only hold approximately, we need a set of predictor weights
+ 
+\begin_inset Formula $\boldsymbol{V}$
+\end_inset
+
+ that prioritizes which variables to match better.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Given 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+, then
+\begin_inset Formula 
+\begin{align*}
+\mathbf{W^{*}} & =\arg\min_{\mathbf{W}}\left\Vert \mathbf{X}_{1}-\mathbf{X}_{0}\mathbf{W}\right\Vert _{\mathbf{V}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Multiple options for 
+\begin_inset Formula $\mathbf{V}$
+\end_inset
+
+ (
+\family typewriter
+synth
+\family default
+ includes regression weights and nested optimization 
+\begin_inset Formula $\mathbf{V}^{*}=\arg\min_{\mathbf{V}}\left\Vert \overleftarrow{\mathbf{Y}}_{1}-\overleftarrow{\mathbf{Y}}_{0}\mathbf{W}(\mathbf{V})\right\Vert $
+\end_inset
+
+)
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+DGP II
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Factor model (
+\begin_inset Formula $\mathbf{\lambda}'_{t}\mathbf{\mu}_{j}$
+\end_inset
+
+) accommodates many forms:
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Standard panel model with time and units fixed effects from 
+\begin_inset Formula $\mu_{j}=(1,\gamma_{j})$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda_{t}=(\xi_{t},1)'$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Unit-specific (non-parallel) time trends: 
+\begin_inset Formula $\mu_{j}=(\gamma_{j})$
+\end_inset
+
+ and 
+\begin_inset Formula $\lambda_{t}=(t)$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Need 
+\begin_inset Formula $\sum_{t=1}^{T_{0}}\mathbf{\lambda}_{t}\mathbf{\lambda}_{t}'$
+\end_inset
+
+ non-singular.
+ Implies:
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+All factors must have been 
+\begin_inset Quotes eld
+\end_inset
+
+active
+\begin_inset Quotes erd
+\end_inset
+
+ in the past (one can not be all 
+\begin_inset Formula $0$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Number of factors can be no more than 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+ (Cauchy-Binet formula).
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Inference
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+SCM relies on in-place placebo (permutation) tests for inference.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Re-estimate synthetic controls on all 
+\begin_inset Formula $J$
+\end_inset
+
+ donors to get 
+\begin_inset Formula $\{\hat{\alpha}_{p}\}$
+\end_inset
+
+.
+ Call this the placebo distribution 
+\begin_inset Formula $\hat{\alpha}_{1}^{PL}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Compare 
+\begin_inset Formula $\hat{\alpha}_{1}$
+\end_inset
+
+ to 
+\begin_inset Formula $\hat{\alpha}_{1}^{PL}$
+\end_inset
+
+.
+ The two-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-value for 
+\begin_inset Formula $\hat{\alpha}_{1t}$
+\end_inset
+
+ is then
+\begin_inset Formula 
+\begin{align*}
+p\textrm{-value} & =\Pr\left(|\hat{\alpha}_{1t}^{PL}|\geq|\hat{\alpha}_{1t}|\right)\\
+ & =\frac{\sum_{j\neq1}1(|\hat{\alpha}_{jt}|\geq|\hat{\alpha}_{1t}|)}{J}
+\end{align*}
+
+\end_inset
+
+the one-sided 
+\begin_inset Formula $p$
+\end_inset
+
+-values (for positive effects) are 
+\begin_inset Formula 
+\begin{align*}
+p\textrm{-value} & =\Pr\left(\hat{\alpha}_{1t}^{PL}\geq\hat{\alpha}_{1t}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Can assess significant of joint post-treatment effects by comparing 
+\begin_inset Formula $\overrightarrow{s}_{1}$
+\end_inset
+
+ to 
+\begin_inset Formula $\{\overrightarrow{s}_{p}\}_{p}$
+\end_inset
+
+.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Interpretation of Inference
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Interpretation is usually different than with randomization inference.
+ Here it is 
+\begin_inset Quotes eld
+\end_inset
+
+what proportion of untreated units have calculated effects as large?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Randomization tests have 
+\begin_inset Formula $J+1$
+\end_inset
+
+ in the denominator.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Could construct confidence intervals though interpretation is again slightly
+ different (shows the variability of the placebo distribution).
+\end_layout
+
+\begin_layout NoteItem
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ has 
+\begin_inset Formula $J+1$
+\end_inset
+
+ in the denominator.
+ 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH14"
+
+\end_inset
+
+ and 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+, however, do not take this approach.
+ With multiple treatments, there would be several approaches to adding the
+ effects on the treated to the comparison distribution, so they are not
+ dealt with here.
+ Basically can you assign a treatment to a unit that already had it?
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Accounting for Match Quality
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Post-treatment differences may be large just because of poor match quality.
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Can take quality of match for pre-treatment period into account:
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Limit donor pool to cases that matched as well as the treated unit was matched
+ (limit by 
+\begin_inset Formula $\overleftarrow{s}_{1}$
+\end_inset
+
+ or some multiple 
+\begin_inset Formula $m$
+\end_inset
+
+ of that).
+ 
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Construct standardized (studentized) effects as in 
+\begin_inset Formula $\hat{\alpha}_{1}/\overleftarrow{s}_{1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\overrightarrow{s}_{1}/\overleftarrow{s}_{1}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Inference can then be conducted over four quantities (
+\begin_inset Formula $\hat{\alpha}_{jt},\overrightarrow{s}_{j},\nicefrac{\hat{\alpha}_{jt}}{\overleftarrow{s_{j}}},\nicefrac{\overrightarrow{s}_{j}}{\overleftarrow{s}_{j}}$
+\end_inset
+
+) and the comparison set can also be limited by the choice of 
+\begin_inset Formula $m$
+\end_inset
+
+.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multiple Treatments
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multiple Treatments - Setup
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ analyze multiple independent treatments at possibly different time periods.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Index treated units 
+\begin_inset Formula $g\in\{1...G\}$
+\end_inset
+
+.
+ Let 
+\begin_inset Formula $J$
+\end_inset
+
+ be those units that never undergo treatment.
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Index effects relative to treatment date.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multiple Treatments - Estimation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+For each 
+\begin_inset Formula $g\in\{1,...,G\}$
+\end_inset
+
+:
+\end_layout
+
+\begin_layout Itemize
+Estimate vector 
+\begin_inset Formula $\hat{\alpha}_{g}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Estimate set of vectors 
+\begin_inset Formula $\hat{\alpha}_{g}^{PL}=\{\hat{\alpha}_{j}^{g}\}_{j\in J}$
+\end_inset
+
+ assuming treatment date same as 
+\begin_inset Formula $g$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+(If two treated units have the same treatment period, then their placebo
+ sets will the be the same.)
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+Define vector 
+\begin_inset Formula $\bar{\alpha}=G^{-1}\sum_{g\in G}\hat{\alpha}_{g}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multiple Treatments - Estimation II
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Standard
+Defining 
+\begin_inset Formula $\bar{\alpha}=G^{-1}\sum_{g\in G}\hat{\alpha}_{g}$
+\end_inset
+
+ smooths out noise in the estimate so one needs to do the same with the
+ elements of the placebo set.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Define an vector of choices from each placebo set 
+\begin_inset Formula $\tilde{j}=(j_{1},...,j_{G})$
+\end_inset
+
+ and the set of all such choices 
+\begin_inset Formula $\tilde{J}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $|\tilde{J}|=J^{G}$
+\end_inset
+
+ unless limited by 
+\begin_inset Formula $\overrightarrow{s}$
+\end_inset
+
+, in which case 
+\begin_inset Formula $\prod_{g=1}^{G}J_{g}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+An averge of picks is 
+\begin_inset Formula $\bar{\alpha}(\tilde{j})=G^{-1}\sum_{g\in G}\hat{\alpha}_{\tilde{j}[g]}^{g}$
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Define set of vectors 
+\begin_inset Formula $\bar{\alpha}^{PL}=\{\bar{\alpha}(\tilde{j})|\tilde{j}\in\tilde{J}\}$
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Stata Module
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+
+\family typewriter
+synth_runner
+\family default
+ Module
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ introduce 
+\family typewriter
+synth
+\family default
+ which conducts a single estimation.
+ Building on that, 
+\family typewriter
+synth_runner
+\family default
+:
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Runs placebo tests and outputs 
+\begin_inset Formula $p$
+\end_inset
+
+-values and confidence intervals
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Allows for matching on trends in the outcome variable rather than on the
+ level
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Handles multiple-treatments
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Automates the process of splitting pre-treatment periods into 
+\begin_inset Quotes eld
+\end_inset
+
+training
+\begin_inset Quotes erd
+\end_inset
+
+ and 
+\begin_inset Quotes eld
+\end_inset
+
+validation
+\begin_inset Quotes erd
+\end_inset
+
+ sections
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Provides diagnostics
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Graphs results
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Single Treatment - Example 1
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+EX 1
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Run estimation similar to ADH10
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+*Data setup the same for all examples
+\end_layout
+
+\begin_layout Plain Layout
+
+sysuse smoking
+\end_layout
+
+\begin_layout Plain Layout
+
+tsset state year
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+tempfile keepfile
+\end_layout
+
+\begin_layout Plain Layout
+
+*similar syntax to -synth-
+\end_layout
+
+\begin_layout Plain Layout
+
+synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24
+ cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) keep(`keepf
+ile')
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Returned Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Post-treatment joint significance
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(pval_joint_post) =  .1315789473684211
+\end_layout
+
+\begin_layout Plain Layout
+
+e(pval_joint_post_std) =  0
+\end_layout
+
+\end_inset
+
+Diagnostics.
+ If too small then SCM may not be appropriate for this unit.
+ If conducting over multiple treatments, good to assess individual match
+ quality and discard some units.
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(avg_pre_rmspe_p) =  .9210526315789474
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Make Graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+*`keepfile' now contains the differences between units and their synthetic
+ controls
+\end_layout
+
+\begin_layout Plain Layout
+
+merge 1:1 state year using `keepfile', nogenerate
+\end_layout
+
+\begin_layout Plain Layout
+
+gen cigsale_synth = cigsale-effect
+\end_layout
+
+\begin_layout Plain Layout
+
+single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) effects_ylabel
+s(-30(10)30) effects_ymax(35) effects_ymin(-35)
+\end_layout
+
+\begin_layout Plain Layout
+
+effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1
+989) effect_var(effect)
+\end_layout
+
+\begin_layout Plain Layout
+
+pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Outcome Trends
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_raw.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+NB: Not a full test of parallel trends assumption as does not account for
+ regression adjustment done in DiD.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Treated and Synthetic Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_tc.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Treated and Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_effect.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Difference
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Differences
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_effects.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $P$
+\end_inset
+
+-Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_pval.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale1_pval_t.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Studentized Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+Single Treatment - Example 2
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+EX 2
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+More complicated example
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+gen byte D = (state==3 & year>=1989) 
+\end_layout
+
+\begin_layout Plain Layout
+
+tempfile keepfile2
+\end_layout
+
+\begin_layout Plain Layout
+
+synth_runner cigsale beer(1984(1)1988) lnincome(1972(1) 1988) retprice age15to24
+, trunit(3) trperiod(1989) trends training_propr(`=13/18') pre_limit_mult(10)
+ keep(`keepfile2') 
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Returned Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Post-treatment joint significance
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(pval_joint_post) =  .0263157894736842
+\end_layout
+
+\begin_layout Plain Layout
+
+e(pval_joint_post_std) =  0
+\end_layout
+
+\end_inset
+
+Diagnostics (want large values)
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(avg_pre_rmspe_p) =  .631578947368421
+\end_layout
+
+\begin_layout Plain Layout
+
+    e(avg_val_rmspe_p) =  .8421052631578947
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Make Graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+merge 1:1 state year using `keepfile2', nogenerate 
+\end_layout
+
+\begin_layout Plain Layout
+
+gen cigsale_scaled_synth = cigsale_scaled - effect_scaled
+\end_layout
+
+\begin_layout Plain Layout
+
+single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled)
+ trunit(3) trperiod(1989) 
+\end_layout
+
+\begin_layout Plain Layout
+
+effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth)
+ effect_var(effect_scaled) trunit (3) trperiod(1989) 
+\end_layout
+
+\begin_layout Plain Layout
+
+pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Outcome Trends
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_raw.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Mean Treated and Synthetic Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_tc.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Treated and Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_effect.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Difference
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Differences
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_effects.pdf
+	scale 65
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout NoteItem
+All match at treatment year because all units are 1 then (so all SCs are
+ one then)
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $P$
+\end_inset
+
+-Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_pval.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale2_pval_t.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Studentized Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Multiple Treatments - Example 3
+\begin_inset Argument 2
+status open
+
+\begin_layout Plain Layout
+EX 3
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Multiple Treatments
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Placebo Set
+\end_layout
+
+\begin_layout Itemize
+The number of SC estimates grows linearly (
+\begin_inset Formula $J\cdot G$
+\end_inset
+
+) while the size of the placebo set grows exponentially (
+\begin_inset Formula $J^{G}$
+\end_inset
+
+) 
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Inference can quickly become infeasible
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+By default, there is a maximum number (
+\begin_inset Formula $max$
+\end_inset
+
+) of averages computed for inference (1,000,000)
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $J^{G}<max$
+\end_inset
+
+ then all 
+\begin_inset Formula $J^{G}$
+\end_inset
+
+ are used for inference
+\end_layout
+
+\begin_layout Itemize
+If 
+\begin_inset Formula $J^{G}>max$
+\end_inset
+
+ then 
+\begin_inset Formula $max$
+\end_inset
+
+ are drawn at random (with replacement)
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+(
+\begin_inset Formula $max$
+\end_inset
+
+ is modifyable and can be set to 
+\begin_inset Formula $\infty$
+\end_inset
+
+)
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Itemize
+Space requirements scale exponentially if confidence intervals as desired,
+ otherwise scales linearly.
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Estimate with Multiple Treatments
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)
+\end_layout
+
+\begin_layout Plain Layout
+
+synth_runner cigsale beer(1984(1)1987) lnincome(1972(1)1987) retprice age15to24,
+ d(D) trends training_propr(`=13/18')
+\end_layout
+
+\begin_layout Plain Layout
+
+*Graphs
+\end_layout
+
+\begin_layout Plain Layout
+
+effect_graphs , multi depvar(cigsale)
+\end_layout
+
+\begin_layout Plain Layout
+
+pval_graphs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout FragileFrame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Returned Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+Post-treatment joint significance
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(pval_joint_post) =  .0423666910153397
+\end_layout
+
+\begin_layout Plain Layout
+
+e(pval_joint_post_std) =  0
+\end_layout
+
+\end_inset
+
+Diagnostics (want large values)
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+lstparams "basicstyle={\small\ttfamily},breaklines=true"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+    e(avg_pre_rmspe_p) =  .9298758217677137
+\end_layout
+
+\begin_layout Plain Layout
+
+    e(avg_val_rmspe_p) =  .9598246895544192
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Mean Treated and Synthetic Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale3_tc.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mean Treated and Control
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale3_effect.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Mean Difference
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+\begin_inset Formula $P$
+\end_inset
+
+-Values
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale3_pval.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename ../fig/pdf/cigsale3_pval_t.pdf
+	scale 35
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Studentized Effect
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Installation
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Installation
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Stable Version: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+http://econweb.umd.edu/~galiani/code.html
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+Development: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/bquistorff/synth_runner
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Can submit bug reports and patches.
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Discussion
+\end_layout
+
+\begin_layout Subsection
+Future Work
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Future Work for 
+\family typewriter
+synth_runner
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Cross-validation for picking regressors 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "DZ15"
+
+\end_inset
+
+.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+For multiple do the procedure as if estimating 
+\begin_inset Formula $\bar{\alpha}$
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Graph the ratio of post/pre RMSPE (as in 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH14"
+
+\end_inset
+
+)
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+\begin_inset CommandInset citation
+LatexCommand citet
+key "ADH10"
+
+\end_inset
+
+ did it also but graph not as good
+\end_layout
+
+\end_inset
+
+
+\begin_inset Separator latexpar
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Leave-one-observation-out robustness:
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Small number: Graph as in 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH14"
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+Helpful if you have extra-experimental knowledge of why one observation
+ skewed results
+\end_layout
+
+\end_inset
+
+.
+ Would also want to show changing significance levels.
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Large number: Standard deviation of the change of the estimate 
+\begin_inset Formula $\{(\hat{\alpha}-\hat{\alpha}_{-j}\}_{j}$
+\end_inset
+
+ 
+\begin_inset CommandInset citation
+LatexCommand citep
+key "AI15"
+
+\end_inset
+
+
+\begin_inset Note Note
+status collapsed
+
+\begin_layout Plain Layout
+like DFBETA from w:Influential_observation
+\end_layout
+
+\end_inset
+
+.
+ What proportion lose/gain significance? 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Average the effects weighting by inverse of estimate variance (i.e.
+ meta-analysis)
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+That's more about getting at an underlying truth.
+ Here we want to know variability
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Pause
+
+\end_layout
+
+\begin_layout Itemize
+Balance Table for 
+\begin_inset Formula $\mathbf{Z}$
+\end_inset
+
+ (requires a small change to synth to output the unrounded weight matrix)?
+ How to do for multiple?
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Allow per-treatment donor sets e.g.
+ to limit interpolation bias
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+ when 
+\begin_inset Formula $\mathbf{Y}_{0}(\mathbf{X}_{0})\cdot\mathbf{W}\neq\mathbf{Y}(\mathbf{X}_{0}\cdot\mathbf{W})$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+ (non-linear DGP) or spill-overs.
+\end_layout
+
+\begin_deeper
+\begin_layout Pause
+
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+CV for picking 
+\begin_inset Formula $V$
+\end_inset
+
+ (mentioned in 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH10"
+
+\end_inset
+
+ and used in 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH14"
+
+\end_inset
+
+) using training period
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Finding the the best SC using a small # of donors.
+ 
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+More important to political scientists than economists.
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+Multiple Hypotheses testing.
+ Since there is correlation between the tests (across time and across tests
+ via the same null distribution) would want a facility to control the family-wis
+e error rate, but haven't seen one.
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+higher order concern
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Q & A
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Q & A
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\begin_inset space ~
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\start_of_appendix
+\begin_inset Argument 4
+status open
+
+\begin_layout Plain Layout
+Appendix Slides
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Separator parbreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+begin{frame}[allowframebreaks]
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset bibtex
+LatexCommand bibtex
+bibfiles "../literature/_IDB_synth"
+options "plainnat"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+
+\backslash
+end{frame}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

@@ -1,0 +1,36 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Custom for Visual Studio
+*.cs     diff=csharp
+
+# Standard to msysgit
+*.doc	 diff=astextplain
+*.DOC	 diff=astextplain
+*.docx diff=astextplain
+*.DOCX diff=astextplain
+*.dot  diff=astextplain
+*.DOT  diff=astextplain
+*.pdf  diff=astextplain
+*.PDF	 diff=astextplain
+*.rtf	 diff=astextplain
+*.RTF	 diff=astextplain
+
+# Stata-specific normalizations. Text ones should be auto
+#*.do text
+#*.ado text
+#*.mata text
+#*.hlp text
+#*.sthlp text
+#*.pkg text
+#*.toc text
+#*.trk text
+*.mlib binary
+*.dta binary
+*.gph binary
+
+# other. Text ones should be auto
+#*.tex text
+#*.lyx text
+#*.dep text
+#*.mk text

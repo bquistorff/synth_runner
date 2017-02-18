@@ -14,18 +14,18 @@ d
 d KW: Synthetic Control Methodology
 d
 d 
-f _sr_add_keepfile_to_agg.ado
-f _sr_do_work_do.ado
-f _sr_do_work_tr.ado
-f _sr_gen_time_locals.ado
-f _sr_get_returns.ado
-f _sr_print_dots.ado
-f calc_RMSPE.ado
-f effect_graphs.ado
-f pval_graphs.ado
-f single_treatment_graphs.ado
-f synth_runner.ado
-f synth_wrapper.ado
-f synth_runner.sthlp
+f code/ado/_sr_add_keepfile_to_agg.ado
+f code/ado/_sr_do_work_do.ado
+f code/ado/_sr_do_work_tr.ado
+f code/ado/_sr_gen_time_locals.ado
+f code/ado/_sr_get_returns.ado
+f code/ado/_sr_print_dots.ado
+f code/ado/calc_RMSPE.ado
+f code/ado/effect_graphs.ado
+f code/ado/pval_graphs.ado
+f code/ado/single_treatment_graphs.ado
+f code/ado/synth_runner.ado
+f code/ado/synth_wrapper.ado
+f code/ado/synth_runner.sthlp
 
 

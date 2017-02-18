@@ -1,0 +1,268 @@
+{smcl}
+{* *! version 1.0.1  11jan2006}{...}
+{cmd:help sjlatex}{...}
+{right:also see:  {help sjlog}}
+{hline}
+
+{title:Title}
+
+{pstd}
+{hi:sjlatex} {hline 2} Downloading LaTeX files for the Stata Journal
+
+
+{title:Syntax}
+
+{phang2}
+{cmd:sjlatex} [ {cmd:using} {it:dirname} ]
+
+{phang2}
+{cmd:sjlatex} {cmdab:q:uery} [ {cmd:using} {it:dirname} ]
+
+{phang2}
+{cmd:sjlatex} {cmdab:i:nstall} [ {cmd:using} {it:dirname} ] [, {cmd:replace} ]
+
+{phang2}
+{cmd:sjlatex} {cmdab:u:pdate} [ {cmd:using} {it:dirname} ]
+
+{phang2}
+{cmd:sjlatex} {cmdab:a:do} {* !!: to be removed when official}
+
+{pstd}
+Note that directories containing spaces should be enclosed in quotes.
+
+
+{title:Description}
+
+{pstd}
+The {cmd:sjlatex} command reports on the current release of the package of
+LaTeX files developed for the Stata Journal and installs/updates this
+package.
+
+{phang}
+{cmd:sjlatex} reports on the LaTeX files installed in {it:dirname}.
+
+{phang}
+{cmd:sjlatex {cmd:query}} reports on the LaTeX files installed in
+{it:dirname} and displays the release number of the files at the
+Stata Journal web site.
+
+{phang}
+{cmd:sjlatex install} installs the LaTeX files in {it:dirname}.
+
+{phang}
+{cmd:sjlatex update} updates the LaTeX files in {it:dirname}.
+
+{phang}
+{cmd:sjlatex ado} updates {cmd:sjlatex} and the other ado files that are
+packaged with {cmd:sjlatex}.  This subcommand is only necessary for Stata 8 or
+older; otherwise, use the {help adoupdate} command released in Stata 9.
+
+
+{title:Options}
+
+{phang}
+{cmd:using} {it:dirname} identifies a directory to be used in
+{cmd:sjlatex} [ {cmd:query} | {cmd:install} | {cmd:update} ].
+{cmd:sjlatex install} creates {it:dirname}.  The default is to use the
+current directory.
+
+{phang}
+{cmd:replace} ({cmd:sjlatex} {cmd:install} only) causes {cmd:sjlatex}
+{cmd:install} to behave like {cmd:sjlatex update}.
+
+
+{title:Remarks}
+
+{pstd}
+Remarks are presented under the headings
+
+	Getting Started with the Stata Journal
+	Running LaTeX
+	Downloading Examples
+	TeX Distributions
+
+
+{title:Getting Started with the Stata Journal}
+
+{pstd}
+There is a getting started example packaged with the Stata Journal LaTeX
+files. The driver (main.tex) for this example uses the Stata Press document
+class (statapress.cls), the Stata Press page dimensions package
+(pagedims.sty), the Stata Journal package (sj.sty), the Stata
+package (stata.sty), and the Stata Journal bibliographic style
+(sj.bst). Individuals that have access to recent distributions of TeX are
+encouraged to use these files since they are ultimately used to generate the
+Stata Journal in its printed and electronic forms.
+
+{pstd}
+An alternate driver (altmain.tex) is also supplied. This file uses the LaTeX2e
+standard article document class along with sj.bst, sj.sty, and
+stata.sty.  This alternative driver is supplied with the hope that
+compatibility will not be an issue; however, the page dimensions and font
+sizes are different in this case.
+
+
+{title:File Dependencies}
+
+{pstd}
+The Stata Press document class (statapress.cls) is based on the standard
+book document class (book.cls) in your TeX distribution.
+
+{phang}
+statapress.cls also requires hyperref.sty, color.sty,
+fancyhdr.sty, natbib.sty, makeidx.sty, showidx.sty, and
+multind.sty.
+
+{phang}
+pagedims.sty requires calc.sty and calc.sty.
+
+{phang}
+sj.sty requires ifthen.sty and chapterbib.sty.
+
+{phang}
+stata.sty requires alltt.sty and pstricks.sty.
+
+{pstd}
+All of these packages are available in most "free" TeX distributions.
+
+{pmore}
+Unfortunately crop.sty, chapterbib.sty, and natbib.sty are not
+present in OzTeX 4.0, but they are collected into the
+{net search sjextra:sjextra} Stata package for download.  If you are using
+OzTeX, then you will have to copy these files into the directory containing
+your journal insert.  The docstrip documentation/source for crop.sty and
+natbib.sty are also included in the sjextra package for copyright
+purposes.  This package can be found using the following command in Stata.
+
+{pmore2}
+{cmd:. net search} {net search sjextra:sjextra}
+
+{pmore}
+You must also change {cmd:newcenter} to {cmd:oldcenter} in main.tex.
+
+
+{title:Running LaTeX}
+
+{pstd}
+Before you make any changes to main.tex (or altmain.tex) to include your
+journal insert, you should test the files using the given example article
+(readme.tex).  In fact, the files are already set up to perform the test.  In
+the following, we assume that you will be using main.tex, but the instructions
+are essentially the same if you use altmain.tex.
+
+{pstd}
+The LaTeX program on Unix machines and PCs is invoked at the command prompt,
+so let {cmd:>} (greater than symbol) be the command prompt.  The Stata prompt
+is {cmd:.} (period).  Macintosh distributions of TeX tend to be based on
+menus, thus the spirit of the following instructions are equivalent.
+
+{phang}
+1.  Install {cmd:sjlatex}.  Then from within Stata, install the author tools
+in a new directory.  For example, you might try one of the following depending
+upon your operating system.
+
+{pmore}
+PC Windows:{break}
+{cmd:. sjlatex install using C:\sjtemp}
+
+{pmore}
+UNIX:{break}
+{cmd:. sjlatex install using ~/sjtemp}
+
+{pmore}
+Macintosh:{break}
+{cmd:. sjlatex install using ~:sjtemp}
+
+{pmore}
+Here {cmd:sjlatex} will indicated the version and date of the LaTeX files.
+
+{phang}
+2.  At the command prompt, you can now run LaTeX on main.tex.
+
+{pmore}
+{inp:> latex main}{break}
+{inp:> bibtex main}{break}
+{inp:> latex main}{break}
+{inp:> latex main}{break}
+{inp:> dvips main.dvi -o main.ps}
+
+{pmore}
+The first command generates the auxiliary (aux) file for your journal insert.
+The bibtex command uses the aux file from your journal insert (main.aux for
+the example) to generate bibliographic citations and references. After bibtex,
+two more latex runs are needed to ensure that cross references appear
+correctly in the resulting dvi-file.  The last command uses dvips to generate
+a PostScript file from the dvi-file.
+
+{pmore}
+The above commands were placed in a script (included with the files downloaded
+by {cmd:sjlatex}) for your convenience.
+
+{pmore}
+PC Windows:{break}
+{inp:> doit.bat}
+
+{pmore}
+UNIX:{break}
+{inp:> sh doit.sh}
+
+{pstd}
+The final result is main.ps, which can be viewed using Ghostscript (PC:
+gsview, UNIX: ghostview or gv, Macintosh: view the dvi-file from the menu).
+Provided your TeX distribution contains the required packages, and passed the
+above test, you can use these files to write your journal insert.  Just make a
+change to main.tex so that it includes the file containing your journal insert
+(instead of readme.tex), and you're ready to run LaTeX on main.tex.
+
+
+{title:Downloading Examples}
+
+{pstd}
+The results of the above test (of main.tex and altmain.tex) have been
+converted to PDF documents collected in the {net search sjxmpl:sjxmpl} Stata
+package for download.  This package can be found using the following command
+in Stata.
+
+{pmore}
+{cmd:. net search} {net search sjxmpl:sjxmpl}
+
+
+{title:TeX distributions}
+
+{pstd}
+The examples have been successfully tested using the following TeX
+distributions.
+
+{pmore}
+PC Windows:  {browse "http://www.miktex.org":MiKTeX} version 2.3 (Free)
+
+{pmore}
+UNIX:  {browse "http://www.tug.org/tetex/":teTeX} versions 1.0 to 3.0 (Free)
+
+{pmore}
+Macintosh: {browse "http://www.trevorrow.com/oztex/":OzTeX} version 4.0
+(Shareware), and {browse "http://www.kiffe.com/cmactex.html":CMacTeX}
+version 4.0 (Shareware)
+
+{pmore}
+Macintosh OS X: 
+{browse "http://www.uoregon.edu/~koch/texshop/texshop.html":TeXShop} 
+version 1.40 (Free){p_end}
+{pmore2}For compatibility with {cmd:sjlatex} and TeXShop, you must
+           enable the {hi:Typeset} -> {hi:TeX} and {hi:Ghostscript} mode.
+
+{pstd}
+The main web site for the Comprehensive TeX Archive Network (CTAN) is
+{browse "http://www.tug.org/"}.
+
+{pstd}
+The main web site for Ghostscript is {browse "http://www.cs.wisc.edu/~ghost/"}.
+
+
+
+{title:Also see}
+
+{psee}
+Online:  
+{help sjlog}
+{p_end}
