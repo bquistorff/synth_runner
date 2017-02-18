@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.0]
+### Added
+ - Added dynamic covariates, dynamic donor pool, determinism, parallel support, and more unit tests.
+
 ## [1.2.0]
 ### Added
  - A separate testing suite aside from usage.do.
