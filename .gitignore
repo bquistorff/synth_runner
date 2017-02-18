@@ -1,3 +1,7 @@
-*.eps
-*.gph
-_README.txt
+temp/*
+resources/.env
+writeups/sjtemp/
+*/#*.lyx#
+code/ado/backup.trk
+deliverables/sj/*
+!deliverables/sj/README.txt

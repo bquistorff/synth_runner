@@ -23,7 +23,7 @@ help :
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
-.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check module
+.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check
 
 	
 # get the list of eps files from
