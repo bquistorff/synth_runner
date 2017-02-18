@@ -34,6 +34,16 @@ program synth_wrapper, eclass
 	
 	synth `anything', keep(`keep') trperiod(`trperiod') trunit(`trunit') `options'
 	
+	//Catch an uncaught optimization error.
+	//If a predictor has no variation among candidate donor set at some point there is an optimization failure
+	//Could update -synth- to check for this and then remove that predictor and restart with candidate set.
+	tempname Xbalance
+	mat `Xbalance' = e(X_balance)
+	if `Xbalance'[1,2]==. {
+		di as err "Optimization error (no variation among candidate donor set for at least one predictor)"
+		error 409
+	}
+	
 	*RMSPE should've been returned as a scalar (logically, and makes usage easier)
 	tempname rmspe_mat
 	mat `rmspe_mat' = e(RMSPE)

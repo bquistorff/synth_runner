@@ -1,5 +1,5 @@
 {smcl}
-{* 05aug2016}{...}
+{* 17feb2017}{...}
 {cmd:help synth_runner} 
 {hline}
 
@@ -13,8 +13,8 @@
 {title:Syntax}
 
 {p 6 8 2}
-{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt k:eep(file)} {opt rep:lace} {opt ci} {opt pvals1s} 
-{opt n_pl_avgs:(string)} {it:synthsettings} ]
+{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt k:eep(file)} {opt rep:lace} {opt ci} {opt pvals1s}
+ {opt max_lead(int)} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} {it:synthsettings} ]
 
 {p 4 4 2}
 Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
@@ -31,6 +31,8 @@ It will then provide inference (p-values) comparing the estimated main effect to
 If there are multiple treatment periods, then effects are centered around the treatment period so as to be comparable. 
 The maximum number of leads and lags that can be achieved in the data given the treated units are used for analysis.
 It provides facilities for automatically generating the outcome predictors using a training proportion of the pre-treatment period. It also provides diagnostics to assess fit. 
+{cmd:synth_runner} is designed to accompany {cmd:synth} but not supersede it.
+For more details about single estimations (variable weights, observation weights,  covariate balance, and synthetic control outcomes when there are multiple time periods) use {cmd:synth} directly.
 See {help synth:{it:synth}} and Abadie and Gardeazabal (2003) and Abadie, Diamond, and Hainmueller (2010, 2014) for more details.
 
 {title:Required Settings}
@@ -127,6 +129,15 @@ If the match was done on trends, this is the difference between the unit's (scal
 If omitted, the default behavior is cap the number of averages computed at 1,000,000 and if the total is more than that to sample (with replacement) the full distribution. 
 The option {cmd: n_pl_avgs(}{it:all}{cmd:)} can be used to override this behavior and compute all the possible averages. 
 The option {cmd: n_pl_avgs(}{it:#}{cmd:)} can be used to specify a specific number less than the total number of averages possible.
+
+{p 4 8 2}
+{cmd: max_lead(}{it:int}{cmd:)} will limit the number of post-treatment periods analyzed.
+
+{p 4 8 2}
+{cmd: parallel} will enable parallel processing if the {cmd:parallel} command (at least version 1.17) is installed and configured.
+
+{p 4 8 2}
+{cmd: deterministicoutput} eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so that log files can be easily compared across runs.
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.
@@ -249,7 +260,7 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Aug 2016. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.2.0.
+synthetic control estimation using synth, Feb 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.3.0.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -257,9 +268,9 @@ synthetic control estimation using synth, Aug 2016. {browse "https://github.com/
 @Misc{QG16,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = aug,
-  Note   = {Version 1.2.0},
-  Year   = {2016},
+  Month  = feb,
+  Note   = {Version 1.3.0},
+  Year   = {2017},
   Url    = {https://github.com/bquistorff/synth_runner}
 }
 
@@ -280,7 +291,7 @@ Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural di
 
 {title:Authors}
 
-      Brian Quistorff, bquistorff@gmail.com (corresponding author, see Development section for reportings bugs)
-      University of Maryland
+      Brian Quistorff, Brian.Quistorff@microsoft.com (corresponding author, see Development section for reportings bugs)
+      Microsoft Research
       Sebastian Galiani
       University of Maryland

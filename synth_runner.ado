@@ -1,4 +1,4 @@
-*! version 1.2.0 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.3.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Automates the process of conducting many synthetic control estimations
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
@@ -13,17 +13,20 @@ program synth_runner, eclass
 		pvals1s ///
 		TREnds ///
 		training_propr(real 0) ///
-		max_lead(numlist min=1 max=1 int)  ///
+		max_lead(numlist min=1 max=1 int >=0)  ///
 		Keep(string) ///
 		REPlace ///
 		TRPeriod(numlist min=1 max=1 int) ///
 		TRUnit(numlist min=1 max=1 int) ///
-		pre_limit_mult(numlist max=1 >0) ///
+		pre_limit_mult(numlist max=1 >=1) ///
 		n_pl_avgs(string) ///
+		PARallel DETerministicoutput ///
+		pred_prog(string) ///
+		drop_units_prog(string) ///
 		COUnit(string) FIGure resultsperiod(string) *]
 		
 	gettoken depvar cov_predictors : anything
-	get_returns pvar=r(panelvar) tvar=r(timevar) bal=r(balanced): qui tsset
+	_sr_get_returns pvar=r(panelvar) tvar=r(timevar) bal=r(balanced): qui tsset
 	* Stata's dta file operations (save/use/merge) will automatically add dta to extensionless files, so do that too.
 	if `"`keep'"'!=""{
 		_getfilename `"`keep'"'
@@ -49,15 +52,22 @@ program synth_runner, eclass
 	if "`pre_limit_mult'"=="" local pre_limit_mult .
 	_assert ("`n_pl_avgs'"=="" | "`n_pl_avgs'"=="all" | real("`n_pl_avgs'")!=.), msg("-, n_pl_avgs()- must be blank, a number, or all")
 	
+	//check for needed programs
 	cap synth
 	_assert _rc!=199, msg(`"-synth- must be installed (available from SSC, {stata "ssc install synth":ssc install synth})."')
+	if "`parallel'"!=""{
+		cap parallel
+		_assert _rc!=199, msg(`"-parallel- must be installed if option used (available from SSC or http://github.com/gvegayon/parallel)."')
+		
+		_assert "$PLL_CLUSTERS"!="", msg("You must use -parallel setclusters XXX- before using the parallel option for -synth_runner-.")
+	}
 	
 	tempvar ever_treated tper_var0 tper_var event
 	tempname trs uniq_trs pvals pvals_t estimates CI pval_pre_RMSPE pval_val_RMSPE ///
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
 		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used ///
 		failed_opt_targets
-	tempfile ind_file agg_file out_e
+	tempfile agg_file out_e fail_file
 		
 	qui bys `pvar': egen `tper_var0' = min(`tvar') if `D'
 	qui bys `pvar': egen `tper_var' = max(`tper_var0')
@@ -115,38 +125,25 @@ program synth_runner, eclass
 	
 	di as result "Estimating the treatment effects"
 	local num_tr_units : list sizeof tr_units
-	mat `tr_pre_rmspes' = J(`num_tr_units',1,.)
-	mat `tr_post_rmspes' = J(`num_tr_units',1,.)
-	mat `tr_val_rmspes' = J(`num_tr_units',1,.)
-	forval g=1/`num_tr_units'{
-		local tr_unit = `trs'[`g',1]
-		local tper    = `trs'[`g',2]
-		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
-			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
-		preserve
-		qui drop if `ever_treated' & `pvar'!=`tr_unit'
-		cap synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
-			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends'
-		if _rc{
-			di as err "Error estimating treatment effect for unit `tr_unit'"
-			error _rc
-		}
-		mat `tr_pre_rmspes'[`g',1] = e(pre_rmspe)
-		mat `tr_post_rmspes'[`g',1] = e(post_rmspe)
-		if `num_tr_units'>5  _print_dots `g' `num_tr_units'
-		if `training_propr'>0{
-			calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
-				local(val_rmspe)
-			mat `tr_val_rmspes'[`g',1] = `val_rmspe'
-		}
-		add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
-			tper(`tper') unit(`tr_unit') depvar(`depvar') pre_rmspe(`=`tr_pre_rmspes'[`g',1]') ///
-			post_rmspe(`=`tr_post_rmspes'[`g',1]')
-		restore
-	}
+	tempfile maindata maindata2
+	qui save "`maindata'"
+	drop _all
+	qui svmat `trs', names(col)
+	gen long n = _n
+	if ("`parallel'"!="" & `num_tr_units'>1) local do_par "parallel, outputopts(agg_file) programs(`drop_units_prog' `pred_prog') `deterministicoutput':"
+	`do_par' _sr_do_work_tr `depvar' `cov_predictors', data("`maindata'") ///
+		pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
+		`trends' training_propr(`training_propr') agg_file(`agg_file') pred_prog(`pred_prog') ///
+		drop_units_prog(`drop_units_prog') `options'
+	sort n
+	mkmat pre_rmspes, matrix(`tr_pre_rmspes')
+	mkmat post_rmspes, matrix(`tr_post_rmspes')
+	if `training_propr'>0 mkmat val_rmspes, matrix(`tr_val_rmspes')
+	qui use "`maindata'", clear
+	
 	cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') min_lead(`min_lead') ///
 		out_effect_full(`out_ef') max_lead(`max_lead') depvar(`depvar') `trends' tper_var(`tper_var')
-	if "`keep'"!="" qui copy `agg_file' `keep', `replace'
+	if "`keep'"!="" qui copy "`agg_file'" "`keep'", `replace'
 	load_dta_to_mata, dta(`out_e') mata_var(tr_effects)
 	mata: tr_effect_avg = mean(tr_effects)
 	mata: st_matrix("`estimates'", tr_effect_avg)
@@ -158,7 +155,7 @@ program synth_runner, eclass
 	mata: tr_post_rmspes_t_avg = mean(tr_post_rmspes :/ tr_pre_rmspes)
 	
 	
-	di "Estimating the possible placebo effects"
+	di "Estimating the possible placebo effects (one set for each of the `num_tpers' treatment periods)"
 	local do_units : list units - tr_units
 	local num_do_units : list sizeof do_units
 	mata: do_effects_p = J(`num_tr_units',1,NULL)
@@ -170,55 +167,43 @@ program synth_runner, eclass
 	
 	preserve
 	qui drop if `ever_treated'
+	qui save "`maindata2'", replace
 	local do_aggs_i 1
 	*Be smart about not redoing matches at the same time.
-	local rep 1
-	local num_reps = `num_tpers'*`num_do_units'
 	scalar `n_pl' = 1
 	forval i=1/`num_tpers'{
 		local tper = `uniq_trs'[`i',1]
 		local times =`uniq_trs'[`i',2]
 
-		gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
+		_sr_gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
 			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
-		
-		mat `do_pre_rmspes' = J(`num_do_units',1,.)
-		mat `do_post_rmspes' = J(`num_do_units',1,.)
-		mat `do_val_rmspes' = J(`num_do_units',1,.)
+		if "`pred_prog'"!=""{
+			`pred_prog' `tper'
+			local add_predictors `"`r(predictors)'"'
+		}
+			
+		//pass in the unit ids to estimate
+		qui use "`maindata2'", clear
+		qui by `pvar': keep if _n==1
+		keep `pvar'
+		gen long n = _n
 		
 		cap erase `agg_file'
-		local j = 0
-		foreach unit of local do_units{
-			cap synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
-				trunit(`unit') trperiod(`tper') keep(`ind_file') replace `trends'
-			if _rc==1 error 1
-			if _rc==0 {
-				_print_dots `rep++' `num_reps'
-				local ++j
-				local pre_rmspe = e(pre_rmspe)
-				mat `do_pre_rmspes'[`j',1] = e(pre_rmspe)
-				mat `do_post_rmspes'[`j',1] = e(post_rmspe)
-				if `training_propr'>0{
-					calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
-						local(val_rmspe)
-					mat `do_val_rmspes'[`j',1] = `val_rmspe'
-				}
-				add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
-					tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`pre_rmspe') ///
-					post_rmspe(`=`do_post_rmspes'[`j',1]')
-			}
-			else {
-				_print_dots `rep++' `num_reps' x
-				mat `failed_opt_targets' = nullmat(`failed_opt_targets') \ (`tper', `unit') 
-			}
-		}
-		if `j'!=`num_do_units'{ //there was an error, so matrix not full
-			mat `do_pre_rmspes'  = `do_pre_rmspes'[1..`j',1]
-			mat `do_post_rmspes' = `do_post_rmspes'[1..`j',1]
-			mat `do_val_rmspes'  = `do_val_rmspes'[1..`j',1]
-			local failed_o = 1
-		}
+		tempfile fail_file_do_round
+		if ("`parallel'"!="") local do_par "parallel, outputopts(agg_file fail_file) programs(`drop_units_prog') `deterministicoutput':"
+		`do_par' _sr_do_work_do `depvar' `cov_predictors' `add_predictors', data("`maindata2'") ///
+			pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') outcome_pred(`outcome_pred') ///
+			ntraining(`ntraining') nvalidation(`nvalidation') tper(`tper') `trends' ///
+			training_propr(`training_propr') `options' agg_file("`agg_file'") fail_file("`fail_file_do_round'") ///
+			drop_units_prog(`drop_units_prog') `deterministicoutput'
+		qui append_to, appendage(`fail_file_do_round') body(`fail_file')
+		sort n
+		if _N!=`num_do_units' local failed_o = 1
+		mkmat pre_rmspes, matrix(`do_pre_rmspes')
+		mkmat post_rmspes, matrix(`do_post_rmspes')
+		if `training_propr'>0 mkmat val_rmspes, matrix(`do_val_rmspes')
 		
+		qui use "`maindata2'", clear
 		cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') depvar(`depvar') ///
 			tper_var(`tper_var') `trends' max_lead(`max_lead')
 		load_dta_to_mata, dta(`out_e') mata_var(do_effect_base`i')
@@ -251,15 +236,12 @@ program synth_runner, eclass
 			local ++do_aggs_i
 		}
 	}
-	if "`keep'"!=""{
-		qui use `keep', clear
-		qui append using `agg_file'
-		qui save `keep', replace
-	}
+	cap load_dta_to_matrix, dta("`fail_file'") matrix(`failed_opt_targets')
+	if "`keep'"!="" qui append_to, appendage(`agg_file') body(`keep')
 	restore
 	
 	local num_steps = cond(`training_propr'>0,6,5)
-	local default_max_n_pl 1000000 //1000000
+	local default_max_n_pl 1000000
 	if "`n_pl_avgs'"==""{
 		if `default_max_n_pl'<`n_pl'{
 			scalar `n_pl_used' = `default_max_n_pl'
@@ -332,13 +314,14 @@ program synth_runner, eclass
 	}
 	
 	*Post output
-	di _n "Post-treatment results: Effects, p-values, p-values (psuedo t-stats)"
+	di _n "Post-treatment results: Effects, p-values, standardized p-values"
 	mat `disp_mat' = (`estimates'', `pvals'[2,1...]',`pvals_t'[2,1...]')
 	mat colnames `disp_mat' = estimates pvals pvals_std
 	mat rownames `disp_mat' = `leadlist'
 	matlist `disp_mat'
 	*Effects
 	ereturn post `estimates'
+	ereturn local cmd="synth_runner"
 	*Could return avg_post_rmspe, avg_post_rmspe_t, estimates_t but these aren't very interpretable
 	matrix rownames `out_ef' = `llist'
 	ereturn matrix treat_control = `out_ef'
@@ -380,11 +363,23 @@ end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.2.0 "
+	di as result "version" as text " 1.3.0 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.2.0"
+	return local version = "1.3.0"
+end
+
+//allows body or appendage to be null (so that looping and adding is easy)
+//makes files even if inputs are 0-observation files
+program append_to
+	syntax, appendage(string) body(string)
+	preserve
+	
+	drop _all
+	cap use "`body'"
+	cap append using `"`appendage'"'
+	save "`body'", replace emptyok
 end
 
 program cleanup_mata
@@ -425,28 +420,13 @@ end
 
 
 
-program gen_time_locals
-	syntax , tper(int) prop(real) depvar(string) tvar_vals(numlist) outcome_pred_loc(string) ntraining_loc(string) ///
-		nvalidation_loc(string)
-	get_returns tvar=r(timevar) : tsset, noquery
-	local tper_ind : list posof "`tper'" in tvar_vals
-	local num_pre_per = `tper_ind'-1
 
-	if `prop'==0 exit
-	local ntraining = `num_pre_per'
-	local nvalidation= 0
-	if(`prop'<1){
-		_assert `num_pre_per'>=2, msg("If training_propr<1 then need at least 2 periods pre-treatment for every treated unit")
-		local ntraining = clip(1,int(`prop'*`num_pre_per'),`num_pre_per'-1)
-		local nvalidation = `num_pre_per'-`ntraining'
-	}
-	forval i=1/`ntraining'{
-		local period : word `i' of `tvar_vals'
-		local olist = "`olist' `depvar'(`period')"
-	}
-	c_local `outcome_pred_loc' = "`olist'"
-	c_local `ntraining_loc' = `ntraining'
-	c_local `nvalidation_loc' = `nvalidation'
+program load_dta_to_matrix
+	syntax, dta(string) matrix(string)
+	
+	preserve
+	qui use `dta', clear
+	mkmat *, matrix(`matrix')
 end
 
 *Simple program to load a numeric dta into a mata variable
@@ -463,7 +443,7 @@ end
 program cleanup_and_convert_to_diffs
 	syntax, dta(string) out_effect(string) depvar(string) tper_var(string) max_lead(int) ///
 		[out_effect_full(string) trends min_lead(int -1) pre_rmspe_max(numlist max=1 >0)] 
-	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
+	_sr_get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
 	preserve
 	
 	keep `depvar' `pvar' `tvar'
@@ -515,123 +495,6 @@ program cleanup_and_convert_to_diffs
 	qui save `out_effect', replace
 end
 
-*Compiles up the keep() files from synth
-program add_keepfile_to_agg
-	syntax , keep(string) aggfile(string) depvar(string) tper_var(string) tper(int) ///
-		unit(int) pre_rmspe(real) post_rmspe(real)
-	get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
-	preserve
-	
-	qui use `keep', clear
-	drop _Co_Number _W_Weight
-	qui drop if mi(_time) //other stuff in the file that might make it longer
-	rename _time `tvar'
-	rename _Y_treated* `depvar'*
-	rename _Y_synthetic* `depvar'*_synth
-	drop `depvar' //they have it wherever we merge into
-	
-	//note the "event" details
-	gen long `pvar' = `unit'
-	gen long `tper_var'=`tper'
-	gen pre_rmspe = `pre_rmspe'
-	gen post_rmspe = `post_rmspe'
-
-	cap append using `aggfile'
-	qui save `aggfile', replace
-end
-
-
-
-* will store into locals the return values from command (some commands should 1-liners!)
-program get_returns
-	gettoken my_opts 0: 0, parse(":")
-	gettoken colon their_cmd: 0, parse(":")
-	
-	`their_cmd'
-	foreach my_opt of local my_opts{
-		if regexm("`my_opt'","(.+)=(.+\(.+\))"){
-			c_local `=regexs(1)' = "``=regexs(2)''"
-		}
-	}
-end
-
-program _print_dots
-	version 12
-	args curr end char
-	
-	if `c(noisily)'==0 exit 0 //only have one timer going at at time.
-	
-	if "`char'"=="" local char "."
-	
-	local timernum 13
-	if "$PRINTDOTS_WIDTH"=="" local width 50
-	else local width = clip(${PRINTDOTS_WIDTH},1,50)
-	
-	*See if passed in both
-	if "`end'"==""{
-		local end `curr'
-		if "$PRINTDOTS_CURR"=="" global PRINTDOTS_CURR 0
-		global PRINTDOTS_CURR = $PRINTDOTS_CURR+1
-		local curr $PRINTDOTS_CURR
-	}
-	
-	if `curr'==1 {
-		timer off `timernum'
-		timer clear `timernum'
-		timer on `timernum'
-
-		if `end'<`width'{
-			di "|" _column(`end') "|" _continue
-		}
-		else{
-			local full_header "----+--- 1 ---+--- 2 ---+--- 3 ---+--- 4 ---+--- 5"
-			local header = substr("`full_header'",1,`width')
-			di "`header'" _continue
-		}
-		di " Total: `end'"
-		di "`char'" _continue
-		exit 0
-	}
-	
-	if (mod(`curr', `width')==0 | `curr'==`end'){
-		timer off `timernum'
-		qui timer list  `timernum'
-		local used `r(t`timernum')'
-		_format_time `= round(`used')', local(used_toprint)
-		if `end'>`curr'{
-			timer on `timernum'
-			local remaining = `used'*(`end'/`curr'-1)
-			_format_time `= round(`remaining')', local(remaining_toprint)
-			display "`char' `used_toprint' elapsed. `remaining_toprint' remaining"
-		}
-		else{
-			di "| `used_toprint' elapsed. "
-		}
-	}
-	else{
-		di "`char'" _continue
-	}
-end
-
-program _format_time
-	syntax anything(name=time), local(string)
-	
-	local suff "s"
-	if `time'>100{
-		local time=`time'/60
-		local suff "m"
-		if `time'>100{
-			local time = `time'/60
-			local suff "h"
-			if `time'>36{
-				local time = `time'/24
-				local suff "d"
-			}
-		}
-	}
-	local str =string(`time', "%9.2f")
-	c_local `local' `str'`suff'
-end
 
 mata:
 

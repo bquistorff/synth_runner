@@ -12,9 +12,10 @@ log using "usage.log", replace
 version 12
 set scheme s2mono
 set more off
+set matsize 11000
 mata: mata set matafavor speed
 set tracedepth 2
-*set trace on
+set trace off
 
 
 * Re-doing the maing example from -synth-
@@ -31,7 +32,7 @@ local tper 1989
 *For the case of single treated unit, -synth_runner- will generate an output file that's a bit more helpful
 tempfile keepfile
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), ///
-	trunit(3) trperiod(`tper') keep(`keepfile') 
+	trunit(3) trperiod(`tper') keep(`keepfile')
 ereturn list
 di (e(pval_joint_post_std)*e(n_pl)+1)/(e(n_pl)+1) //p-value if truly random
 mat li e(treat_control)
@@ -74,17 +75,32 @@ pval_graphs , pvals_gname(cigsale2_pval) pvals_std_gname(cigsale2_pval_t)
 keep $orig_vars
 }
 
-**Now a more complicated example
+**Now a more complicated example.
+*Use a treatment indicator variable, multiple treated units, dynamic predictors, and dropping interfering units
 if 1{
-*Make a treatment indicator variable for -synth_runner- rather than listing specifically (which -synth- does)
+cap program drop _gen_predictors
+program _gen_predictors, rclass
+	args year
+	return local predictors "beer(`=`year'-4'(1)`=`year'-1') lnincome(`=`year'-4'(1)`=`year'-1')"
+end
+cap program drop _drop_units
+program _drop_units
+	args tunit
+	
+	if `tunit'==39 qui drop if inlist(state,21,38)
+	if `tunit'==3 qui drop if state==21
+end
+
 gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988) //Georgia
-synth_runner cigsale beer(1984(1)1987) lnincome(1972(1)1987) retprice age15to24, d(D) ///
-	trends training_propr(`=13/18')
+synth_runner cigsale retprice age15to24, d(D) pred_prog(_gen_predictors) ///
+	trends training_propr(`=13/18') drop_units_prog(_drop_units)
 ereturn list
 mat li e(treat_control)
 effect_graphs , multi depvar_lbl(`:variable label cigsale') effect_gname(cigsale3_effect) tc_gname(cigsale3_tc)
 pval_graphs , pvals_gname(cigsale3_pval) pvals_std_gname(cigsale3_pval_t)
+keep $orig_vars
 }
+
 
 *Save the named graphs to disk
 if 1{
@@ -97,5 +113,7 @@ foreach gname of local grphs{
 	qui graph export "`gname'.pdf", name(`gname') replace
 }
 }
+
+
 
 cap noisily log close
