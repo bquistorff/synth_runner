@@ -150,7 +150,15 @@ program synth_runner, eclass
 	drop _all
 	qui svmat `trs', names(col)
 	gen long n = _n
-	if ("`parallel'"!="" & `num_tr_units'>1) local do_par "parallel, outputopts(agg_file) programs(`drop_units_prog' `pred_prog' `xperiod_prog' `mspeperiod_prog') `deterministicoutput':"
+	
+	if ("`parallel'"!="" & `num_tr_units'>1){
+		//figure out which programs need to passed to parallel
+		foreach v in drop_units_prog pred_prog xperiod_prog mspeperiod_prog{
+			cap findfile ``v''.ado
+			if (_rc) local tr_programs_copy `tr_programs_copy' ``v''
+		}
+		local do_par "parallel, outputopts(agg_file) programs(`tr_programs_copy') `deterministicoutput':"
+	}
 	`do_par' _sr_do_work_tr `depvar' `cov_predictors', data("`maindata'") pvar(`pvar') ///
 		tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
 		`trends' training_propr(`training_propr') agg_file(`agg_file') pred_prog(`pred_prog') ///
@@ -194,6 +202,11 @@ program synth_runner, eclass
 	local do_aggs_i 1
 	*Be smart about not redoing matches at the same time.
 	scalar `n_pl' = 1
+	if ("`parallel'"!=""){
+		cap findfile `drop_units_prog'.ado
+		if (_rc) local do_programs_copy `do_programs_copy' `drop_units_prog'
+		local do_par "parallel, outputopts(agg_file fail_file) programs(`do_programs_copy') `deterministicoutput':"
+	}
 	forval i=1/`num_tpers'{
 		local tper = `uniq_trs'[`i',1]
 		local times =`uniq_trs'[`i',2]
@@ -219,7 +232,6 @@ program synth_runner, eclass
 		
 		cap erase "`agg_file'"
 		tempfile fail_file_do_round
-		if ("`parallel'"!="") local do_par "parallel, outputopts(agg_file fail_file) programs(`drop_units_prog') `deterministicoutput':"
 		`do_par' _sr_do_work_do `depvar' `cov_predictors' `add_predictors', data("`maindata_no_tr'") ///
 			pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') outcome_pred(`outcome_pred') ///
 			ntraining(`ntraining') nvalidation(`nvalidation') tper(`tper') `trends' ///
