@@ -649,10 +649,10 @@ if "`keep'" != "" {
 qui keep _Co_Number _W_Weight _Y_treated _Y_synthetic _time
 qui drop if _Co_Number ==. & _Y_treated==.
  if "`replace'" != "" {
-  qui save `keep' , `replace'
+  qui save "`keep'", `replace'
  }
   else {
-  qui save `keep'
+  qui save "`keep'"
  }
 }
 

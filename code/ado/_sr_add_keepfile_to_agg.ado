@@ -5,7 +5,7 @@ program _sr_add_keepfile_to_agg
 	_sr_get_returns pvar=r(panelvar) tvar=r(timevar) : tsset, noquery
 	preserve
 	
-	qui use `keep', clear
+	qui use "`keep'", clear
 	drop _Co_Number _W_Weight
 	qui drop if mi(_time) //other stuff in the file that might make it longer
 	rename _time `tvar'
@@ -19,6 +19,6 @@ program _sr_add_keepfile_to_agg
 	gen pre_rmspe = `pre_rmspe'
 	gen post_rmspe = `post_rmspe'
 
-	cap append using `aggfile'
-	qui save `aggfile', replace
+	cap append using "`aggfile'"
+	qui save "`aggfile'", replace
 end

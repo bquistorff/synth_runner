@@ -32,7 +32,7 @@ program synth_wrapper, eclass
 		qui replace `depvar' = (`depvar'/`v2')
 	}
 	
-	synth `anything', keep(`keep') trperiod(`trperiod') trunit(`trunit') `options'
+	synth `anything', keep("`keep'") trperiod(`trperiod') trunit(`trunit') `options'
 	
 	//Catch an uncaught optimization error.
 	//If a predictor has no variation among candidate donor set at some point there is an optimization failure
@@ -62,7 +62,7 @@ program synth_wrapper, eclass
 	
 	*should've kept track of the types for id & period
 	if "`keep'"!=""{
-		use `keep', clear
+		use "`keep'", clear
 		if "`trends'"!=""{
 			rename (_Y_treated _Y_synthetic) (_Y_treated_scaled _Y_synthetic_scaled)
 			gen _Y_treated = _Y_treated_scaled*`scale'
@@ -71,7 +71,7 @@ program synth_wrapper, eclass
 		}
 		label variable _Y_treated "`depvar_lbl'"
 		qui compress
-		qui save `keep', replace
+		qui save "`keep'", replace
 	}
 end
 

@@ -2742,7 +2742,7 @@ Post-treatment results: Effects, p-values, p-values (psuedo t-stats)
 \begin_layout Plain Layout
 
 .
- merge 1:1 state year using `keepfile', nogenerate
+ merge 1:1 state year using "`keepfile'", nogenerate
 \end_layout
 
 \begin_layout Plain Layout
@@ -3427,7 +3427,7 @@ status open
 \begin_layout Plain Layout
 
 .
- merge 1:1 state year using `keepfile2', nogenerate
+ merge 1:1 state year using "`keepfile2'", nogenerate
 \end_layout
 
 \begin_layout Plain Layout

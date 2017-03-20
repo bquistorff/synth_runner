@@ -217,7 +217,7 @@ program synth_runner, eclass
 		//pass in the unit ids to estimate
 		qui use "`no_tr_pids'", clear
 		
-		cap erase `agg_file'
+		cap erase "`agg_file'"
 		tempfile fail_file_do_round
 		if ("`parallel'"!="") local do_par "parallel, outputopts(agg_file fail_file) programs(`drop_units_prog') `deterministicoutput':"
 		`do_par' _sr_do_work_do `depvar' `cov_predictors' `add_predictors', data("`maindata_no_tr'") ///
@@ -454,7 +454,7 @@ program load_dta_to_matrix
 	syntax, dta(string) matrix(string)
 	
 	preserve
-	qui use `dta', clear
+	qui use "`dta'", clear
 	mkmat *, matrix(`matrix')
 end
 
@@ -463,7 +463,7 @@ program load_dta_to_mata
 	syntax, dta(string) mata_var(string)
 	
 	preserve
-	qui use `dta', clear
+	qui use "`dta'", clear
 	mata: `mata_var'=st_data(.,.)
 end
 
@@ -476,11 +476,11 @@ program cleanup_and_convert_to_diffs
 	preserve
 	
 	keep `depvar' `pvar' `tvar'
-	qui merge 1:1 `pvar' `tvar' using `dta', keep(match using) nogenerate
+	qui merge 1:1 `pvar' `tvar' using "`dta'", keep(match using) nogenerate
 	
 	//generate leads. CGNP13 define lead1 as contemporaneous (rather than lead0)
 	//gen long lead = `tvar'-`tper_var'+1 //if time periods are only one apart
-	qui by `pvar': gen n_of_trperiod = _n if `tvar'==`tper_var'
+	qui bys `pvar': gen n_of_trperiod = _n if `tvar'==`tper_var' //in v12 leaving merge it's not sorted
 	qui by `pvar': egen n_of_trperiod_all = max(n_of_trperiod)
 	by `pvar': gen lead = _n - n_of_trperiod_all +1
 	drop n_of_trperiod n_of_trperiod_all
@@ -492,7 +492,7 @@ program cleanup_and_convert_to_diffs
 	
 	if "`out_effect_full'"!=""{
 		tempfile int
-		qui save `int'
+		qui save "`int'"
 		if "`trends'"!=""{
 			qui replace `depvar'       = `depvar'_scaled
 			qui replace `depvar'_synth = `depvar'_scaled_synth
@@ -501,12 +501,12 @@ program cleanup_and_convert_to_diffs
 		collapse (mean) `depvar' `depvar'_synth, by(lead)
 		sort lead
 		mkmat `depvar' `depvar'_synth, matrix(`out_effect_full')
-		qui use `int', clear
+		qui use "`int'", clear
 	}
 	
 	drop `depvar' `tper_var' `depvar'*_synth //will have already, redundant, redundant
 	qui compress
-	qui save `dta', replace
+	qui save "`dta'", replace
 	
 	if "`trends'"!=""{ //now the main effect is the scaled one
 		drop effect
@@ -521,7 +521,7 @@ program cleanup_and_convert_to_diffs
 	global ReS_jv2
 	drop `pvar' //for now don't need
 	qui compress
-	qui save `out_effect', replace
+	qui save "`out_effect'", replace
 end
 
 

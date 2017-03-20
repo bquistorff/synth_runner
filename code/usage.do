@@ -36,7 +36,7 @@ synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 
 ereturn list
 di (e(pval_joint_post_std)*e(n_pl)+1)/(e(n_pl)+1) //p-value if truly random
 mat li e(treat_control)
-merge 1:1 state year using `keepfile', nogenerate
+merge 1:1 state year using "`keepfile'", nogenerate
 gen cigsale_synth = cigsale-effect
 
 
@@ -62,7 +62,7 @@ ereturn list
 di "Proportion of control units that have a higher RMSPE than the treated unit in the validtion period:"
 di round(`e(avg_val_rmspe_p)', 0.001)
 mat li e(treat_control)
-merge 1:1 state year using `keepfile2', nogenerate
+merge 1:1 state year using "`keepfile2'", nogenerate
 gen cigsale_scaled_synth = cigsale_scaled - effect_scaled
 gen cigsale_synth        = cigsale        - effect
 
