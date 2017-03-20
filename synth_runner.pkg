@@ -2,9 +2,9 @@ d 'synth_runner': module
 d
 d   Automation for multiple Synthetic Control estimations. 
 d
-d Version 1.3.0
+d Version 1.4.0
 d
-d Distribution-Date: 20170217
+d Distribution-Date: 20170320
 d Requires: -synth- from SSC
 d Recommends: -parallel- at least version 1.18.1 (available from GitHub)
 d

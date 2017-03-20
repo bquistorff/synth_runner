@@ -2,6 +2,14 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.4.0]
+### Added
+ - Added dynamic setting of synth's xperiod and mspeperiod option.
+
+### Changed
+ - With multiple treatment periods, restrict history the maximim common support. Added option to maintain old behavior (allowing maximal histories in estimation).
+ - Relabel the row labels the return matrix to be more intuitive (pre vs post numbers).
+
 ## [1.3.0]
 ### Added
  - Added dynamic covariates, dynamic donor pool, determinism, parallel support, and more unit tests.

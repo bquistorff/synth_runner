@@ -1,4 +1,4 @@
-*! version 1.3.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.4.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Automates the process of conducting many synthetic control estimations
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
@@ -14,6 +14,7 @@ program synth_runner, eclass
 		TREnds ///
 		training_propr(real 0) ///
 		max_lead(numlist min=1 max=1 int >=0)  ///
+		noenforce_const_pre_length ///
 		Keep(string) ///
 		REPlace ///
 		TRPeriod(numlist min=1 max=1 int) ///
@@ -23,7 +24,10 @@ program synth_runner, eclass
 		PARallel DETerministicoutput ///
 		pred_prog(string) ///
 		drop_units_prog(string) ///
-		COUnit(string) FIGure resultsperiod(string) *]
+		xperiod_prog(string) ///
+		mspeperiod_prog(string) ///
+		COUnit(string) FIGure resultsperiod(string)  ///
+		xperiod(numlist min=1 >=0 int sort) mspeperiod(numlist  min=1 >=0 int sort) *]
 		
 	gettoken depvar cov_predictors : anything
 	_sr_get_returns pvar=r(panelvar) tvar=r(timevar) bal=r(balanced): qui tsset
@@ -49,8 +53,13 @@ program synth_runner, eclass
 	_assert "`counit'"=="", msg("counit() option not allowed. Non-treated units are assumed to be controls. Remove units that are neither controls nor treatments before invoking.")
 	_assert "`figure'"=="", msg("figure option not allowed.")
 	_assert "`resultsperiod'"=="", msg("resultsperiod() option not allowed. Use max_lead() or drop selected post-periods.")
+	
 	if "`pre_limit_mult'"=="" local pre_limit_mult .
 	_assert ("`n_pl_avgs'"=="" | "`n_pl_avgs'"=="all" | real("`n_pl_avgs'")!=.), msg("-, n_pl_avgs()- must be blank, a number, or all")
+	_assert ("`xperiod'"=="" | "`xperiod_prog'"==""), msg("Can not specify both xperiod() and xperiod_prog()")
+	_assert ("`mspeperiod'"=="" | "`mspeperiod_prog'"==""), msg("Can not specify both mspeperiod() and mspeperiod_prog()")
+	if "`xperiod'"!=""    local options "xperiod(`xperiod') `options'"
+	if "`mspeperiod'"!="" local options "mspeperiod(`mspeperiod') `options'"
 	
 	//check for needed programs
 	cap synth
@@ -67,7 +76,7 @@ program synth_runner, eclass
 		tr_pre_rmspes tr_val_rmspes do_pre_rmspes do_val_rmspes p1 p2 tr_post_rmspes ///
 		do_post_rmspes pval_post_RMSPE pval_post_RMSPE_t disp_mat out_ef n_pl n_pl_used ///
 		failed_opt_targets
-	tempfile agg_file out_e fail_file
+	tempfile agg_file out_e fail_file no_tr_pids
 		
 	qui bys `pvar': egen `tper_var0' = min(`tvar') if `D'
 	qui bys `pvar': egen `tper_var' = max(`tper_var0')
@@ -82,7 +91,11 @@ program synth_runner, eclass
 	mkmat `tper_var' _freq, matrix(`uniq_trs')
 	local num_tpers = rowsof(`uniq_trs')
 	restore
-	_assert `num_tpers'==1 | "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
+	if `num_tpers'>1{
+		_assert "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
+		if "`xperiod'"!="" di "With multliple time periods you may want to use xperiod_prog() instead of xperiod()"
+		if "`mspeperiod'"!="" di "With multliple time periods you may want to use mspeperiod_prog() instead of mspeperiod()"
+	}
 	cleanup_mata , tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult') warn
 	
 	
@@ -96,7 +109,7 @@ program synth_runner, eclass
 	local max_trperiod = r(max)
 	local min_trperiod_ind : list posof "`min_trperiod'" in tvar_vals
 	local max_trperiod_ind : list posof "`max_trperiod'" in tvar_vals
-	local min_lead = 1+(1-`min_trperiod_ind') //min lead (max lag) with common support.
+	local min_lead = 1+(1-`min_trperiod_ind') //min lead (max "lag") with common support.
 	local max_lead_avail = `n_tvar_vals' - `max_trperiod_ind' + 1
 
 	if "`max_lead'"!=""{
@@ -109,14 +122,21 @@ program synth_runner, eclass
 		local max_lead =`max_lead_avail'
 	}
 	
-	forval lead=1/`max_lead'{
-		local leadlist "`leadlist' lead`lead'"
+	//Get row labels for the treatment-relevant stats
+	//the 'lead' variable is integer (including 0) and lead1=post1, so lead0=pre1, lead-1=pre2, etc.
+	//This is unintuitive, so label them as "... pre2 pre1 post1 post2 ..."
+	local max_post = `max_lead'
+	forval post=1/`max_post'{
+		local postlist "`postlist' post`post'"
 	}
-	forval lead=`min_lead'/-1{
-		local lag = -1*`lead'
-		local laglist "`laglist' lag`lag'"
+	local max_pre_const = -1*`min_lead' + 1
+	forval pre=`max_pre_const'(-1)1{
+		local prelist "`prelist' pre`pre'" 
 	}
-	local llist "`laglist' lead0 `leadlist'"
+	local plist "`prelist' `postlist'"
+	
+	
+	if "`enforce_const_pre_length'"=="noenforce_const_pre_length" local max_pre_opt "max_pre(`max_pre_const')"
 	
 	bys `pvar': egen byte `ever_treated'=max(`D')
 	
@@ -125,16 +145,17 @@ program synth_runner, eclass
 	
 	di as result "Estimating the treatment effects"
 	local num_tr_units : list sizeof tr_units
-	tempfile maindata maindata2
+	tempfile maindata maindata_no_tr
 	qui save "`maindata'"
 	drop _all
 	qui svmat `trs', names(col)
 	gen long n = _n
-	if ("`parallel'"!="" & `num_tr_units'>1) local do_par "parallel, outputopts(agg_file) programs(`drop_units_prog' `pred_prog') `deterministicoutput':"
-	`do_par' _sr_do_work_tr `depvar' `cov_predictors', data("`maindata'") ///
-		pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
+	if ("`parallel'"!="" & `num_tr_units'>1) local do_par "parallel, outputopts(agg_file) programs(`drop_units_prog' `pred_prog' `xperiod_prog' `mspeperiod_prog') `deterministicoutput':"
+	`do_par' _sr_do_work_tr `depvar' `cov_predictors', data("`maindata'") pvar(`pvar') ///
+		tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
 		`trends' training_propr(`training_propr') agg_file(`agg_file') pred_prog(`pred_prog') ///
-		drop_units_prog(`drop_units_prog') `options'
+		drop_units_prog(`drop_units_prog') `max_pre_opt' xperiod_prog(`xperiod_prog') ///
+		mspeperiod_prog(`mspeperiod_prog') `options'
 	sort n
 	mkmat pre_rmspes, matrix(`tr_pre_rmspes')
 	mkmat post_rmspes, matrix(`tr_post_rmspes')
@@ -158,16 +179,18 @@ program synth_runner, eclass
 	di "Estimating the possible placebo effects (one set for each of the `num_tpers' treatment periods)"
 	local do_units : list units - tr_units
 	local num_do_units : list sizeof do_units
-	mata: do_effects_p = J(`num_tr_units',1,NULL)
-	mata: do_t_effects_p = J(`num_tr_units',1,NULL)
-	mata: do_pre_rmspes_p  = J(`num_tr_units',1,NULL)
-	mata: do_post_rmspes_p  = J(`num_tr_units',1,NULL)
-	mata: do_post_rmspes_t_p  = J(`num_tr_units',1,NULL)
-	mata: do_val_rmspes_p  = J(`num_tr_units',1,NULL)
+	foreach mat_v in do_effects_p do_t_effects_p do_pre_rmspes_p do_post_rmspes_p do_post_rmspes_t_p do_val_rmspes_p{
+		mata: `mat_v' = J(`num_tr_units',1,NULL)
+	}
 	
 	preserve
 	qui drop if `ever_treated'
-	qui save "`maindata2'", replace
+	qui save "`maindata_no_tr'", replace
+	qui by `pvar': keep if _n==1
+	keep `pvar'
+	gen long n = _n
+	qui save "`no_tr_pids'"
+	
 	local do_aggs_i 1
 	*Be smart about not redoing matches at the same time.
 	scalar `n_pl' = 1
@@ -176,26 +199,32 @@ program synth_runner, eclass
 		local times =`uniq_trs'[`i',2]
 
 		_sr_gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
-			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
+			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation) `max_pre_opt' tvar(`tvar')
+		macro drop _add_predictors _xperiod_opt _mspeperiod_opt
 		if "`pred_prog'"!=""{
 			`pred_prog' `tper'
 			local add_predictors `"`r(predictors)'"'
 		}
+		if "`xperiod_prog'"!=""{
+			`xperiod_prog' `tper'
+			local xperiod_opt `"xperiod(`r(xperiod)')"'
+		}
+		if "`mspeperiod_prog'"!=""{
+			`mspeperiod_prog' `tper'
+			local mspeperiod_opt `"mspeperiod(`r(mspeperiod)')"'
+		}
 			
 		//pass in the unit ids to estimate
-		qui use "`maindata2'", clear
-		qui by `pvar': keep if _n==1
-		keep `pvar'
-		gen long n = _n
+		qui use "`no_tr_pids'", clear
 		
 		cap erase `agg_file'
 		tempfile fail_file_do_round
 		if ("`parallel'"!="") local do_par "parallel, outputopts(agg_file fail_file) programs(`drop_units_prog') `deterministicoutput':"
-		`do_par' _sr_do_work_do `depvar' `cov_predictors' `add_predictors', data("`maindata2'") ///
+		`do_par' _sr_do_work_do `depvar' `cov_predictors' `add_predictors', data("`maindata_no_tr'") ///
 			pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') outcome_pred(`outcome_pred') ///
 			ntraining(`ntraining') nvalidation(`nvalidation') tper(`tper') `trends' ///
 			training_propr(`training_propr') `options' agg_file("`agg_file'") fail_file("`fail_file_do_round'") ///
-			drop_units_prog(`drop_units_prog') `deterministicoutput'
+			drop_units_prog(`drop_units_prog') `xperiod_opt' `mspeperiod_opt' `max_pre_opt'
 		qui append_to, appendage(`fail_file_do_round') body(`fail_file')
 		sort n
 		if _N!=`num_do_units' local failed_o = 1
@@ -203,7 +232,7 @@ program synth_runner, eclass
 		mkmat post_rmspes, matrix(`do_post_rmspes')
 		if `training_propr'>0 mkmat val_rmspes, matrix(`do_val_rmspes')
 		
-		qui use "`maindata2'", clear
+		qui use "`maindata_no_tr'", clear //for cleanup_and_convert_to_diffs
 		cleanup_and_convert_to_diffs, dta(`agg_file') out_effect(`out_e') depvar(`depvar') ///
 			tper_var(`tper_var') `trends' max_lead(`max_lead')
 		load_dta_to_mata, dta(`out_e') mata_var(do_effect_base`i')
@@ -323,7 +352,7 @@ program synth_runner, eclass
 	ereturn post `estimates'
 	ereturn local cmd="synth_runner"
 	*Could return avg_post_rmspe, avg_post_rmspe_t, estimates_t but these aren't very interpretable
-	matrix rownames `out_ef' = `llist'
+	matrix rownames `out_ef' = `plist'
 	ereturn matrix treat_control = `out_ef'
 	
 	*Inference stats
@@ -363,11 +392,11 @@ end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.3.0 "
+	di as result "version" as text " 1.4.0 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.3.0"
+	return local version = "1.4.0"
 end
 
 //allows body or appendage to be null (so that looping and adding is easy)

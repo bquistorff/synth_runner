@@ -1,7 +1,7 @@
 program _sr_do_work_do
 	syntax anything, data(string) pvar(string) tper_var(string) tvar_vals(string) ///
 		tper(string) agg_file(string) fail_file(string) [outcome_pred(string) ntraining(string) ///
-		nvalidation(string) TREnds training_propr(real 0) drop_units_prog(string) *]
+		nvalidation(string) TREnds training_propr(real 0) drop_units_prog(string) max_pre(int -1) *]
 	gettoken depvar cov_predictors : anything
 	
 	local num_reps = _N
@@ -13,14 +13,25 @@ program _sr_do_work_do
 	if `training_propr'>0 local pfile_open_var "val_rmspes"
 	postfile `phandle' long(n) float(pre_rmspes post_rmspes `pfile_open_var') using "`rmspes_f'"
 	postfile `phandle_fail' tper unit using "`fail_file'"
+	
 	qui use "`data'", clear
+	
+	//could have done this in the loop body in synth_runner, but I never load-up the data in there
+	//prior to this so might be faster to have this here.
+	if `max_pre'!=-1{
+		_sr_get_returns tvar=r(timevar) : tsset, noquery
+		local tper_ind : list posof "`tper'" in tvar_vals
+		local earliest_good_ind = `tper_ind'-`max_pre'
+		local earliest_good_val : word `earliest_good_ind' of `tvar_vals'
+		qui drop if `tvar'<`earliest_good_val'
+	}
 	
 	forval g=1/`num_reps'{
 		local unit = `dos'[`g',1]
 		local n    = `dos'[`g',2]
 		
 		preserve
-		if "`drop_units_prog'"!="" `drop_units_prog' `unit'
+		if "`drop_units_prog'"!="" qui `drop_units_prog' `unit'
 		
 		cap synth_wrapper `depvar' `outcome_pred' `cov_predictors', `options' ///
 			trunit(`unit') trperiod(`tper') keep(`ind_file') replace `trends'

@@ -1,34 +1,53 @@
 program _sr_do_work_tr
 	syntax anything, data(string) pvar(string) tper_var(string) tvar_vals(string) ///
 		agg_file(string) ever_treated(string) [TREnds training_propr(real 0) pred_prog(string) ///
-		drop_units_prog(string) *]
+		drop_units_prog(string) max_pre(int -1) xperiod_prog(string) mspeperiod_prog(string) *]
 	gettoken depvar cov_predictors : anything
 
 	local num_rep = _N
 	tempname trs phandle
-	mkmat `pvar' `tper_var' n, matrix(`trs')
+	mkmat `pvar' `tper_var' n, matrix(`trs') //
 	
 	tempfile rmspes_f ind_file
 	if `training_propr'>0 local pfile_open_var "val_rmspes"
 	postfile `phandle' long(n) float(pre_rmspes post_rmspes `pfile_open_var') using "`rmspes_f'"
 	qui use "`data'", clear
+	_sr_get_returns tvar=r(timevar) pvar=r(panelvar) : tsset, noquery
 	forval g=1/`num_rep'{
 		local tr_unit = `trs'[`g',1]
 		local tper    = `trs'[`g',2]
 		local n       = `trs'[`g',3]
 		
+		preserve
+		
+		if `max_pre'!=-1{
+			local tper_ind : list posof "`tper'" in tvar_vals
+			local earliest_good_ind = `tper_ind'-`max_pre'
+			local earliest_good_val : word `earliest_good_ind' of `tvar_vals'
+			qui drop if `tvar'<`earliest_good_val'
+		}
+		
 		_sr_gen_time_locals , tper(`tper') prop(`training_propr') depvar(`depvar') tvar_vals(`tvar_vals') ///
-			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation)
+			outcome_pred_loc(outcome_pred) ntraining_loc(ntraining) nvalidation_loc(nvalidation) max_pre(`max_pre')
+		macro drop _add_predictors _xperiod_opt _mspeperiod_opt
 		if "`pred_prog'"!=""{
 			`pred_prog' `tper'
 			local add_predictors `"`r(predictors)'"'
 		}
-		preserve
+		if "`xperiod_prog'"!=""{
+			`xperiod_prog' `tper'
+			local xperiod_opt `"xperiod(`r(xperiod)')"'
+		}
+		if "`mspeperiod_prog'"!=""{
+			`mspeperiod_prog' `tper'
+			local mspeperiod_opt `"mspeperiod(`r(mspeperiod)')"'
+		}
+		
 		qui drop if `ever_treated' & `pvar'!=`tr_unit'
-		if "`drop_units_prog'"!="" `drop_units_prog' `tr_unit'
+		if "`drop_units_prog'"!="" qui `drop_units_prog' `tr_unit'
 		
 		cap synth_wrapper `depvar' `outcome_pred' `cov_predictors' `add_predictors', `options' ///
-			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends'
+			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends' `xperiod_opt' `mspeperiod_opt'
 		if _rc==1 error 1
 		if _rc{
 			di as err "Error estimating treatment effect for unit `tr_unit'"

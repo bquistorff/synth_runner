@@ -5,11 +5,10 @@
 ##Work-flow
 ## Open Stata 12, navigate to the folder, and do:
 ##  do code/test.do
+##  do code/usage.do
 ## Then, if no errors:
-##  make usage-cleanup
-## If making module, next:
+##  make usage-cleanup OR make usage-delete
 ##  make check
-##  make github-deliverable
 
 .PHONY: list help
 help : 
@@ -48,12 +47,12 @@ usage-delete:
 	-rm *.pdf
 	
 clean:
-	-rm -f temp/* temp/lastrun/*
+	-rm -f temp/*
 
 check : check_smcl check_version inc_dist_date
 	
 inc_dist_date:
-	sed -i "s/\(d Distribution-Date: \).\+/\1$$(date +%Y%m%d)/g" code/ado/synth_runner.pkg
+	sed -i "s/\(d Distribution-Date: \).\+/\1$$(date +%Y%m%d)/g" synth_runner.pkg
 
 #Smcl has problems displaying lines over 244 characters
 check_smcl:
@@ -65,7 +64,7 @@ check_version:
 	@echo "Visually ensure numbers are the same:"
 	grep Version code/ado/synth_runner.sthlp
 	@echo
-	grep Version code/ado/synth_runner.pkg
+	grep Version synth_runner.pkg
 	@echo
 	@echo code/ado/synth_runner.ado
 	@grep "! version" code/ado/synth_runner.ado

@@ -14,7 +14,8 @@
 
 {p 6 8 2}
 {opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt k:eep(file)} {opt rep:lace} {opt ci} {opt pvals1s}
- {opt max_lead(int)} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} {it:synthsettings} ]
+ {opt max_lead(int)} {opt noenforce_const_pre_length} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} 
+ {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {it:synthsettings} ]
 
 {p 4 4 2}
 Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
@@ -48,7 +49,8 @@ See {help synth:{it:synth}} and Abadie and Gardeazabal (2003) and Abadie, Diamon
 For specifying the unit and time-period of treatment, there are two methods. Exactly one of these is required.
 
 {p 4 8 2}
-{cmd:trunit(}{it:#}{cmd:)} and {cmd:trperiod(}{it:#}{cmd:)}. This syntax (used by {cmd:synth}) can be used when there is a single unit entering treatment.
+{cmd:trunit(}{it:#}{cmd:)} and {cmd:trperiod(}{it:#}{cmd:)}. This syntax (used by {cmd:synth}) can be used when there is a single unit entering treatment. 
+Since synthetic control methods split time into pre-treatment and treated periods, trperiod is the first of the treated periods and, slightly confusingly, also called post-treatment.
 
 {p 4 8 2}
 {cmd:d(}varname{cmd:)}. The {cmd:d} variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else. 
@@ -93,7 +95,7 @@ A variable that contains the respective time period (from the {cmd: tsset} panel
 {p 8 17 15}
 {cmd:lead:}{p_end}
 {p 12 12 15}
-A variable that contains the respective time period relative to the treatment period. Lead=1 specifies the first period of treatment.{p_end}
+A variable that contains the respective time period relative to treatment. {it:Lead=1} specifies the first period of treatment. This is to match Cavallo et al. (2013) and in effect is the offset from the last non-treatment period.{p_end}
 
 {p 8 17 15}
 {cmd:effect:}{p_end}
@@ -131,13 +133,37 @@ The option {cmd: n_pl_avgs(}{it:all}{cmd:)} can be used to override this behavio
 The option {cmd: n_pl_avgs(}{it:#}{cmd:)} can be used to specify a specific number less than the total number of averages possible.
 
 {p 4 8 2}
-{cmd: max_lead(}{it:int}{cmd:)} will limit the number of post-treatment periods analyzed.
+{cmd: max_lead(}{it:int}{cmd:)} will limit the number of post-treatment periods analyzed. The default is the maximum number of leads that is available for all treatment periods.
 
 {p 4 8 2}
-{cmd: parallel} will enable parallel processing if the {cmd:parallel} command (at least version 1.17) is installed and configured.
+{cmd: noenforce_const_pre_length} - When there are multiple periods, estimations at later treatment dates will have more pre-treatment history available. 
+By default, these histories are trimmed on the early side so that all estimations have the same amount of history. 
+If instead, maximal histories are desired at each estimation stage, use {cmd:noenforce_const_pre_length}.
+
+{p 4 8 2}
+{cmd: parallel} will enable parallel processing if the {cmd:parallel} command is installed and configured. Version 1.18.1 is needed at a minimum (available via {browse "https://github.com/gvegayon/parallel/"}).
 
 {p 4 8 2}
 {cmd: deterministicoutput} eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so that log files can be easily compared across runs.
+
+{p 4 8 2}
+{cmd: pred_prog(}{it:string}{cmd:)} is a method to allow-time contingent predictor sets. 
+The user writes a program that takes as input a time period and outputs via r(predictors) a synth-style predictor string. 
+If one is not using training_propr then pred_program could be used to dynamically include outcome predictors. See Example 3 for usage details.
+
+{p 4 8 2}
+{cmd: drop_units_prog(}{it:string}{cmd:)} is the name of a program that, when passed the unit to be considered treated, will drop other units that should not be considered when forming the synthetic control. 
+Commonly this is because they are neighboring or interfering units. See Example 3 for usage details.
+
+{p 4 8 2}
+{cmd: xperiod_prog(}{it:string}{cmd:)} allows for setting of synth's xperiod option that varies with the treatment period. 
+The user-written program is passed the treatment period and should return, via r(xperiod), a numlist suitable for synth's xperiod (the period over which generic predictor variables are averaged). 
+See synth for more details on the xperiod option. See Example 3 for usage details.
+
+{p 4 8 2}
+{cmd: mspeperiod_prog(}{it:string}{cmd:)} allows for setting of synth's mspeperiod option that varies with the treatment period. 
+The user-written program is passed the treatment period and should return, via r(mspeperiod), a numlist suitable for synth's mspeperiod (the period over which the prediction outcome is evaluated). 
+See synth for more details on the mspeperiod option. See Example 3 for usage details.
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.
@@ -199,6 +225,12 @@ If there are failures of {cmd:synth} when estimating on the donors, {cmd:synth_r
 {p 10 10 2}
 When specifying {cmd:training_propr}, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 
+{p 8 8 2}
+{cmd: e(failed_opt_targets):}{p_end}
+{p 10 10 2}
+Errors when constructing the synthetic controls for non-treated units are handled gracefully. If any are detected they will be listed in this matrix. 
+(Errors when constructing the synthetic control for treated units will abort the method.)
+
 {title:Examples}
 
 {p 4 4 2}
@@ -218,7 +250,8 @@ Example 1 - Reconstruct the initial {cmd:synth} example plus graphs:{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
 In this example, {cmd:synth_runner} conducts all the estimations and inference. Since there was only a single treatment period we can save the output and merge it back into the dataset. Then we can create the various graphs. 
-Note the option {it:trlinediff} allows the offset of a vertical treatment line (default is -1). {p_end}
+Note the option {it:trlinediff} allows the offset of a vertical treatment line. 
+Likely options include values in the range from (first treatment period - last post-treatment period) to 0 and the default value is -1 (to match Abadie et al. 2010). {p_end}
 
 {p 4 8 2}
 Example 2 - Same treatment, but a bit more complicated setup:{p_end}
@@ -236,13 +269,34 @@ Again there is a single treatment period, so output can be saved and merged back
 
 {p 4 8 2}
 Example 3 - Multiple treatments at different time periods:{p_end}
+
+{phang}{stata cap program drop my_pred my_drop_units my_xperiod my_mspeperiod}{p_end}
+{phang}{stata program my_pred, rclass}{p_end}
+{phang2}{stata args tyear}{p_end}
+{phang2}{stata return local predictors "beer(`=`tyear'-4'(1)`=`tyear'-1') lnincome(`=`tyear'-4'(1)`=`tyear'-1')" }{p_end}
+{phang}{stata end}{p_end}
+{phang}{stata program my_drop_units}{p_end}
+{phang2}{stata args tunit}{p_end}
+{phang2}{stata if `tunit'==39 qui drop if inlist(state,21,38)}{p_end}
+{phang2}{stata if `tunit'==3 qui drop if state==21}{p_end}
+{phang}{stata end}{p_end}
+{phang}{stata program my_xperiod, rclass}{p_end}
+{phang2}{stata args tyear}{p_end}
+{phang2}{stata return local xperiod "`=`tyear'-12'(1)`=`tyear'-1'"}{p_end}
+{phang}{stata end}{p_end}
+{phang}{stata program my_mspeperiod, rclass}{p_end}
+{phang2}{stata args tyear}{p_end}
+{phang2}{stata return local mspeperiod "`=`tyear'-12'(1)`=`tyear'-1'"}{p_end}
+{phang}{stata end}{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)}{p_end}
-{phang}{stata synth_runner cigsale beer(1984(1)1987) lnincome(1972(1)1987) retprice age15to24, d(D) trends training_propr(`=13/18')}{p_end}
+{phang}{stata synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units)}) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod){p_end}
 {phang}{stata effect_graphs , multi depvar(cigsale)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
 We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. 
-Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. {p_end}
+Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. 
+We also show how predictors can be dynamically generated depending on the treatment year. 
+Finally, if some units should not be used when constructing synthetic controls, we show how those can be specified.{p_end}
 
 {title:Development}
 
@@ -260,16 +314,16 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Feb 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.3.0.
+synthetic control estimation using synth, Mar 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.4.0.
 {p_end}
 
 {p}And in bibtex format:{p_end}
 
-@Misc{QG16,
+@Misc{QG17,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = feb,
-  Note   = {Version 1.3.0},
+  Month  = mar,
+  Note   = {Version 1.4.0},
   Year   = {2017},
   Url    = {https://github.com/bquistorff/synth_runner}
 }
