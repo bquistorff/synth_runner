@@ -324,7 +324,8 @@ status open
 status open
 
 \begin_layout Plain Layout
-Check: <snippet>
+Check: <snippet>.
+ No: year
 \end_layout
 
 \end_inset
@@ -692,7 +693,8 @@ Given
 \begin_inset Formula $\mathbf{W}$
 \end_inset
 
- is picked to minimize the RMSPE of the predictor variables, 
+ is picked to minimize the root mean squared prediction error (RMSPE) of
+ the predictor variables, 
 \begin_inset Formula $\left\Vert \mathbf{X}_{1}-\mathbf{X}_{0}\mathbf{W}\right\Vert _{\mathbf{V}}$
 \end_inset
 
@@ -729,8 +731,8 @@ key "ADH10"
 \begin_inset Formula $\left\Vert \overleftarrow{\mathbf{Y}}_{1}-\overleftarrow{\mathbf{Y}}_{0}\mathbf{W}\right\Vert $
 \end_inset
 
- is then the pre-treatment root mean squared prediction error (RMSPE) with
- a given weighted average of the control units.
+ is then the pre-treatment RMSPE with a given weighted average of the control
+ units.
  Define this as 
 \begin_inset Formula $\overleftarrow{s}_{1}$
 \end_inset
@@ -1539,6 +1541,17 @@ num)
 
 \begin_layout Plain Layout
 
+    noenforce
+\backslash
+_const
+\backslash
+_pre
+\backslash
+_length
+\end_layout
+
+\begin_layout Plain Layout
+
     n
 \backslash
 _pl
@@ -1576,6 +1589,24 @@ it string})
     drop
 \backslash
 _units
+\backslash
+_prog({
+\backslash
+it string})
+\end_layout
+
+\begin_layout Plain Layout
+
+    xperiod
+\backslash
+_prog({
+\backslash
+it string})
+\end_layout
+
+\begin_layout Plain Layout
+
+    mspeperiod
 \backslash
 _prog({
 \backslash
@@ -1627,7 +1658,35 @@ pvals1s
 \family default
 , 
 \family typewriter
+max_leads
+\family default
+, 
+\family typewriter
 n_pl_avgs
+\family default
+, 
+\family typewriter
+parallel
+\family default
+, 
+\family typewriter
+deterministicout
+\family default
+, 
+\family typewriter
+pred_prog
+\family default
+, 
+\family typewriter
+drop_units_prog
+\family default
+, 
+\family typewriter
+xperiod_prog
+\family default
+, 
+\family typewriter
+mspeperiod_prog
 \family default
 .
  Options not explicitly matched will be passed to 
@@ -1702,6 +1761,13 @@ trperiod(
 synth
 \family default
 ) can be used when there is a single unit entering treatment.
+ Since synthetic control methods split time into pre-treatment and treated
+ periods, 
+\family typewriter
+trperiod
+\family default
+ is the first of the treated periods and, slightly confusingly, also called
+ post-treatment.
 \end_layout
 
 \begin_layout Itemize
@@ -1901,12 +1967,24 @@ timevar
 \family typewriter
 lead
 \family default
- contains the respective time period relative to the treatment period.
+ contains the respective time period relative to treatment.
  
 \begin_inset Formula $Lead=1$
 \end_inset
 
  specifies the first period of treatment.
+ This is to match 
+\begin_inset CommandInset citation
+LatexCommand citet
+key "CGNP13"
+
+\end_inset
+
+ and in effect is the offset from 
+\begin_inset Formula $T_{0}$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -1923,8 +2001,7 @@ effect
 \family typewriter
 pre_rmspe
 \family default
- contains the pre-treatment match quality in terms of Root Mean Squared
- Predictive Error.
+ contains the pre-treatment match quality in terms of RMSPE.
  It is constant for a unit.
 \end_layout
 
@@ -1934,7 +2011,7 @@ pre_rmspe
 post_rmspe
 \family default
  contains a measure of the post-treatment effect (jointly over all post-treatmen
-t time periods) in terms of Root Mean Squared Predictive Error.
+t time periods) in terms of RMSPE.
  It is constant for a unit.
 \end_layout
 
@@ -2031,6 +2108,25 @@ int
 )
 \family default
  will limit the number of post-treatment periods analyzed.
+ The default is the maximum number of leads that is available for all treatment
+ periods.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+noenforce_const_pre_length
+\family default
+ - When there are multiple periods, estimations at later treatment dates
+ will have more pre-treatment history available.
+ By default, these histories are trimmed on the early side so that all estimatio
+ns have the same amount of history.
+ If instead, maximal histories are desired at each estimation stage, use
+ 
+\family typewriter
+noenforce_const_pre_length
+\family default
+.
 \end_layout
 
 \begin_layout Itemize
@@ -2042,7 +2138,30 @@ parallel
 \family typewriter
 parallel
 \family default
- command (at least version 1.18.2) is installed and configured.
+ command is installed and configured.
+ Version 1.18.2 is needed at a minimum
+\begin_inset Foot
+status open
+
+\begin_layout Plain Layout
+At the time of writing, SSC does not contain a new enough version.
+ Newer versions are available via the development website: 
+\begin_inset Flex URL
+status open
+
+\begin_layout Plain Layout
+
+https://github.com/gvegayon/parallel/
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Itemize
@@ -2063,10 +2182,17 @@ parallel
 \begin_layout Itemize
 
 \family typewriter
-pred_program
+pred_program(
 \family default
- is the name of a program that, when passed the period, will return via
- 
+\emph on
+string
+\family typewriter
+\emph default
+)
+\family default
+ allows for time-contingent predictor sets.
+ The user writes a program that takes as input a time period and outputs
+ via 
 \family typewriter
 r(predictors)
 \family default
@@ -2075,7 +2201,16 @@ r(predictors)
 synth
 \family default
 -style predictor string.
- See Example 3
+ If one is not using 
+\family typewriter
+training_propr
+\family default
+ then 
+\family typewriter
+pred_program
+\family default
+ could be used to dynamically include outcome predictors.
+ See Example 3 for usage details
 \begin_inset Note Note
 status open
 
@@ -2091,13 +2226,115 @@ update if number changes
 \begin_layout Itemize
 
 \family typewriter
-drop_units_prog
+drop_units_prog(
 \family default
-is the name of a program that, when passed the unit to be considered treated,
+\emph on
+string
+\family typewriter
+\emph default
+)
+\family default
+ is the name of a program that, when passed the unit to be considered treated,
  will drop other units that should not be considered when forming the synthetic
  control.
  Commonly this is because they are neighboring or interfering units.
- See Example 3
+ See Example 3 for usage details
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+update if number changes
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+xperiod_prog(
+\family default
+\emph on
+string
+\family typewriter
+\emph default
+)
+\family default
+ allows for setting of synth's 
+\family typewriter
+xperiod
+\family default
+ option that varies with the treatment period.
+ The user-written program is passed the treatment period and should return,
+ via 
+\family typewriter
+r(xperiod)
+\family default
+, a numlist suitable for synth's 
+\family typewriter
+xperiod
+\family default
+ (the period over which generic predictor variables are averaged).
+ See 
+\family typewriter
+synth
+\family default
+ for more details on the 
+\family typewriter
+xperiod
+\family default
+ option.
+ See Example 3 for usage details
+\begin_inset Note Note
+status open
+
+\begin_layout Plain Layout
+update if number changes
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+mspeperiod_prog(
+\family default
+\emph on
+string
+\family typewriter
+\emph default
+)
+\family default
+ allows for setting of synth's 
+\family typewriter
+mspeperiod
+\family default
+ option that varies with the treatment period.
+ The user-written program is passed the treatment period and should return,
+ via 
+\family typewriter
+r(mspeperiod)
+\family default
+, a numlist suitable for synth's 
+\family typewriter
+mspeperiod
+\family default
+ (the period over which the prediction outcome is evaluated).
+ See 
+\family typewriter
+synth
+\family default
+ for more details on the 
+\family typewriter
+mspeperiod
+\family default
+ option.
+ See Example 3 for usage details
 \begin_inset Note Note
 status open
 
@@ -2154,7 +2391,7 @@ synth_runner
 
 \begin_layout Standard
 \begin_inset Tabular
-<lyxtabular version="3" rows="11" columns="2">
+<lyxtabular version="3" rows="12" columns="2">
 <features islongtable="true" longtabularalignment="left">
 <column alignment="left" valignment="top" width="0pt">
 <column alignment="left" valignment="top" width="3in">
@@ -2450,6 +2687,35 @@ e(pvals_std)
 A vector of the proportions of placebo standardized effects that are at
  least as large as the main standardized effect for each post-treatment
  period.
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\family typewriter
+\begin_inset space \quad{}
+\end_inset
+
+e(failed_opt_targets)
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+Errors when constructing the synthetic controls for non-treated units are
+ handled gracefully.
+ If any are detected they will be listed in this matrix.
+ (Errors when constructing the synthetic control for treated units will
+ abort the method.)
 \end_layout
 
 \end_inset
@@ -2987,7 +3253,15 @@ trlinediff(real)
  that allows the user to offset a vertical treatment from the first treatment
  period.
  Likely options include values in the range from (first treatment period
- - last post-treatment period) to 0 and the default value is -1.
+ - last post-treatment period) to 0 and the default value is -1 (to match
+ 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH10"
+
+\end_inset
+
+).
  The 
 \family typewriter
 pval_graphs
@@ -3004,7 +3278,7 @@ reference "fig:pval_graphs"
 \begin_inset Formula $p$
 \end_inset
 
--values per-period for post-treatment years for both raw and standardized
+-values per-period for post-treatment periods for both raw and standardized
  effects.
 \begin_inset listings
 inline false
@@ -3660,26 +3934,30 @@ status open
 \begin_layout Plain Layout
 
 .
- cap program drop _gen_predictors 
+ cap program drop my_pred my_drop_units my_xperiod my_mspeperiod
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- program _gen_predictors, rclass
+ program my_pred, rclass
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- 	args year
+ 	args tyear
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- 	return local predictors "beer(`=`year'-4'(1)`=`year'-1') .
- lnincome(`=`year'-4'(1)`=`year'-1')" 
+ 	return local predictors "beer(`=`tyear'-4'(1)`=`tyear'-1') ///  
+\end_layout
+
+\begin_layout Plain Layout
+
+        lnincome(`=`tyear'-4'(1)`=`tyear'-1')" 
 \end_layout
 
 \begin_layout Plain Layout
@@ -3691,13 +3969,7 @@ status open
 \begin_layout Plain Layout
 
 .
- cap program drop _drop_units
-\end_layout
-
-\begin_layout Plain Layout
-
-.
- program _drop_units
+ program my_drop_units
 \end_layout
 
 \begin_layout Plain Layout
@@ -3727,6 +3999,58 @@ status open
 \begin_layout Plain Layout
 
 .
+ program my_xperiod, rclass
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ 	args tyear 
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ 	return local xperiod "`=`tyear'-12'(1)`=`tyear'-1'"
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ end
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ program my_mspeperiod, rclass
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ 	args tyear 
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ 	return local mspeperiod "`=`tyear'-12'(1)`=`tyear'-1'"
+\end_layout
+
+\begin_layout Plain Layout
+
+.
+ end
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+.
  gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)
 \end_layout
 
@@ -3738,12 +4062,13 @@ status open
 
 \begin_layout Plain Layout
 
-    pred_prog(_gen_predictors) trends training_propr(`=13/18') ///
+    pred_prog(my_pred) trends training_propr(`=13/18') ///
 \end_layout
 
 \begin_layout Plain Layout
 
-    drop_units_prog(_drop_units)
+    drop_units_prog(my_drop_units) xperiod_prog(my_xperiod) mspeperiod_prog(my_m
+speperiod)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3790,6 +4115,15 @@ reference "fig:effect_graphs3"
 \end_inset
 
 .
+ We also show how predictors, unit dropping, 
+\family typewriter
+xperiod
+\family default
+, and 
+\family typewriter
+mspeperiod
+\family default
+ can be dynamically generated depending on the treatment year.
 \end_layout
 
 \begin_layout Standard

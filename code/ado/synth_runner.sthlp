@@ -5,7 +5,7 @@
 
 {title:Title}
 
-{p2colset 5 20 22 2}{...}
+{p2colset 5 22 22 2}{...}
 {p2col :{hi:synth_runner} {hline 2}}Automation for multiple Synthetic Control estimations. {p_end}
 {p2colreset}{...}
 
@@ -18,21 +18,21 @@
  {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {it:synthsettings} ]
 
 {p 4 4 2}
-Dataset must be declared as a (balanced) panel using {cmd: tsset} {it:panelvar} {it:timevar}; see {help tsset}.
+The dataset must be declared as a (balanced) panel using {help tsset}.
 Variables specified in {it:depvar} and {it:predictorvars} must be numeric variables; abbreviations are not allowed. The command {cmd:synth} (available in SSC) is required. 
 Auxiliary commands for generating graphs post-estimation are shown in the examples below.
-Finally, the version of the package can be found by running {cmd:synth_runner version} and checking {cmd:r(version)} (or viewing the displayed output).
+Finally, the version of the package can be found by running {cmd:synth_runner version} and checking {cmd:r(version)} or viewing the displayed output.
  
 
 {title:Description}
 
 {p 4 4 2}
 {cmd:synth_runner} automates the process of running multiple synthetic control estimations by {cmd:synth}. It will run placebo estimates in-space (estimations for the same treatment period but on all the control units). 
-It will then provide inference (p-values) comparing the estimated main effect to the distribution of placebo effects. It handles the case where several units receive treatment, possible at different time periods. 
+It will then provide inference (p-values) comparing the estimated main effect to the distribution of placebo effects. It handles the case where several units receive treatment, possibly at different time periods. 
 If there are multiple treatment periods, then effects are centered around the treatment period so as to be comparable. 
-The maximum number of leads and lags that can be achieved in the data given the treated units are used for analysis.
-It provides facilities for automatically generating the outcome predictors using a training proportion of the pre-treatment period. It also provides diagnostics to assess fit. 
-{cmd:synth_runner} is designed to accompany {cmd:synth} but not supersede it.
+The maximum common number of leads and lags that can be achieved in the data given the treated units are used for analysis.
+It provides facilities for automatically generating outcome predictors using a training proportion of the pre-treatment period. It also provides diagnostics to assess fit. 
+{cmd:synth_runner} is designed to accompany {cmd:synth} but not to supersede it.
 For more details about single estimations (variable weights, observation weights,  covariate balance, and synthetic control outcomes when there are multiple time periods) use {cmd:synth} directly.
 See {help synth:{it:synth}} and Abadie and Gardeazabal (2003) and Abadie, Diamond, and Hainmueller (2010, 2014) for more details.
 
@@ -43,14 +43,14 @@ See {help synth:{it:synth}} and Abadie and Gardeazabal (2003) and Abadie, Diamon
 {cmd: depvar} the outcome variable.
 
 {p 4 8 2}
-{cmd: predictorvars} the list of predictor variables. See {help synth:{it:synth}} help for more details.
+{cmd: predictorvars} the list of predictor variables. See {help synth:{it:synth}} for more details.
 
 {p 2 4 2}
 For specifying the unit and time-period of treatment, there are two methods. Exactly one of these is required.
 
 {p 4 8 2}
 {cmd:trunit(}{it:#}{cmd:)} and {cmd:trperiod(}{it:#}{cmd:)}. This syntax (used by {cmd:synth}) can be used when there is a single unit entering treatment. 
-Since synthetic control methods split time into pre-treatment and treated periods, trperiod is the first of the treated periods and, slightly confusingly, also called post-treatment.
+Since synthetic control methods split time into pre-treatment and treated periods, {cmd:trperiod} is the first of the treated periods and, slightly confusingly, also called post-treatment.
 
 {p 4 8 2}
 {cmd:d(}varname{cmd:)}. The {cmd:d} variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else. 
@@ -62,7 +62,7 @@ This allows for multiple units to undergo treatment, possibly at different times
 {cmd: trends} will force {cmd:synth} to match on the trends in the outcome variable. It does this by scaling each unit's outcome variable so that it is 1 in the last pre-treatment period.
 
 {p 4 8 2}
-{cmd: pre_limit_mult(}{it:real>=1}{cmd:)} will not include placebo effects in the pool for inference if the match quality of that control (pre-treatment RMSPE) is greater than {it:pre_limit_mult} times the match quality of the treated unit.
+{cmd: pre_limit_mult(}{it:real>=1}{cmd:)} will not include placebo effects in the pool for inference if the match quality of that control, pre-treatment Root Mean Squared Predictive Error (RMSPE), is greater than {it:pre_limit_mult} times the match quality of the treated unit.
 
 {p 4 8 2}
 {cmd: training_propr(}0<={it:real}<=1{cmd:)} instructs {cmd:synth_runner} to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in predictorvars). 
@@ -105,12 +105,12 @@ A variable that contains the difference between the unit's outcome and its synth
 {p 8 17 15}
 {cmd:pre_rmspe:}{p_end}
 {p 12 12 15}
-A variable, constant for a unit, containing the pre-treatment match quality in terms of Root Mean Squared Predictive Error.{p_end}
+A variable, constant for a unit, containing the pre-treatment match quality in terms of RMSPE.{p_end}
 
 {p 8 17 15}
 {cmd:post_rmspe:}{p_end}
 {p 12 12 15}
-A variable, constant for a unit, containing a measure of the post-treatment effect (jointly over all post-treatment time periods) in terms of Root Mean Squared Predictive Error.{p_end}
+A variable, constant for a unit, containing a measure of the post-treatment effect (jointly over all post-treatment time periods) in terms of RMSPE.{p_end}
 
 {p 8 17 15}
 {cmd:{it:depvar}_scaled:}{p_end}
@@ -147,23 +147,23 @@ If instead, maximal histories are desired at each estimation stage, use {cmd:noe
 {cmd: deterministicoutput} eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so that log files can be easily compared across runs.
 
 {p 4 8 2}
-{cmd: pred_prog(}{it:string}{cmd:)} is a method to allow-time contingent predictor sets. 
-The user writes a program that takes as input a time period and outputs via r(predictors) a synth-style predictor string. 
-If one is not using training_propr then pred_program could be used to dynamically include outcome predictors. See Example 3 for usage details.
+{cmd: pred_prog(}{it:string}{cmd:)} is a method to allow time-contingent predictor sets. 
+The user writes a program that takes as input a time period and outputs via {cmd:r(predictors)} a {cmd:synth}-style predictor string. 
+If one is not using {cmd:training_propr} then {cmd:pred_program} could be used to dynamically include outcome predictors. See Example 3 for usage details.
 
 {p 4 8 2}
 {cmd: drop_units_prog(}{it:string}{cmd:)} is the name of a program that, when passed the unit to be considered treated, will drop other units that should not be considered when forming the synthetic control. 
 Commonly this is because they are neighboring or interfering units. See Example 3 for usage details.
 
 {p 4 8 2}
-{cmd: xperiod_prog(}{it:string}{cmd:)} allows for setting of synth's xperiod option that varies with the treatment period. 
-The user-written program is passed the treatment period and should return, via r(xperiod), a numlist suitable for synth's xperiod (the period over which generic predictor variables are averaged). 
-See synth for more details on the xperiod option. See Example 3 for usage details.
+{cmd: xperiod_prog(}{it:string}{cmd:)} allows for setting of {cmd:synth}'s {cmd:xperiod} option that varies with the treatment period. 
+The user-written program is passed the treatment period and should return, via {cmd:r(xperiod)}, a numlist suitable for {cmd:synth}'s {cmd:xperiod} (the period over which generic predictor variables are averaged). 
+See {cmd:synth} for more details on the {cmd:xperiod} option. See Example 3 for usage details.
 
 {p 4 8 2}
-{cmd: mspeperiod_prog(}{it:string}{cmd:)} allows for setting of synth's mspeperiod option that varies with the treatment period. 
-The user-written program is passed the treatment period and should return, via r(mspeperiod), a numlist suitable for synth's mspeperiod (the period over which the prediction outcome is evaluated). 
-See synth for more details on the mspeperiod option. See Example 3 for usage details.
+{cmd: mspeperiod_prog(}{it:string}{cmd:)} allows for setting of {cmd:synth}'s {cmd:mspeperiod} option that varies with the treatment period. 
+The user-written program is passed the treatment period and should return, via {cmd:r(mspeperiod)}, a numlist suitable for {cmd:synth}'s {cmd:mspeperiod} (the period over which the prediction outcome is evaluated). 
+See {cmd:synth} for more details on the {cmd:mspeperiod} option. See Example 3 for usage details.
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.
@@ -218,18 +218,14 @@ The proportion of placebos that have a pre-treatment RMSPE at least as large as 
 {p 8 8 2}
 {cmd: e(failed_opt_targets):}{p_end}
 {p 10 10 2}
-If there are failures of {cmd:synth} when estimating on the donors, {cmd:synth_runner} will drop those from calculations, but they will be noted in {cmd:e(failed_opt_targets)} for inspection by the user.
+Errors when constructing the synthetic controls for non-treated units are handled gracefully. If any are detected they will be listed in this matrix. 
+(Errors when constructing the synthetic control for treated units will abort the method.)
 
 {p 8 8 2}
 {cmd: e(avg_val_rmspe_p):}{p_end}
 {p 10 10 2}
 When specifying {cmd:training_propr}, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 
-{p 8 8 2}
-{cmd: e(failed_opt_targets):}{p_end}
-{p 10 10 2}
-Errors when constructing the synthetic controls for non-treated units are handled gracefully. If any are detected they will be listed in this matrix. 
-(Errors when constructing the synthetic control for treated units will abort the method.)
 
 {title:Examples}
 
@@ -243,7 +239,7 @@ The following examples use data from the {cmd:synth} package. Ensure that {cmd:s
 Example 1 - Reconstruct the initial {cmd:synth} example plus graphs:{p_end}
 {phang}{stata tempfile keepfile}{p_end}
 {phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) keep(`keepfile')}{p_end}
-{phang}{stata "merge 1:1 state year using `keepfile', nogenerate"}{p_end}
+{phang}{stata `"merge 1:1 state year using "`keepfile'", nogenerate"'}{p_end}
 {phang}{stata gen cigsale_synth = cigsale-effect}{p_end}
 {phang}{stata single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
 {phang}{stata effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)}{p_end}
@@ -258,7 +254,7 @@ Example 2 - Same treatment, but a bit more complicated setup:{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989)}{p_end}
 {phang}{stata tempfile keepfile2}{p_end}
 {phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18') keep(`keepfile2') pre_limit_mult(10)}{p_end}
-{phang}{stata "merge 1:1 state year using `keepfile2', nogenerate"}{p_end}
+{phang}{stata `"merge 1:1 state year using "`keepfile2'", nogenerate"'}{p_end}
 {phang}{stata gen cigsale_scaled_synth = cigsale_scaled - effect_scaled}{p_end}
 {phang}{stata single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
 {phang}{stata effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
@@ -289,14 +285,13 @@ Example 3 - Multiple treatments at different time periods:{p_end}
 {phang2}{stata return local mspeperiod "`=`tyear'-12'(1)`=`tyear'-1'"}{p_end}
 {phang}{stata end}{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)}{p_end}
-{phang}{stata synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units)}) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod){p_end}
+{phang}{stata synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units)) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)}{p_end}
 {phang}{stata effect_graphs , multi depvar(cigsale)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
 We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. 
 Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. 
-We also show how predictors can be dynamically generated depending on the treatment year. 
-Finally, if some units should not be used when constructing synthetic controls, we show how those can be specified.{p_end}
+We also show how predictors, unit dropping, {cmd:xperiod}, and {cmd:mspeperiod} can be dynamically generated depending on the treatment year. {p_end}
 
 {title:Development}
 
