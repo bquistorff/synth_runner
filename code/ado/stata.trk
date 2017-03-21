@@ -1,4 +1,4 @@
-* 00000033
+* 00000034
 *! version 1.0.0
 * Do not erase or edit this file
 * It is used by Stata to track the ado and help
@@ -158,10 +158,10 @@ f s\synth.sthlp
 f l\lsynth_mata_subr.mlib
 f s\synthopt.plugin
 e
-S https://raw.github.com/gvegayon/parallel/master
+S C:\Users\bquistorff\Documents\GitHub\parallel
 N parallel.pkg
-D 17 Feb 2017
-U 33
+D 20 Mar 2017
+U 34
 d 'PARALLEL': module for Parallel Computing
 d 
 d   Inspired in the R library "snow" and to be used in multicore

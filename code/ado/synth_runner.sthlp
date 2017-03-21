@@ -141,7 +141,7 @@ By default, these histories are trimmed on the early side so that all estimation
 If instead, maximal histories are desired at each estimation stage, use {cmd:noenforce_const_pre_length}.
 
 {p 4 8 2}
-{cmd: parallel} will enable parallel processing if the {cmd:parallel} command is installed and configured. Version 1.18.1 is needed at a minimum (available via {browse "https://github.com/gvegayon/parallel/"}).
+{cmd: parallel} will enable parallel processing if the {cmd:parallel} command is installed and configured. Version 1.18.2 is needed at a minimum (available via {browse "https://github.com/gvegayon/parallel/"}).
 
 {p 4 8 2}
 {cmd: deterministicoutput} eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so that log files can be easily compared across runs.
