@@ -1,4 +1,3 @@
-# Github targets depend on relative path to those repos (../GitHub/)
 # The deliverables automatically overwrite
 # Comments that begin with ## will be shown from target help
 
@@ -24,16 +23,17 @@ list:
 
 .PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check
 
-	
+
 # get the list of eps files from
 #. grepr eps writeups/synth_runner_sj.lyx | grep filename | cut -c14- | tr '\n' ' '
 sj-deliverable:
 	-rm deliverables/sj/*.zip
-	zip -j deliverables/sj/figs.zip fig/eps/cigsale1_raw.eps fig/eps/cigsale1_effects.eps fig/eps/cigsale1_effect.eps fig/eps/cigsale1_tc.eps fig/eps/cigsale2_pval.eps fig/eps/cigsale2_pval_t.eps fig/eps/cigsale2_raw.eps fig/eps/cigsale2_effects.eps fig/eps/cigsale3_effect.eps fig/eps/cigsale3_tc.eps
-	zip -j deliverables/sj/program_files.zip code/ado/calc_RMSPE.ado code/ado/effect_graphs.ado code/ado/pval_graphs.ado code/ado/single_treatment_graphs.ado code/ado/synth_runner.ado code/ado/synth_runner.pkg code/ado/synth_runner.sthlp code/ado/synth_wrapper.ado code/usage.do
+	zip -j deliverables/sj/figs.zip fig/eps/cigsale1_raw.eps fig/eps/cigsale1_effects.eps fig/eps/cigsale1_effect.eps fig/eps/cigsale1_tc.eps fig/eps/cigsale1_pval.eps fig/eps/cigsale1_pval_t.eps fig/eps/cigsale2_raw.eps fig/eps/cigsale2_effects.eps fig/eps/cigsale3_effect.eps fig/eps/cigsale3_tc.eps
+	zip -j deliverables/sj/program_files.zip code/ado/_sr_add_keepfile_to_agg.ado code/ado/_sr_do_work_do.ado code/ado/_sr_do_work_tr.ado code/ado/_sr_gen_time_locals.ado code/ado/_sr_get_returns.ado code/ado/_sr_print_dots.ado code/ado/calc_RMSPE.ado code/ado/effect_graphs.ado code/ado/pval_graphs.ado code/ado/single_treatment_graphs.ado code/ado/synth_runner.ado code/ado/synth_runner.pkg code/ado/synth_runner.sthlp code/ado/synth_wrapper.ado code/usage.do
 	cp writeups/synth_runner_sj.pdf deliverables/sj
-	# README.txt is already there
-	
+	@echo "README.txt is already there"
+	@echo "Check that including all figs (see command in makefile)"
+
 usage-cleanup:
 	-mv *.log log/do/
 	-mv *.gph fig/gph/

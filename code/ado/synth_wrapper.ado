@@ -1,4 +1,4 @@
-*! version 1.0 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Cleanups output and makes easier returns for -synth-
 program synth_wrapper, eclass
 	version 12 //haven't tested on earlier versions

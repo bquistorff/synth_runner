@@ -1,4 +1,4 @@
-*! version 1.0 Brian Quistorff <bquistorff@gmail.com>
+*! version 1.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Produces graphs for all units: raw outcome data, and effects
 program single_treatment_graphs
 	version 12 //haven't tested on earlier versions

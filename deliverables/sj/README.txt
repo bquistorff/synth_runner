@@ -4,9 +4,9 @@ AUTHOR(S):  Sebastian Galiani
             University of Maryland, College Park
 
             Brian Quistorff
-            University of Maryland, College Park
+            Microsoft AI and Research
 
-SUPPORT:    quistorff@econ.umd.edu
+SUPPORT:    Brian.Quistorff@microsoft.com
 
 HELP:       After installation, install -synth- (from SSC)
 
@@ -15,6 +15,12 @@ HELP:       After installation, install -synth- (from SSC)
 
 FILES:
 
+_sr_add_keepfile_to_agg.ado
+_sr_do_work_do.ado
+_sr_do_work_tr.ado
+_sr_gen_time_locals.ado
+_sr_get_returns.ado
+_sr_print_dots.ado
 calc_RMSPE.ado
 effect_graphs.ado
 pval_graphs.ado
