@@ -1515,12 +1515,18 @@ _vars
 
 \begin_layout Plain Layout
 
-    ci
+    noenforce
+\backslash
+_const
+\backslash
+_pre
+\backslash
+_length
 \end_layout
 
 \begin_layout Plain Layout
 
-    pvals1s
+    ci
 \end_layout
 
 \begin_layout Plain Layout
@@ -1530,17 +1536,6 @@ _vars
 _lead(
 \backslash
 num)
-\end_layout
-
-\begin_layout Plain Layout
-
-    noenforce
-\backslash
-_const
-\backslash
-_pre
-\backslash
-_length
 \end_layout
 
 \begin_layout Plain Layout
@@ -1556,9 +1551,11 @@ it string})
 
 \begin_layout Plain Layout
 
-    
+    pred
 \backslash
-underbar{par}allel
+_prog({
+\backslash
+it string})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1570,11 +1567,14 @@ underbar{det}erministicout
 
 \begin_layout Plain Layout
 
-    pred
+    
 \backslash
-_prog({
-\backslash
-it string})
+underbar{par}allel
+\end_layout
+
+\begin_layout Plain Layout
+
+    pvals1s
 \end_layout
 
 \begin_layout Plain Layout
@@ -3112,11 +3112,11 @@ e(pval_joint_post_std)
 Next we create common synthetic control graphs.
  Note that both 
 \family typewriter
-single_treatment_graphs
+effect_graphs
 \family default
  and 
 \family typewriter
-effect_graphs
+single_treatment_graphs
 \family default
  require variables generated from the 
 \family typewriter
