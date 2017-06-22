@@ -13,7 +13,7 @@
 {title:Syntax}
 
 {p 6 8 2}
-{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt k:eep(file)} {opt rep:lace} {opt ci} {opt pvals1s}
+{opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt gen:_vars} {opt ci} {opt pvals1s}
  {opt max_lead(int)} {opt noenforce_const_pre_length} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} 
  {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {it:synthsettings} ]
 
@@ -62,7 +62,8 @@ This allows for multiple units to undergo treatment, possibly at different times
 {cmd: trends} will force {cmd:synth} to match on the trends in the outcome variable. It does this by scaling each unit's outcome variable so that it is 1 in the last pre-treatment period.
 
 {p 4 8 2}
-{cmd: pre_limit_mult(}{it:real>=1}{cmd:)} will not include placebo effects in the pool for inference if the match quality of that control, pre-treatment Root Mean Squared Predictive Error (RMSPE), is greater than {it:pre_limit_mult} times the match quality of the treated unit.
+{cmd: pre_limit_mult(}{it:real>=1}{cmd:)} will not include placebo effects in the pool for inference if the match quality of that control, pre-treatment Root Mean Squared Predictive Error (RMSPE), 
+is greater than {it:pre_limit_mult} times the match quality of the treated unit.
 
 {p 4 8 2}
 {cmd: training_propr(}0<={it:real}<=1{cmd:)} instructs {cmd:synth_runner} to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in predictorvars). 
@@ -79,23 +80,18 @@ If treatment is not randomly assigned then these confidence intervals do not hav
 {cmd: pvals1s} outputs one-sided p-values in addition to the two-sided p-values.
 
 {p 4 8 2}
-{cmd:keep(}{it:filename}{cmd:)} saves a dataset with the results. If a file extension is omitted .dta is assumed. 
-This is only allowed if there is a single period in which unit(s) enter treatment. It is easy to merge this in the initial dataset. If {cmd:keep(}{it:filename}{cmd:)} is specified, it will hold the following variables:
-
-{p 8 17 15}
-{cmd:{it:panelvar}:}{p_end}
-{p 12 12 15}
-A variable that contains the respective panel unit (from the {cmd: tsset} panel unit variable {it:panelvar}).{p_end}
-
-{p 8 17 15}
-{cmd:{it:timevar}:}{p_end}
-{p 12 12 15}
-A variable that contains the respective time period (from the {cmd: tsset} panel time variable {it:timevar}).{p_end}
+{cmd:gen_vars} generates variables in the dataset from estimation. 
+This is only allowed if there is a single period in which unit(s) enter treatment. If {cmd:gen_vars} is specified, it will generate the following variables:
 
 {p 8 17 15}
 {cmd:lead:}{p_end}
 {p 12 12 15}
 A variable that contains the respective time period relative to treatment. {it:Lead=1} specifies the first period of treatment. This is to match Cavallo et al. (2013) and in effect is the offset from the last non-treatment period.{p_end}
+
+{p 8 17 15}
+{cmd:{it:depvar}_synth:}{p_end}
+{p 12 12 15}
+A variable that contains the unit's synthetic control outcome for that time period.{p_end}
 
 {p 8 17 15}
 {cmd:effect:}{p_end}
@@ -118,13 +114,14 @@ A variable, constant for a unit, containing a measure of the post-treatment effe
 If the match was done on trends, this is the unit's outcome variable normalized so that its last pre-treatment period outcome is 1.{p_end}
 
 {p 8 17 15}
+{cmd:{it:depvar}_scaled_synth:}{p_end}
+{p 12 12 15}
+If the match was done on trends, this is the unit's synthetic control's (scaled) outcome variable.{p_end}
+
+{p 8 17 15}
 {cmd:effect_scaled:}{p_end}
 {p 12 12 15}
 If the match was done on trends, this is the difference between the unit's (scaled) outcome and its (scaled) synthetic control for that time period.{p_end}
-
-{p 4 8 2}
-{cmd:replace} replaces the dataset specified in 
-{cmd:keep(}{it:filename}{cmd:)} if it already exists.
 
 {p 4 8 2}
 {cmd: n_pl_avgs(}{it:string}{cmd:)} controls the number of placebo averages to compute for inference. The total possible grows exponentially with the number of treated events.
@@ -237,10 +234,7 @@ The following examples use data from the {cmd:synth} package. Ensure that {cmd:s
 
 {p 4 8 2}
 Example 1 - Reconstruct the initial {cmd:synth} example plus graphs:{p_end}
-{phang}{stata tempfile keepfile}{p_end}
-{phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) keep(`keepfile')}{p_end}
-{phang}{stata `"merge 1:1 state year using "`keepfile'", nogenerate"'}{p_end}
-{phang}{stata gen cigsale_synth = cigsale-effect}{p_end}
+{phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) gen_vars}{p_end}
 {phang}{stata single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
 {phang}{stata effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)}{p_end}
 {phang}{stata pval_graphs}{p_end}
@@ -252,10 +246,7 @@ Likely options include values in the range from (first treatment period - last p
 {p 4 8 2}
 Example 2 - Same treatment, but a bit more complicated setup:{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989)}{p_end}
-{phang}{stata tempfile keepfile2}{p_end}
-{phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18') keep(`keepfile2') pre_limit_mult(10)}{p_end}
-{phang}{stata `"merge 1:1 state year using "`keepfile2'", nogenerate"'}{p_end}
-{phang}{stata gen cigsale_scaled_synth = cigsale_scaled - effect_scaled}{p_end}
+{phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18') gen_vars pre_limit_mult(10)}{p_end}
 {phang}{stata single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
 {phang}{stata effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
 {phang}{stata pval_graphs}{p_end}
@@ -309,7 +300,7 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, Mar 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.4.0.
+synthetic control estimation using synth, June 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.5.0.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -317,8 +308,8 @@ synthetic control estimation using synth, Mar 2017. {browse "https://github.com/
 @Misc{QG17,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = mar,
-  Note   = {Version 1.4.0},
+  Month  = jun,
+  Note   = {Version 1.5.0},
   Year   = {2017},
   Url    = {https://github.com/bquistorff/synth_runner}
 }

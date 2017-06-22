@@ -1,4 +1,4 @@
-*! version 1.4.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.5.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Automates the process of conducting many synthetic control estimations
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
@@ -17,6 +17,7 @@ program synth_runner, eclass
 		noenforce_const_pre_length ///
 		Keep(string) ///
 		REPlace ///
+		GEN_vars ///
 		TRPeriod(numlist min=1 max=1 int) ///
 		TRUnit(numlist min=1 max=1 int) ///
 		pre_limit_mult(numlist max=1 >=1) ///
@@ -37,6 +38,16 @@ program synth_runner, eclass
 		if `=strpos(`"`r(filename)'"',".")'==0{
 			local keep `"`keep'.dta"'
 		}
+	}
+	if "`gen_vars'"!=""{
+		if `"`keep'"'=="" tempfile keep
+		local new_vars "lead `depvar'_synth effect pre_rmspe post_rmspe"
+		if "`trends'"!="" {
+			local new_vars "`new_vars' `depvar'_scaled `depvar'_scaled_synth effect_scaled"
+		}
+		cap confirm new variable `new_vars'
+		_assert _rc==0, msg("With -, gen_vars- the program needs to be able create the following variables: `new_vars'. Please make sure there are no such varaibles and that the dependent variable [`depvar'] has a short enough name that the generated vars are not too long (usually a max of 32 characters).")
+	
 	}
 	
 	_assert "`bal'"=="strongly balanced", msg("Panel must be strongly balanced. See -tsset-.")
@@ -400,15 +411,23 @@ program synth_runner, eclass
 	}
 	
 	cleanup_mata, tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult')
+	
+	if "`gen_vars'"!=""{
+		qui merge 1:1 `pvar' `tvar' using "`keep'", nogenerate nolabel nonotes
+		gen `depvar'_synth = `depvar' - effect
+		if "`trends'"!="" {
+			gen `depvar'_scaled_synth = `depvar'_scaled - effect_scaled
+		}
+	}
 end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.4.0 "
+	di as result "version" as text " 1.5.0 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.4.0"
+	return local version = "1.5.0"
 end
 
 //allows body or appendage to be null (so that looping and adding is easy)

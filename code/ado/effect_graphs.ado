@@ -30,6 +30,9 @@ program effect_graphs
 	}
 	else {
 		if "`effect_var'"=="" local effect_var effect
+		cap confirm variable `effect_var'
+		_assert _rc==0, msg(`"Effect variable [`effect_var'] does not exist, did you use the -, gen_vars- option in -synth_runner-?"') rc(111)
+	
 		qui keep if `pvar'==`trunit'
 	}
 

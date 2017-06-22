@@ -8,6 +8,8 @@ program single_treatment_graphs
 
 	if "`do_color'"=="" local do_color bg
 	if "`effect_var'"=="" local effect_var effect
+	cap confirm variable `effect_var'
+	_assert _rc==0, msg(`"Effect variable [`effect_var'] does not exist, did you use the -, gen_vars- option in -synth_runner-?"') rc(111)
 	if "`raw_gname'"=="" local raw_gname raw
 	if "`effects_gname'"=="" local effects_gname effects
 

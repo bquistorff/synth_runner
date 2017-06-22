@@ -1508,16 +1508,9 @@ it real})
 
     
 \backslash
-underbar{k}eep({
+underbar{gen}
 \backslash
-it file})
-\end_layout
-
-\begin_layout Plain Layout
-
-    
-\backslash
-underbar{rep}lace
+_vars
 \end_layout
 
 \begin_layout Plain Layout
@@ -1896,72 +1889,28 @@ pvals1s
 \begin_layout Itemize
 
 \family typewriter
-keep(
+gen_vars
 \family default
-\emph on
-filename
-\family typewriter
-\emph default
-)
-\family default
- saves a dataset with the results.
+ generates variables in the dataset from estimation.
  This is only allowed if there is a single period in which unit(s) enter
  treatment.
- It is easy to merge this in the initial dataset.
+ These variables are required for 
+\family typewriter
+single_treatment_graphs
+\family default
+ and 
+\family typewriter
+effect_graphs
+\family default
+.
  If 
 \family typewriter
-keep(
+gen_vars
 \family default
-\emph on
-filename
-\family typewriter
-\emph default
-)
-\family default
- is specified, it will hold the following variables:
-\begin_inset Separator latexpar
-\end_inset
-
-
+ is specified, it will generate the following variables:
 \end_layout
 
 \begin_deeper
-\begin_layout Itemize
-
-\family typewriter
-\emph on
-panelvar
-\family default
-\emph default
- contains the respective panel unit (from the 
-\family typewriter
-tsset
-\family default
- panel unit variable 
-\emph on
-panelvar
-\emph default
-).
-\end_layout
-
-\begin_layout Itemize
-
-\family typewriter
-\emph on
-timevar
-\family default
-\emph default
- contains the respective time period (from the 
-\family typewriter
-tsset
-\family default
- panel time variable 
-\emph on
-timevar
-\emph default
-).
-\end_layout
-
 \begin_layout Itemize
 
 \family typewriter
@@ -1985,6 +1934,17 @@ key "CGNP13"
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Itemize
+
+\family typewriter
+\emph on
+depvar
+\emph default
+_synth
+\family default
+ contains the unit's synthetic control outcome for that time period.
 \end_layout
 
 \begin_layout Itemize
@@ -2030,31 +1990,25 @@ _scaled
 \begin_layout Itemize
 
 \family typewriter
-effect_scaled
+\emph on
+depvar
+\emph default
+_scaled_synth
 \family default
- (if the match was done on trends) is the difference between the unit's
- scaled outcome and its scaled synthetic control for that time period.
+ (if the match was done on trends) is the unit's synthetic control (scaled)
 \end_layout
 
-\end_deeper
 \begin_layout Itemize
 
 \family typewriter
-replace
+effect_scaled
 \family default
- replaces the dataset specified in 
-\family typewriter
-keep(
-\family default
-\emph on
-filename
-\family typewriter
-\emph default
-)
-\family default
- if it already exists.
+ (if the match was done on trends) is the difference between the unit's
+ scaled outcome and its synthetic control's (scaled) outcome for that time
+ period.
 \end_layout
 
+\end_deeper
 \begin_layout Itemize
 
 \family typewriter
@@ -2843,12 +2797,6 @@ status open
 \begin_layout Plain Layout
 
 .
- tempfile keepfile
-\end_layout
-
-\begin_layout Plain Layout
-
-.
  synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) ///
 \end_layout
 
@@ -2859,7 +2807,7 @@ status open
 
 \begin_layout Plain Layout
 
-   trunit(3) trperiod(1989) keep(`keepfile')
+   trunit(3) trperiod(1989) gen_vars
 \end_layout
 
 \begin_layout Plain Layout
@@ -3005,53 +2953,6 @@ Post-treatment results: Effects, p-values, p-values (psuedo t-stats)
      lead12 |  -24.2687   .1052632   .0263158 
 \end_layout
 
-\begin_layout Plain Layout
-
-.
- merge 1:1 state year using "`keepfile'", nogenerate
-\end_layout
-
-\begin_layout Plain Layout
-
-(label state already defined)
-\end_layout
-
-\begin_layout Plain Layout
-
-\end_layout
-
-\begin_layout Plain Layout
-
-   Result                           # of obs.
- 
-\end_layout
-
-\begin_layout Plain Layout
-
-   ----------------------------------------- 
-\end_layout
-
-\begin_layout Plain Layout
-
-   not matched                             0 
-\end_layout
-
-\begin_layout Plain Layout
-
-   matched                             1,209   
-\end_layout
-
-\begin_layout Plain Layout
-
-   ----------------------------------------- 
-\end_layout
-
-\begin_layout Plain Layout
-
-.
- gen cigsale_synth = cigsale-effect
-\end_layout
-
 \end_inset
 
 
@@ -3180,7 +3081,7 @@ matrices:
 
 \begin_layout Plain Layout
 
-.02564103
+02564103
 \end_layout
 
 \end_inset
@@ -3209,6 +3110,19 @@ e(pval_joint_post_std)
 
 \begin_layout Standard
 Next we create common synthetic control graphs.
+ Note that both 
+\family typewriter
+single_treatment_graphs
+\family default
+ and 
+\family typewriter
+effect_graphs
+\family default
+ require variables generated from the 
+\family typewriter
+gen_var
+\family default
+ option above.
  The 
 \family typewriter
 single_treatment_graphs
@@ -3280,6 +3194,9 @@ reference "fig:pval_graphs"
 
 -values per-period for post-treatment periods for both raw and standardized
  effects.
+\end_layout
+
+\begin_layout Standard
 \begin_inset listings
 inline false
 status open
@@ -3679,12 +3596,6 @@ status open
 \begin_layout Plain Layout
 
 .
- tempfile keepfile2
-\end_layout
-
-\begin_layout Plain Layout
-
-.
  synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) ///
 \end_layout
 
@@ -3695,30 +3606,19 @@ status open
 
 \begin_layout Plain Layout
 
-    training_propr(`=13/19') pre_limit_mult(10) keep(`keepfile2')
+    training_propr(`=13/19') pre_limit_mult(10) gen_vars
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- merge 1:1 state year using "`keepfile2'", nogenerate
+ // Proportion of control units that have a higher RMSPE than the
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- gen cigsale_scaled_synth = cigsale_scaled - effect_scaled
-\end_layout
-
-\begin_layout Plain Layout
-
-.
- di "Proportion of control units that have a higher RMSPE than the" ///
-\end_layout
-
-\begin_layout Plain Layout
-
-    "treated unit in the validtion period:"
+ //treated unit in the validtion period:"
 \end_layout
 
 \begin_layout Plain Layout
@@ -3729,7 +3629,7 @@ status open
 
 \begin_layout Plain Layout
 
-.842
+842
 \end_layout
 
 \begin_layout Plain Layout
@@ -3923,7 +3823,16 @@ begin{stexample}[Example 3]
 \end_layout
 
 \begin_layout Standard
-Multiple treatments at different time periods:
+The final example involves multiple treatments at different time periods
+ and shows usage of user-generated programs to customize the individual
+ 
+\family typewriter
+synth
+\family default
+ calls based on treatment year and the unit considered as treated.
+ These programs allow, for instance, that the predictors include the last
+ four periods of beer sales and income as predictors and shows how units
+ can be dropped from comparison set due to concerns about treatment spillovers.
 \end_layout
 
 \begin_layout Standard
@@ -4115,15 +4024,24 @@ reference "fig:effect_graphs3"
 \end_inset
 
 .
- We also show how predictors, unit dropping, 
+ In addition to showing how predictors and unit dropping can be dynamically
+ generated for the underlying 
+\family typewriter
+synth
+\family default
+ calls, we also show how this can be done for the 
 \family typewriter
 xperiod
 \family default
-, and 
+ and 
 \family typewriter
 mspeperiod
 \family default
- can be dynamically generated depending on the treatment year.
+ options to 
+\family typewriter
+synth
+\family default
+.
 \end_layout
 
 \begin_layout Standard
