@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.5.0]
+### Added
+ - The `gen_var` to easily include the synthetic control estimates in the dataset.
+### Changed
+ - Deprecated `keep(file)` and `replace` options (in favor `gen_var`)
+
 ## [1.4.0]
 ### Added
  - Added dynamic setting of synth's xperiod and mspeperiod option.

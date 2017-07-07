@@ -1,13 +1,19 @@
 # The deliverables automatically overwrite
 # Comments that begin with ## will be shown from target help
 
-##Work-flow
+##Test work-flow
 ## Open Stata 12, navigate to the folder, and do:
 ##  do code/test.do
 ##  do code/usage.do
 ## Then, if no errors:
 ##  make usage-cleanup OR make usage-delete
 ##  make check
+##Release work-flow
+## (test)
+## Bump version number and -make check_version-
+## Update CHANGELOG.md
+## git push
+## https://github.com/bquistorff/synth_runner/releases and make new release
 
 .PHONY: list help
 help : 
