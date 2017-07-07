@@ -1,5 +1,5 @@
 # Note: Before submitting an issue, please check that you:
-[] Are using the newest release (see (here)[https://github.com/bquistorff/synth_runner/releases] for latest release version number).
+[] Are using the newest release (see [here](https://github.com/bquistorff/synth_runner/releases) for latest release version number).
 [] Have checked that the examples in the help work.
 [] Have checked that there is not already an existing issues for what you are reporting.
 
