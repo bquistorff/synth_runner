@@ -6,6 +6,11 @@
 \origin unavailable
 \textclass article
 \begin_preamble
+%Make it reproducible on the same machine
+\pdfinfo{ /ModDate ()  /CreationDate () }
+\pdftrailerid{} %Remove ID
+\pdfsuppressptexinfo15 %Suppress PTEX.Fullbanner and info of imported PDFs 
+
 %Stata commands
 \usepackage[article,notstatapress]{sj}
 \usepackage{epsfig}
@@ -1867,7 +1872,7 @@ ci
  estimates.
  These should only be used if the treatment is randomly assigned.
  If treatment is not randomly assigned then these confidence intervals do
- not have the standard interpretation.
+ not have the standard interpretation (see above).
 \end_layout
 
 \begin_layout Itemize
@@ -2127,7 +2132,7 @@ deterministicoutput
 \family typewriter
 parallel
 \family default
-, will eliminates displayed output that would vary depending on the machine
+, will eliminate displayed output that would vary depending on the machine
  (e.g.
  timers and number of parallel clusters) so that log files can be easily
  compared across runs.
@@ -2316,7 +2321,7 @@ synth
 help synth
 \family default
  for more information.
- The following which are disallowed: 
+ The following are disallowed: 
 \family typewriter
 counit
 \family default
@@ -2481,8 +2486,8 @@ e(avg_pre_rmspe_p)
 \begin_layout Plain Layout
 The proportion of placebos that have a pre-treatment RMSPE at least as large
  as the average of the treated units.
- A measure of fit.
- Concerning if significant.
+ The farther this measure is from 0 towards 1, the better the relative fit
+ of the treated units.
 \end_layout
 
 \end_inset
@@ -2513,8 +2518,8 @@ training_propr
 \family default
 , this is the proportion of placebos that have a RMSPE for the validation
  period at least as large as the average of the treated units.
- A measure of fit.
- Concerning if significant.
+ The farther this measure is from 0 towards 1, the better the relative fit
+ of the treated units.
 \end_layout
 
 \end_inset
@@ -2963,15 +2968,22 @@ The program notes progress towards estimating prediction errors and for
  conducting inference.
  Results for post-treatment periods are shown by default.
  In this example they are negative and significant by the standardized effect
- measure indicating that the law it studied likely had a negative effect
- on cigarette sales.
- We then merge in the synthetic control results and construct the effect
- variable.
+ measure indicating that California's Proposition 99 studied by 
+\begin_inset CommandInset citation
+LatexCommand citealt
+key "ADH10"
+
+\end_inset
+
+ likely had a negative effect on cigarette sales.
 \end_layout
 
 \begin_layout Standard
-While some of the return values are matrices and can be best visualized,
- some are scalars and easy to examine directly.
+The following are returned by 
+\family typewriter
+synth_runner
+\family default
+:
 \end_layout
 
 \begin_layout Standard
@@ -3092,14 +3104,22 @@ e(pval_joint_post)
 \family default
  lists the proportion of effects from control units that have post-treatment
  RMSPE at least as great as the treated unit.
- While it is not significant, it's The return 
+ While it is no quite significant at the 10 percent level, it does not take
+ into account pre-treatment match quality.
+ The 
 \family typewriter
 e(pval_joint_post_std)
 \family default
- lists the same, but scales all values by the relevant pre-treatment RMSPE.
- The final measure is a diagnostic measure and it notes that the treated
- unit was matched better than the majority of the control units.
- If the treatment is considered truly at random them the true 
+ value lists the same proportion, but scales all values by the relevant
+ pre-treatment RMSPE.
+ This measure does show significance.
+ The final measure, 
+\family typewriter
+e(avg_pre_rmspe_p)
+\family default
+, is a diagnostic measure and it notes that the treated unit was matched
+ better than the majority of the control units.
+ If the treatment is considered truly at random then the true 
 \begin_inset Formula $p$
 \end_inset
 
@@ -3579,7 +3599,8 @@ begin{stexample}[Example 2]
 \end_layout
 
 \begin_layout Standard
-Same treatment, but a bit more complicated setup:
+In this example we analyze the same treatment, but use some of the the more
+ advanced options:
 \end_layout
 
 \begin_layout Standard
@@ -3666,14 +3687,14 @@ status open
 \end_layout
 
 \begin_layout Standard
-Again there is a single treatment period, so output can be saved and merged
- back into the dataset.
+Again there is a single treatment period, so synthetic control data can
+ be merged into our main dataset.
  In this setting we (a) specify the treated units/periods with a binary
  variable, (b) generate the outcome predictors automatically using the initial
  13 periods of the pre-treatment era (the rest is the "validation" period),
- (c) we match on trends, and (d) we limit during inference control units
- whose pre-treatment match quality more than 10 times worse than the match
- quality of the corresponding treatment units.
+ (c) we match on trends, and (d) during inference we limit the control units
+ to those with pre-treatment match quality no more than 10 times worse than
+ the match quality of the corresponding treatment units.
  Now that we have a training/validation period split there is a new diagnostic.
  It shows that 84% of the control units have a worse match (a higher RMSPE)
  during the validation period.
@@ -4000,14 +4021,15 @@ speperiod)
 \begin_layout Standard
 We extend Example 2 by considering a control state now to be treated (Georgia
  in addition to California).
- No treatment actually happened in Georgia in 1987.
- Now that we have several treatment periods we can not merge in a simple
- file.
+ Note that no treatment actually happened in Georgia in 1987.
+ This is just to illustrate additional usage options.
+ With several treatment periods we can not automatically include all the
+ synthetic control outputs back into the main dataset.
  Some of the graphs (of 
 \family typewriter
 single_treatment_graphs
 \family default
-) can no longer be made.
+) can also no longer be made.
  The option 
 \emph on
 multi
