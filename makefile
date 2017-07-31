@@ -27,7 +27,7 @@ help :
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
-.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check
+.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check gen_html_help
 
 
 # get the list of eps files from
@@ -77,3 +77,6 @@ check_version:
 	@grep "local version" code/ado/synth_runner.ado
 	@grep '"version" as' code/ado/synth_runner.ado
 	@echo ""
+
+gen_html_help
+	$(STATABATCH) do gen_html_help.do
