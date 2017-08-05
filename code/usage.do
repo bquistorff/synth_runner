@@ -1,3 +1,10 @@
+/*
+If you would like to automatically setup the ADO path to use the package in this repo
+1) Navigate Stata to have its current working directoy in the rebo root (not in code/)
+2) Execute
+do code/setup_ado.do
+*/
+
 * This file shows three examples. Each can be turned off by changing
 *  if 1{
 * to 
@@ -7,8 +14,10 @@
 * Header
 clear all
 mac drop _all
-log close _all
-log using "usage.log", replace
+//if run in batch-mode then set this doesn't force trying to make 2 logs
+cap log close _all
+cap log using "usage.log", replace
+set graphics `= cond("`c(mode)'"=="batch", "off", "on")'
 version 12
 set scheme s2mono
 set more off

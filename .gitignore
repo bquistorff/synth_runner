@@ -1,6 +1,11 @@
+*env.sh
+code/*.log
+code/all_tests_results.txt
+code/platformname.txt
 temp/*
 resources/.env
 writeups/sjtemp/
+writeups/*.tex
 */#*.lyx#
 code/ado/backup.trk
 deliverables/sj/*

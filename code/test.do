@@ -1,20 +1,33 @@
+/*
+If you would like to automatically setup the ADO path to use the package in this repo
+1) Navigate Stata to have its current working directoy in the rebo root (not in code/)
+2) Execute
+do code/setup_ado.do
+*/
+
+* This file shows three examples. Each can be turned off by changing
+*  if 1{
+* to 
+*  if 0{
+*  around the appropriate section
+
+/*
+The standard tests are in 
+do code/usage.do
+These below are extra tests aside from usage.do
+*/
+
 clear all
 mac drop _all
-do code/setup_ado.do
-
-//standard tests
-//do code/usage.do
-//These below are extra tests aside from usage.do
-
+//if run in batch-mode then set this doesn't force trying to make 2 logs
+cap log close _all
+cap log using "test.log", replace
 version 12
 set scheme s2mono
 set more off
 mata: mata clear
 mata: mata set matafavor speed
 parallel setclusters 2, force
-
-log close _all
-log using "test.log", replace
 
 
 //un-evenly spaced panel in parallel

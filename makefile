@@ -1,19 +1,11 @@
-# The deliverables automatically overwrite
 # Comments that begin with ## will be shown from target help
-
-##Test work-flow
-## Open Stata 12, navigate to the folder, and do:
-##  do code/test.do
-##  do code/usage.do
-## Then, if no errors:
-##  make usage-cleanup OR make usage-delete
-##  make check
-##Release work-flow
-## (test)
-## Bump version number and -make check_version-
-## Update CHANGELOG.md
-## git push
-## https://github.com/bquistorff/synth_runner/releases and make new release
+##Testing:
+## source code/test_stata12_env.sh
+## make tests
+##Release:
+## make releaseinfo
+##SJ (automatically overwrites):
+## make sj-deliverable
 
 .PHONY: list help
 help : 
@@ -27,7 +19,7 @@ help :
 list:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$' | xargs
 
-.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check gen_html_help
+.PHONY: sj-deliverable usage-cleanup usage-delete clean check_smcl check_version check gen_html_help releasehelp code_checks package_checks package check_paper
 
 
 # get the list of eps files from
@@ -55,11 +47,17 @@ usage-delete:
 clean:
 	-rm -f temp/*
 
-check : check_smcl check_version inc_dist_date
+check : code_checks package_checks
+
+package_checks: check_version
 	
 inc_dist_date:
 	sed -i "s/\(d Distribution-Date: \).\+/\1$$(date +%Y%m%d)/g" synth_runner.pkg
 
+code_checks: check_smcl
+
+package: inc_dist_date code/ado/synth_runner.html
+  
 #Smcl has problems displaying lines over 244 characters
 check_smcl:
 	@echo "Will display lines if error"
@@ -78,5 +76,49 @@ check_version:
 	@grep '"version" as' code/ado/synth_runner.ado
 	@echo ""
 
-gen_html_help
+releasehelp:
+	@echo Make sure you run tests \(on Stata v12\)
+	@echo -make code_checks-.
+	@echo -make package- and bump the version.
+	@echo -make package_checks-
+	@echo Edit the CHANGELOG.md
+	@echo Push to GitHub
+	@echo Go to https://github.com/bquistorff/synth_runner/releases and make a release
+	@echo Notify the release on https://github.com/bquistorff/synth_runner/issues/1
+
+TESTS_DOS=usage.do test.do
+TESTS_LOGS:= $(TESTS_DOS:.do=.log)
+
+tests: 
+	@echo Running tests. Do on Stata 12.
+	@echo If error, search for "^r\(" in less: less code/all_tests_results.txt
+	@echo Afterword, drag all PDFs to PDF viewer, then: make usage-delete or usage-cleanup
+	$(STATABATCH) do code/export_platformname.do code/platformname.txt && \
+		PLAT=$$(<code/platformname.txt) && \
+		export S_ADO="code/ado/;code/ado/$$PLAT;UPDATES;BASE;SITE;.;PERSONAL;PLUS;OLDPLACE" && \
+		export STATATMP=. && \
+		for i in $(TESTS_DOS) ; do \
+			$(STATABATCH) do code/$${i}; \
+			echo test $${i} done; \
+		done ; \
+		mv $(TESTS_LOGS) code; \
+		cd "code"; \
+		cat $(TESTS_LOGS) > all_tests_results.txt; \
+		X=$$(grep "^r(" all_tests_results.txt); echo -n "$$X"; [ $$(echo $$X | wc -w) -eq 0 ]  ;
+    
+
+code/ado/synth_runner.html: code/ado/synth_runner.smcl
 	$(STATABATCH) do gen_html_help.do
+
+paper: writeups/synth_runner_sj.pdf
+
+#The lyx --exports often return error 127 (on Windows) but still produce the file fine
+writeups/synth_runner_sj.pdf: writeups/synth_runner_sj.lyx
+	cd writeups && lyx --export pdf2 synth_runner_sj.lyx
+
+writeups/synth_runner_sj.tex: writeups/synth_runner_sj.lyx
+	cd writeups && lyx --export pdflatex synth_runner_sj.lyx
+
+check_paper: writeups/synth_runner_sj.tex
+	chktex -n1 -n3 -n15 -n17 -n9 -n36 writeups/synth_runner_sj.tex
+
