@@ -329,7 +329,7 @@ status open
 status open
 
 \begin_layout Plain Layout
-Check: <snippet>.
+Check: <snippet>, <update>.
  No: year
 \end_layout
 
@@ -516,7 +516,11 @@ where
 \end_layout
 
 \begin_layout Standard
-Equation 
+Equation
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "eq:factor-model"
@@ -552,7 +556,7 @@ To begin with, let there be a single unit that receives treatment.
 
  total periods.
  Index units 
-\begin_inset Formula $\{1,...,J+1\}$
+\begin_inset Formula $\{1,\ldots,J+1\}$
 \end_inset
 
  such that the first unit is the treated unit and the others are 
@@ -594,7 +598,7 @@ donors
 \end_inset
 
  observation-weight matrix 
-\begin_inset Formula $(w_{2},w_{3},...,w_{J+1})'$
+\begin_inset Formula $(w_{2},w_{3},\ldots,w_{J+1})'$
 \end_inset
 
  where 
@@ -602,7 +606,7 @@ donors
 \end_inset
 
  and 
-\begin_inset Formula $w_{j}\geq0\ \forall j\in\{2,...,J+1\}$
+\begin_inset Formula $w_{j}\geq0\ \forall j\in\{2,\ldots,J+1\}$
 \end_inset
 
 .
@@ -746,7 +750,7 @@ key "ADH10"
 \begin_inset Formula $\overrightarrow{s}_{1}$
 \end_inset
 
- as the post-treatment RMSPE.
+ as the post-treatment RMSPE\SpecialChar endofsentence
  
 \begin_inset Formula $\mathbf{V}$
 \end_inset
@@ -1058,7 +1062,7 @@ key "CGNP13"
  allows for more than one unit to experience treatment and at possibly different
  times.
  Index treated units 
-\begin_inset Formula $g\in\{1...G\}$
+\begin_inset Formula $g\in\{1,\dots,G\}$
 \end_inset
 
 .
@@ -1440,14 +1444,18 @@ _runner
 
     {
 \backslash
-it depvar}
+it depvar
+\backslash
+/}
 \end_layout
 
 \begin_layout Plain Layout
 
     {
 \backslash
-it predictorvars}
+it predictorvars
+\backslash
+/}
 \end_layout
 
 \begin_layout Plain Layout
@@ -1497,7 +1505,9 @@ _limit
 \backslash
 _mult({
 \backslash
-it real})
+it real
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1506,7 +1516,9 @@ it real})
 \backslash
 _propr({
 \backslash
-it real})
+it real
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1551,7 +1563,9 @@ _pl
 \backslash
 _avgs({
 \backslash
-it string})
+it string
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1560,7 +1574,9 @@ it string})
 \backslash
 _prog({
 \backslash
-it string})
+it string
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1590,7 +1606,9 @@ _units
 \backslash
 _prog({
 \backslash
-it string})
+it string
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1599,7 +1617,9 @@ it string})
 \backslash
 _prog({
 \backslash
-it string})
+it string
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
@@ -1608,14 +1628,18 @@ it string})
 \backslash
 _prog({
 \backslash
-it string})
+it string
+\backslash
+/})
 \end_layout
 
 \begin_layout Plain Layout
 
     {
 \backslash
-it synthsettings} }
+it synthsettings
+\backslash
+/} }
 \end_layout
 
 \end_inset
@@ -1966,8 +1990,9 @@ effect
 \family typewriter
 pre_rmspe
 \family default
- contains the pre-treatment match quality in terms of RMSPE.
- It is constant for a unit.
+ contains the pre-treatment match quality in terms of RMSPE\SpecialChar endofsentence
+ It is constant
+ for a unit.
 \end_layout
 
 \begin_layout Itemize
@@ -1976,7 +2001,7 @@ pre_rmspe
 post_rmspe
 \family default
  contains a measure of the post-treatment effect (jointly over all post-treatmen
-t time periods) in terms of RMSPE.
+t time periods) in terms of RMSPE\SpecialChar endofsentence
  It is constant for a unit.
 \end_layout
 
@@ -2076,7 +2101,7 @@ int
 \family typewriter
 noenforce_const_pre_length
 \family default
- - When there are multiple periods, estimations at later treatment dates
+: When there are multiple periods, estimations at later treatment dates
  will have more pre-treatment history available.
  By default, these histories are trimmed on the early side so that all estimatio
 ns have the same amount of history.
@@ -2133,8 +2158,7 @@ deterministicoutput
 parallel
 \family default
 , will eliminate displayed output that would vary depending on the machine
- (e.g.
- timers and number of parallel clusters) so that log files can be easily
+ (e.g., timers and number of parallel clusters) so that log files can be easily
  compared across runs.
 \end_layout
 
@@ -2174,7 +2198,7 @@ pred_program
 status open
 
 \begin_layout Plain Layout
-update if number changes
+<update> if number changes
 \end_layout
 
 \end_inset
@@ -2202,7 +2226,7 @@ string
 status open
 
 \begin_layout Plain Layout
-update if number changes
+<update> if number changes
 \end_layout
 
 \end_inset
@@ -2250,7 +2274,7 @@ xperiod
 status open
 
 \begin_layout Plain Layout
-update if number changes
+<update>if number changes
 \end_layout
 
 \end_inset
@@ -2298,7 +2322,7 @@ mspeperiod
 status open
 
 \begin_layout Plain Layout
-update if number changes
+<update>if number changes
 \end_layout
 
 \end_inset
@@ -2311,7 +2335,7 @@ update if number changes
 \emph on
 synthsettings
 \emph default
- pass-through options sent to 
+ are pass-through options sent to 
 \family typewriter
 synth
 \family default
@@ -2707,7 +2731,7 @@ ssc install synth, all
 \family default
 ).
  This panel dataset contains information for 39 US States for the years
- 1970-2000 (see 
+ 1970–2000 (see 
 \begin_inset CommandInset citation
 LatexCommand citealt
 key "ADH10"
@@ -3111,7 +3135,7 @@ e(pval_joint_post)
 e(pval_joint_post_std)
 \family default
  value lists the same proportion, but scales all values by the relevant
- pre-treatment RMSPE.
+ pre-treatment RMSPE\SpecialChar endofsentence
  This measure does show significance.
  The final measure, 
 \family typewriter
@@ -3125,7 +3149,8 @@ e(avg_pre_rmspe_p)
 
 -value is a modification that adds one to the numerator and denominator
  (in cases with a single treatment).
- This is shown for the case of the ratio of post- to pre-treatment RMSPE.
+ This is shown for the case of the ratio of post- to pre-treatment RMSPE\SpecialChar endofsentence
+
 \end_layout
 
 \begin_layout Standard
@@ -3147,7 +3172,11 @@ gen_var
 \family typewriter
 single_treatment_graphs
 \family default
- command creates the graphs in Figure 
+ command creates the graphs in Figure
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:single_treatment_graphs"
@@ -3161,7 +3190,11 @@ reference "fig:single_treatment_graphs"
 \family typewriter
 effect_graphs
 \family default
- command creates the graphs in Figure 
+ command creates the graphs in Figure
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:effect_graphs"
@@ -3187,7 +3220,11 @@ trlinediff(real)
  that allows the user to offset a vertical treatment from the first treatment
  period.
  Likely options include values in the range from (first treatment period
- - last post-treatment period) to 0 and the default value is -1 (to match
+ 
+\begin_inset Formula $-$
+\end_inset
+
+ last post-treatment period) to 0 and the default value is -1 (to match
  
 \begin_inset CommandInset citation
 LatexCommand citealt
@@ -3200,7 +3237,11 @@ key "ADH10"
 \family typewriter
 pval_graphs
 \family default
- command creates the graphs in Figure 
+ command creates the graphs in Figure
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:pval_graphs"
@@ -3700,7 +3741,10 @@ Again there is a single treatment period, so synthetic control data can
  during the validation period.
  The graphing commands are equivalent.
  The ones showing the range of effects and raw data are shown in Figure
- 
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:single_treatment_graphs2"
@@ -4038,7 +4082,11 @@ multi
 \family typewriter
 effect_graphs
 \family default
- and those are shown in Figure 
+ and those are shown in Figure
+\begin_inset space ~
+\end_inset
+
+
 \begin_inset CommandInset ref
 LatexCommand ref
 reference "fig:effect_graphs3"
