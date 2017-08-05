@@ -93,8 +93,8 @@ tests:
 	@echo Running tests. Do on Stata 12.
 	@echo If error, search for "^r\(" in less: less code/all_tests_results.txt
 	@echo Afterword, drag all PDFs to PDF viewer, then: make usage-delete or usage-cleanup
-	$(STATABATCH) do code/export_platformname.do code/platformname.txt && \
-		PLAT=$$(<code/platformname.txt) && \
+	export S_ADO="code/ado/;UPDATES;BASE;SITE;.;PERSONAL;PLUS;OLDPLACE" && $(STATABATCH) do code/export_platformname.do code/platformname.txt;
+	PLAT=$$(<code/platformname.txt) && \
 		export S_ADO="code/ado/;code/ado/$$PLAT;UPDATES;BASE;SITE;.;PERSONAL;PLUS;OLDPLACE" && \
 		export STATATMP=. && \
 		for i in $(TESTS_DOS) ; do \
