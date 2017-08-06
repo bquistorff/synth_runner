@@ -49,4 +49,4 @@ See the [HTML version of the package help](https://rawgit.com/bquistorff/synth_r
 
 Contributing
 =======
-If you think you've encountered a bug, try installing the latest version. If it still persists see if an existing issue notes this problem. If the problem is new, file a new issue and list your version of Stata, synth_runner (from `which synth_runner`), the steps that produce the problem and the output.
+If you think you've encountered a bug, try installing the latest version. If it still persists see if an existing issue notes this problem. If the problem is new, file a [new issue](https://github.com/bquistorff/synth_runner/issues/new) and filling out the checklist so that there is enough information to diagnose the issue.
