@@ -10,3 +10,6 @@ writeups/*.tex
 code/ado/backup.trk
 deliverables/sj/*
 !deliverables/sj/README.txt
+deliverables/sj2/*
+!deliverables/sj2/README.txt
+deliverables/synth_runner.pkg

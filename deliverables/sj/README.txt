@@ -23,10 +23,13 @@ _sr_get_returns.ado
 _sr_print_dots.ado
 calc_RMSPE.ado
 effect_graphs.ado
+effect_graphs.sthlp
 pval_graphs.ado
+pval_graphs.sthlp
 single_treatment_graphs.ado
+single_treatment_graphs.sthlp
 synth_runner.ado
-synth_runner.pkg
 synth_runner.sthlp
+synth_runner.pkg
 synth_wrapper.ado
 usage.do

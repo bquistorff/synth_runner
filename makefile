@@ -29,13 +29,22 @@ list:
 
 # get the list of eps files from
 #. grepr eps writeups/synth_runner_sj.lyx | grep filename | cut -c14- | tr '\n' ' '
+#code files that are not in the package: usage.do 
 sj-deliverable:
 	-rm deliverables/sj/*.zip
+	sed 's|code/ado/||' synth_runner.pkg > deliverables/synth_runner.pkg
 	zip -j deliverables/sj/figs.zip fig/eps/cigsale1_raw.eps fig/eps/cigsale1_effects.eps fig/eps/cigsale1_effect.eps fig/eps/cigsale1_tc.eps fig/eps/cigsale1_pval.eps fig/eps/cigsale1_pval_t.eps fig/eps/cigsale2_raw.eps fig/eps/cigsale2_effects.eps fig/eps/cigsale3_effect.eps fig/eps/cigsale3_tc.eps
-	zip -j deliverables/sj/program_files.zip code/ado/_sr_add_keepfile_to_agg.ado code/ado/_sr_do_work_do.ado code/ado/_sr_do_work_tr.ado code/ado/_sr_gen_time_locals.ado code/ado/_sr_get_returns.ado code/ado/_sr_print_dots.ado code/ado/calc_RMSPE.ado code/ado/effect_graphs.ado code/ado/pval_graphs.ado code/ado/single_treatment_graphs.ado code/ado/synth_runner.ado code/ado/synth_runner.pkg code/ado/synth_runner.sthlp code/ado/synth_wrapper.ado code/usage.do
+	zip -j deliverables/sj/program_files.zip code/ado/_sr_add_keepfile_to_agg.ado code/ado/_sr_do_work_do.ado code/ado/_sr_do_work_tr.ado code/ado/_sr_gen_time_locals.ado code/ado/_sr_get_returns.ado code/ado/_sr_print_dots.ado code/ado/calc_RMSPE.ado code/ado/effect_graphs.ado code/ado/effect_graphs.sthlp code/ado/pval_graphs.ado code/ado/pval_graphs.sthlp code/ado/single_treatment_graphs.ado code/ado/single_treatment_graphs.sthlp code/ado/synth_runner.ado code/ado/synth_runner.sthlp deliverables/synth_runner.pkg code/ado/synth_wrapper.ado code/usage.do stata.toc
 	cp writeups/synth_runner_sj.pdf deliverables/sj
 	@echo "README.txt is already there"
 	@echo "Check that including all figs (see command in makefile)"
+
+sj-deliverable2:
+	-rm deliverables/sj2/*.zip
+	cp deliverables/sj/program_files.zip .
+	cp deliverables/sj2/README.txt .
+	zip deliverables/sj2/submission.zippy fig/eps/cigsale1_raw.eps fig/eps/cigsale1_effects.eps fig/eps/cigsale1_effect.eps fig/eps/cigsale1_tc.eps fig/eps/cigsale1_pval.eps fig/eps/cigsale1_pval_t.eps fig/eps/cigsale2_raw.eps fig/eps/cigsale2_effects.eps fig/eps/cigsale3_effect.eps fig/eps/cigsale3_tc.eps literature/_IDB_synth.bib writeups/synth_runner_sj.lyx writeups/synth_runner_sj.pdf writeups/sj.bst writeups/sj.sty writeups/stata.sty writeups/tl.pdf writeups/tr.pdf program_files.zip README.txt
+	rm program_files.zip README.txt
 
 usage-cleanup:
 	-mv *.log log/do/
