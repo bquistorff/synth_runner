@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.6.0]
+### Added
+ - Help files for the graphing commands
+### Changed
+ - Removed some redundant options in the graphing commands
+
 ## [1.5.0]
 ### Added
  - The `gen_var` to easily include the synthetic control estimates in the dataset.

@@ -3202,7 +3202,7 @@ reference "fig:effect_graphs"
 \end_inset
 
 .
- One plots the outcome for the unit and it's synthetic control while the
+ One plots the outcome for the unit and its synthetic control while the
  other plots the difference between the two (which for post-treatment is
  the 
 \begin_inset Quotes eld
@@ -3265,23 +3265,18 @@ status open
 \begin_layout Plain Layout
 
 .
- single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) ///
+ single_treatment_graphs, trlinediff(-1) effects_ylabels(-30(10)30) ///
 \end_layout
 
 \begin_layout Plain Layout
 
-   trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
+    effects_ymax(35) effects_ymin(-35)
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) ///
-\end_layout
-
-\begin_layout Plain Layout
-
-    trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)
+ effect_graphs , trlinediff(-1)
 \end_layout
 
 \begin_layout Plain Layout
@@ -3433,17 +3428,14 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Effect
+Treatment vs Control
 \end_layout
 
 \end_inset
 
 
-\end_layout
-
-\begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../fig/eps/cigsale1_effect.eps
+	filename ../fig/eps/cigsale1_tc.eps
 	scale 47
 
 \end_inset
@@ -3463,7 +3455,7 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-Treatment vs Control
+Effect
 \end_layout
 
 \end_inset
@@ -3473,7 +3465,7 @@ Treatment vs Control
 
 \begin_layout Plain Layout
 \begin_inset Graphics
-	filename ../fig/eps/cigsale1_tc.eps
+	filename ../fig/eps/cigsale1_effect.eps
 	scale 47
 
 \end_inset
@@ -3697,23 +3689,13 @@ status open
 \begin_layout Plain Layout
 
 .
- single_treatment_graphs, depvar(cigsale_scaled) ///
-\end_layout
-
-\begin_layout Plain Layout
-
-    effect_var(effect_scaled) trunit(3) trperiod(1989)
+ single_treatment_graphs, scaled
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- effect_graphs , depvar(cigsale_scaled) trunit(3) trperiod(1989) ///
-\end_layout
-
-\begin_layout Plain Layout
-
-    effect_var(effect_scaled) depvar_synth(cigsale_scaled_synth) 
+ effect_graphs , scaled
 \end_layout
 
 \begin_layout Plain Layout
@@ -3926,12 +3908,14 @@ status open
 \begin_layout Plain Layout
 
 .
- 	return local predictors "beer(`=`tyear'-4'(1)`=`tyear'-1') ///  
+ 	local beerv "beer(`=`tyear'-4'(1)`=`tyear'-1')"
 \end_layout
 
 \begin_layout Plain Layout
 
-        lnincome(`=`tyear'-4'(1)`=`tyear'-1')" 
+.
+ 	return local predictors "`beerv' lnincome(`=`tyear'-4'(1)`=`tyear'-1')"
+ 
 \end_layout
 
 \begin_layout Plain Layout
@@ -4031,24 +4015,24 @@ status open
 \begin_layout Plain Layout
 
 .
- synth_runner cigsale retprice age15to24, d(D) ///
+ synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends
+ ///
 \end_layout
 
 \begin_layout Plain Layout
 
-    pred_prog(my_pred) trends training_propr(`=13/18') ///
+    training_propr(`=13/18') drop_units_prog(my_drop_units) ///
 \end_layout
 
 \begin_layout Plain Layout
 
-    drop_units_prog(my_drop_units) xperiod_prog(my_xperiod) mspeperiod_prog(my_m
-speperiod)
+    xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)
 \end_layout
 
 \begin_layout Plain Layout
 
 .
- effect_graphs , multi depvar(cigsale)
+ effect_graphs
 \end_layout
 
 \begin_layout Plain Layout
@@ -4074,15 +4058,11 @@ We extend Example 2 by considering a control state now to be treated (Georgia
 single_treatment_graphs
 \family default
 ) can also no longer be made.
- The option 
-\emph on
-multi
-\emph default
- is now passed to 
+ The 
 \family typewriter
 effect_graphs
 \family default
- and those are shown in Figure
+ are shown in Figure
 \begin_inset space ~
 \end_inset
 

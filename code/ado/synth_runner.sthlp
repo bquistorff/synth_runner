@@ -1,5 +1,8 @@
 {smcl}
 {* 17feb2017}{...}
+{vieweralsosee "effect_graphs" "help effect_graphs"}{...}
+{vieweralsosee "pval_graphs" "help pval_graphs"}{...}
+{vieweralsosee "single_treatment_graphs" "help single_treatment_graphs"}{...}
 {cmd:help synth_runner} 
 {hline}
 
@@ -235,20 +238,21 @@ The following examples use data from the {cmd:synth} package. Ensure that {cmd:s
 {p 4 8 2}
 Example 1 - Reconstruct the initial {cmd:synth} example plus graphs:{p_end}
 {phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) gen_vars}{p_end}
-{phang}{stata single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
-{phang}{stata effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)}{p_end}
+{phang}{stata single_treatment_graphs, trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)}{p_end}
+{phang}{stata effect_graphs , trlinediff(-1)}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
-In this example, {cmd:synth_runner} conducts all the estimations and inference. Since there was only a single treatment period we can save the output and merge it back into the dataset. Then we can create the various graphs. 
+In this example, {cmd:synth_runner} conducts all the estimations and inference. Since there was only a single treatment period we can save the output into the dataset. Then we can create the various graphs. 
 Note the option {it:trlinediff} allows the offset of a vertical treatment line. 
 Likely options include values in the range from (first treatment period - last post-treatment period) to 0 and the default value is -1 (to match Abadie et al. 2010). {p_end}
 
 {p 4 8 2}
 Example 2 - Same treatment, but a bit more complicated setup:{p_end}
+{phang}{stata cap drop pre_rmspe post_rmspe lead effect cigsale_synth}{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989)}{p_end}
 {phang}{stata synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18') gen_vars pre_limit_mult(10)}{p_end}
-{phang}{stata single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
-{phang}{stata effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) effect_var(effect_scaled) trunit(3) trperiod(1989)}{p_end}
+{phang}{stata single_treatment_graphs, scaled}{p_end}
+{phang}{stata effect_graphs , scaled}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
 Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we (a) specify the treated units/periods with a binary variable, 
@@ -257,6 +261,8 @@ Again there is a single treatment period, so output can be saved and merged back
 {p 4 8 2}
 Example 3 - Multiple treatments at different time periods:{p_end}
 
+{phang}{stata cap drop pre_rmspe post_rmspe lead effect cigsale_synth}{p_end}
+{phang}{stata cap drop cigsale_scaled effect_scaled cigsale_scaled_synth D}{p_end}
 {phang}{stata cap program drop my_pred my_drop_units my_xperiod my_mspeperiod}{p_end}
 {phang}{stata program my_pred, rclass}{p_end}
 {phang2}{stata args tyear}{p_end}
@@ -277,11 +283,11 @@ Example 3 - Multiple treatments at different time periods:{p_end}
 {phang}{stata end}{p_end}
 {phang}{stata gen byte D = (state==3 & year>=1989) | (state==7 & year>=1988)}{p_end}
 {phang}{stata synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units)) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)}{p_end}
-{phang}{stata effect_graphs , multi depvar(cigsale)}{p_end}
+{phang}{stata effect_graphs}{p_end}
 {phang}{stata pval_graphs}{p_end}
 {p 8 8 2}
 We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file. 
-Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. The option {it:multi} is now passed to {cmd:effect_graphs}. 
+Some of the graphs (of {cmd:single_treatment_graphs}) can no longer be made. 
 We also show how predictors, unit dropping, {cmd:xperiod}, and {cmd:mspeperiod} can be dynamically generated depending on the treatment year. {p_end}
 
 {title:Development}
@@ -300,7 +306,7 @@ If not, file a new 'issue' there and list (a) the steps causing the problem (wit
 to the research community, like a paper. Please cite it as such: {p_end}
 
 {phang}Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate
-synthetic control estimation using synth, June 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.5.0.
+synthetic control estimation using synth, August 2017. {browse "https://github.com/bquistorff/synth_runner":https://github.com/bquistorff/synth_runner}. Version 1.6.0.
 {p_end}
 
 {p}And in bibtex format:{p_end}
@@ -308,8 +314,8 @@ synthetic control estimation using synth, June 2017. {browse "https://github.com
 @Misc{QG17,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = jun,
-  Note   = {Version 1.5.0},
+  Month  = aug,
+  Note   = {Version 1.6.0},
   Year   = {2017},
   Url    = {https://github.com/bquistorff/synth_runner}
 }

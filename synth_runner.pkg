@@ -2,14 +2,14 @@ d 'synth_runner': module
 d
 d   Automation for multiple Synthetic Control estimations. 
 d
-d Version 1.5.0
+d Version 1.6.0
 d
-d Distribution-Date: 20170622
+d Distribution-Date: 20170808
 d Requires: -synth- from SSC
 d Recommends: -parallel- at least version 1.18.2 (available from http://github.com/gvegayon/parallel/)
 d
 d Author: Brian Quistorff
-d Support: email Brian.Quistorff@microsoft.com
+d Support: http://github.com/bquistorff/synth_runner
 d
 d KW: Synthetic Control Methodology
 d
@@ -22,8 +22,11 @@ f code/ado/_sr_get_returns.ado
 f code/ado/_sr_print_dots.ado
 f code/ado/calc_RMSPE.ado
 f code/ado/effect_graphs.ado
+f code/ado/effect_graphs.sthlp
 f code/ado/pval_graphs.ado
+f code/ado/pval_graphs.sthlp
 f code/ado/single_treatment_graphs.ado
+f code/ado/single_treatment_graphs.sthlp
 f code/ado/synth_runner.ado
 f code/ado/synth_wrapper.ado
 f code/ado/synth_runner.sthlp

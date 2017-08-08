@@ -30,6 +30,8 @@ set trace off
 * Re-doing the maing example from -synth-
 sysuse smoking, clear
 tsset state year
+label variable year "Year"
+label variable cigsale "Cigarette sales per capita (in packs)"
 
 compress
 qui describe, varlist
@@ -45,11 +47,10 @@ di (e(pval_joint_post_std)*e(n_pl)+1)/(e(n_pl)+1) //p-value if truly random
 mat li e(treat_control)
 
 
-single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(${tper}) trlinediff(-1) ///
-	raw_gname(cigsale1_raw) effects_gname(cigsale1_effects) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
+single_treatment_graphs, trlinediff(-1) raw_gname(cigsale1_raw) effects_gname(cigsale1_effects) ///
+	effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
 
-effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(${tper}) trlinediff(-1) ///
-	effect_gname(cigsale1_effect) tc_gname(cigsale1_tc)
+effect_graphs , trlinediff(-1) tc_gname(cigsale1_tc) effect_gname(cigsale1_effect)
 	
 pval_graphs , pvals_gname(cigsale1_pval) pvals_std_gname(cigsale1_pval_t)
 keep $orig_vars
@@ -65,11 +66,8 @@ di "Proportion of control units that have a higher RMSPE than the treated unit i
 di round(`e(avg_val_rmspe_p)', 0.001)
 mat li e(treat_control)
 
-single_treatment_graphs, depvar(cigsale_scaled) ///
-	effect_var(effect_scaled) trunit(3) trperiod(${tper}) raw_gname(cigsale2_raw) effects_gname(cigsale2_effects)
-effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) ///
-	effect_var(effect_scaled) trunit(3) trperiod(${tper}) ///
-	effect_gname(cigsale2_effect) tc_gname(cigsale2_tc)
+single_treatment_graphs, scaled raw_gname(cigsale2_raw) effects_gname(cigsale2_effects)
+effect_graphs , scaled tc_gname(cigsale2_tc) effect_gname(cigsale2_effect)
 pval_graphs , pvals_gname(cigsale2_pval) pvals_std_gname(cigsale2_pval_t)
 keep $orig_vars
 }
@@ -109,7 +107,7 @@ synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) ///
 	trends training_propr(`=13/18') drop_units_prog(my_drop_units) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)
 ereturn list
 mat li e(treat_control)
-effect_graphs , multi depvar_lbl(`:variable label cigsale') effect_gname(cigsale3_effect) tc_gname(cigsale3_tc)
+effect_graphs ,  tc_gname(cigsale3_tc) effect_gname(cigsale3_effect)
 pval_graphs , pvals_gname(cigsale3_pval) pvals_std_gname(cigsale3_pval_t)
 keep $orig_vars
 }

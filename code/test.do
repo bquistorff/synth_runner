@@ -22,12 +22,40 @@ mac drop _all
 //if run in batch-mode then set this doesn't force trying to make 2 logs
 cap log close _all
 cap log using "test.log", replace
+set graphics `= cond("`c(mode)'"=="batch", "off", "on")'
 version 12
 set scheme s2mono
 set more off
 mata: mata clear
 mata: mata set matafavor speed
 parallel setclusters 2, force
+
+//extra options to graphing commands
+if 1{
+sysuse smoking, clear
+tsset state year
+label variable year "Year"
+label variable cigsale "Cigarette sales per capita (in packs)"
+synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), ///
+	trunit(3) trperiod(1989) gen_vars
+single_treatment_graphs, trlinediff(-1) ///
+	raw_gname(cigsale1_raw) effects_gname(cigsale1_effects) effects_ylabels(-30(10)30) ///
+	effects_ymax(35) effects_ymin(-35) ///
+	treated_name("California") donors_name("Other states") ///
+	raw_options(title("State Annual Cigarette Sales")) ///
+	effects_options(title("Differences between each State and its Synthetic Control"))
+
+effect_graphs , trlinediff(-1) ///
+	tc_gname(cigsale1_tc) effect_gname(cigsale1_effect) ///
+	treated_name("California") ///
+	tc_options(title("Passage of California's Proposition 99 and Cigarette Sales")) ///
+	effect_options(title("Difference between California and its Synthetic Control"))
+	
+pval_graphs , pvals_gname(cigsale1_pval) pvals_std_gname(cigsale1_pval_t) ///
+	xtitle("Number of years after Proposition 99") ///
+	pvals_options(title("Inference for Effects")) ///
+	pvals_std_options(title("Inference for Effects (Standardized Effect)"))
+}
 
 
 //un-evenly spaced panel in parallel

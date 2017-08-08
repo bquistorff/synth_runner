@@ -1,4 +1,6 @@
-* Description: 
+/* 
+ * (Currrently unused) An Monte Carlos simulator to test speed and estimation quality.
+ */ 
 
 *Header
 *local rootname "testing" //testing mode

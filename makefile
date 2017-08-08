@@ -2,8 +2,13 @@
 ##Testing:
 ## source code/test_stata12_env.sh
 ## make tests
+##Updating module dependencies:
+## See code/setup_ado.do
 ##Release:
-## make releaseinfo
+## make releasehelp
+##Paper:
+## make paper
+## make check_paper
 ##SJ (automatically overwrites):
 ## make sj-deliverable
 
@@ -62,6 +67,9 @@ package: inc_dist_date code/ado/synth_runner.html
 check_smcl:
 	@echo "Will display lines if error"
 	-grep '.\{245\}' code/ado/synth_runner.sthlp
+	-grep '.\{245\}' code/ado/effect_graphs.sthlp
+	-grep '.\{245\}' code/ado/pval_graphs.sthlp
+	-grep '.\{245\}' code/ado/single_treatment_graphs.sthlp
 	@echo ""
 
 check_version:

@@ -2,17 +2,25 @@
 *! Produces graphs for all units: raw outcome data, and effects
 program single_treatment_graphs
 	version 12 //haven't tested on earlier versions
-	syntax , depvar(string) trperiod(int) trunit(string) ///
-		[effect_var(string) raw_gname(string)  effects_gname(string) trlinediff(real -1) ///
-		do_color(string) effects_ylabels(string) effects_ymax(string) effects_ymin(string)]
+	syntax , [scaled raw_gname(string)  effects_gname(string) trlinediff(real -1) ///
+		do_color(string) effects_ylabels(string) effects_ymax(string) effects_ymin(string) ///
+		treated_name(string) donors_name(string) raw_ytitle(string) effects_ytitle(string) raw_options(string) effects_options(string)]
 
+	_assert "`e(cmd)'"=="synth_runner", msg("Need to run this after -synth_runner- (with no other estimation routines in between).")
+	_assert "`e(treat_type)'"=="single unit", msg("Can only be run after estimation with a single treated unit")
 	if "`do_color'"=="" local do_color bg
-	if "`effect_var'"=="" local effect_var effect
-	cap confirm variable `effect_var'
-	_assert _rc==0, msg(`"Effect variable [`effect_var'] does not exist, did you use the -, gen_vars- option in -synth_runner-?"') rc(111)
 	if "`raw_gname'"=="" local raw_gname raw
 	if "`effects_gname'"=="" local effects_gname effects
+	if "`treated_name'"=="" local treated_name "Treated"
+	if "`donors_name'"=="" local donors_name "Donors"
 
+	local depvar = cond("`scaled'"=="", "`e(depvar)'", "`e(depvar)'_scaled")
+	confirm variable `depvar'
+	local effect_var = cond("`scaled'"=="", "effect", "effect_scaled")
+	cap confirm variable `effect_var'
+	_assert _rc==0, msg(`"Effect variable [`effect_var'] does not exist, did you use the -, gen_vars- option in -synth_runner-?"') rc(111)
+	local trunit="`e(trunit)'"
+	local trperiod=`e(trperiod)'
 	tsset, noquery
 	local pvar = "`r(panelvar)'"
 	local tvar = "`r(timevar)'"
@@ -36,13 +44,15 @@ program single_treatment_graphs
 	local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
 
 	local ylbl : variable label `depvar'
+	if "`raw_ytitle'"=="" local raw_ytitle "`ylbl'"
+	if "`effects_ytitle'"=="" & "`raw_ytitle'"!="" local effects_ytitle "Effects - `ylbl'"
 	
 	preserve
 	keep `pvar' `tvar' `depvar'
 	qui reshape wide `depvar', i(`tvar') j(`pvar') //easier in wide format
 	twoway `raw_gline' (line `depvar'`trunit' `tvar', lpattern(solid..) lstyle(foreground..)), ///
-		xline(`=`trperiod'-1') name(`raw_gname', replace) legend(order(`=`n_units'+1' "Treated" 1 "Donors")) ///
-		ylabel(, nogrid) ytitle("`ylbl'")
+		xline(`=`trperiod'-1') name(`raw_gname', replace) legend(order(`=`n_units'+1' "`treated_name'" 1 "`donors_name'")) ///
+		ylabel(, nogrid) ytitle("`raw_ytitle'") `raw_options'
 	restore
 
 	*The effects graph
@@ -61,7 +71,7 @@ program single_treatment_graphs
 	*there is a graph option limit of 20 so limit the number per line
 	twoway `effect_gline'	(line `effect_var'`trunit' `tvar', lstyle(foreground..)), ///
 		xline(`=`trperiod'+`trlinediff'') name(`effects_gname', replace) ylabel(`effects_ylabels', nogrid) ///
-			legend(order(`=`n_units'+1' "Treated" 1 "Donors")) ytitle("Effects - `ylbl'")
+			legend(order(`=`n_units'+1' "`treated_name'" 1 "`donors_name'")) ytitle("`effects_ytitle'") `effects_options'
 	if "`effects_ymax'"!="" gr_edit .plotregion1.yscale.curmax=`effects_ymax'
 	if "`effects_ymin'"!="" gr_edit .plotregion1.yscale.curmin=`effects_ymin'
 	restore

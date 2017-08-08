@@ -1,4 +1,4 @@
-*! version 1.5.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.6.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
 *! Automates the process of conducting many synthetic control estimations
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions
@@ -106,6 +106,7 @@ program synth_runner, eclass
 		_assert "`keep'"=="", msg("Can only keep if one period in which units receive treatment")
 		if "`xperiod'"!="" di "With multliple time periods you may want to use xperiod_prog() instead of xperiod()"
 		if "`mspeperiod'"!="" di "With multliple time periods you may want to use mspeperiod_prog() instead of mspeperiod()"
+		local treat_type="multiple periods"
 	}
 	cleanup_mata , tr_table(`uniq_trs') pre_limit_mult(`pre_limit_mult') warn
 	
@@ -156,6 +157,16 @@ program synth_runner, eclass
 	
 	di as result "Estimating the treatment effects"
 	local num_tr_units : list sizeof tr_units
+	if "`treat_type'"!="multiple periods"{
+		if `num_tr_units'==1 {
+			local treat_type = "single unit"
+			local tt_trunit = `tr_units'
+		}
+		else {
+			local treat_type = "single period"
+		}
+		local tt_trperiod = `uniq_trs'[1,1]
+	}
 	tempfile maindata maindata_no_tr
 	qui save "`maindata'"
 	drop _all
@@ -378,6 +389,16 @@ program synth_runner, eclass
 	matrix rownames `out_ef' = `plist'
 	ereturn matrix treat_control = `out_ef'
 	
+	*Helpers
+	ereturn local depvar="`depvar'"
+	ereturn local treat_type="`treat_type'"
+	if "`treat_type'"=="single unit"{
+		ereturn local trunit="`tt_trunit'"
+	}
+	if "`treat_type'"!="multiple periods"{
+		ereturn local trperiod="`tt_trperiod'"
+	}
+	
 	*Inference stats
 	ereturn scalar n_pl = `n_pl'
 	ereturn scalar n_pl_used = `n_pl_used'
@@ -423,11 +444,11 @@ end
 
 program def synth_runner_version, rclass
 	di as result "synth_runner" as text " Stata module for running Synthetic Control estimations"
-	di as result "version" as text " 1.5.0 "
+	di as result "version" as text " 1.6.0 "
 	* List the "roles" (see http://r-pkgs.had.co.nz/description.html and http://www.loc.gov/marc/relators/relaterm.html)
 	di as result "author" as text " Brian Quistorff [cre,aut]"
 	
-	return local version = "1.5.0"
+	return local version = "1.6.0"
 end
 
 //allows body or appendage to be null (so that looping and adding is easy)
