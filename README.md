@@ -45,7 +45,7 @@ pval_graphs , pvals_gname(cigsale1_pval) pvals_std_gname(cigsale1_pval_t)
 
 Help
 =======
-See the [HTML version of the package help](https://rawgit.com/bquistorff/synth_runner/master/code/ado/parallel.html) for more info.
+See the [HTML version of the package help](https://rawgit.com/bquistorff/synth_runner/master/code/ado/synth_runner.html) for more info.
 
 Contributing
 =======
