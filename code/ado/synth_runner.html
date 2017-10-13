@@ -220,22 +220,21 @@ BODY{background-color: ffffff;
     Example 1 - Reconstruct the initial <span class=result>synth</span> example plus graphs:
     synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975),
         trunit(3) trperiod(1989) gen_vars
-    single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) effects_ylabels(-30(10)30)
-        effects_ymax(35) effects_ymin(-35)
+    single_treatment_graphs, trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
     effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) effect_var(effect)
     pval_graphs
         In this example, <span class=result>synth_runner</span> conducts all the estimations and inference. Since there was only a single treatment
-        period we can save the output and merge it back into the dataset. Then we can create the various graphs.  Note the
+        period we can save the output into the dataset. Then we can create the various graphs.  Note the
         option <i>trlinediff</i> allows the offset of a vertical treatment line.  Likely options include values in the range from
         (first treatment period - last post-treatment period) to 0 and the default value is -1 (to match Abadie et al. 2010).
 <br><br>
     Example 2 - Same treatment, but a bit more complicated setup:
+    cap drop pre_rmspe post_rmspe lead effect cigsale_synth
     gen byte D = (state==3 &amp; year&gt;=1989)
     synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends
         training_propr(`=13/18') gen_vars pre_limit_mult(10)
-    single_treatment_graphs, depvar(cigsale_scaled) effect_var(effect_scaled) trunit(3) trperiod(1989)
-    effect_graphs , depvar(cigsale_scaled) depvar_synth(cigsale_scaled_synth) effect_var(effect_scaled) trunit(3)
-        trperiod(1989)
+    single_treatment_graphs, scaled
+    effect_graphs , scaled
     pval_graphs
         Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we
         (a) specify the treated units/periods with a binary variable, (b) generate the outcome predictors automatically using
@@ -243,6 +242,8 @@ BODY{background-color: ffffff;
 <br><br>
     Example 3 - Multiple treatments at different time periods:
 <br><br>
+    cap drop pre_rmspe post_rmspe lead effect cigsale_synth
+    cap drop cigsale_scaled effect_scaled cigsale_scaled_synth
     cap program drop my_pred my_drop_units my_xperiod my_mspeperiod
     program my_pred, rclass
         args tyear
@@ -264,12 +265,11 @@ BODY{background-color: ffffff;
     gen byte D = (state==3 &amp; year&gt;=1989) | (state==7 &amp; year&gt;=1988)
     synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18')
         drop_units_prog(my_drop_units)) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)
-    effect_graphs , multi depvar(cigsale)
+    effect_graphs
     pval_graphs
         We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment
         actually happened in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file.
-        Some of the graphs (of <span class=result>single_treatment_graphs</span>) can no longer be made. The option <i>multi</i> is now passed to
-        <span class=result>effect_graphs</span>.  We also show how predictors, unit dropping, <span class=result>xperiod</span>, and <span class=result>mspeperiod</span> can be dynamically generated
+        Some of the graphs (of <span class=result>single_treatment_graphs</span>) can no longer be made.  We also show how predictors, unit dropping, <span class=result>xperiod</span>, and <span class=result>mspeperiod</span> can be dynamically generated
         depending on the treatment year.
 <br><br>
 <span class=result><u>Development</u></span>
@@ -289,15 +289,15 @@ To be notified of new releases, subscribe to notifications of this issue .
 as such:
 <br><br>
     Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate synthetic control estimation using
-        synth, June 2017. https://github.com/bquistorff/synth_runner. Version 1.5.0.
+        synth, August 2017. https://github.com/bquistorff/synth_runner. Version 1.6.0.
 <br><br>
 And in bibtex format:
 <br><br>
 @Misc{QG17,
   Title  = {The synth\_runner Package: Utilities to Automate Synthetic Control Estimation Using synth},
   Author = {Brian Quistorff and Sebastian Galiani},
-  Month  = jun,
-  Note   = {Version 1.5.0},
+  Month  = aug,
+  Note   = {Version 1.6.0},
   Year   = {2017},
   Url    = {https://github.com/bquistorff/synth_runner}
 }

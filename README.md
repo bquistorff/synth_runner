@@ -34,11 +34,10 @@ sysuse smoking, clear
 tsset state year
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), ///
 	trunit(3) trperiod(1989) gen_vars
-single_treatment_graphs, depvar(cigsale) trunit(3) trperiod(1989) trlinediff(-1) ///
-	raw_gname(cigsale1_raw) effects_gname(cigsale1_effects) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
+single_treatment_graphs, trlinediff(-1) raw_gname(cigsale1_raw) ///
+	effects_gname(cigsale1_effects) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
 
-effect_graphs , depvar(cigsale) depvar_synth(cigsale_synth) trunit(3) trperiod(1989) trlinediff(-1) ///
-	effect_gname(cigsale1_effect) tc_gname(cigsale1_tc)
+effect_graphs , trlinediff(-1) effect_gname(cigsale1_effect) tc_gname(cigsale1_tc)
 	
 pval_graphs , pvals_gname(cigsale1_pval) pvals_std_gname(cigsale1_pval_t)
 ```

@@ -96,6 +96,7 @@ check_version:
 releasehelp:
 	@echo Make sure you run tests \(on Stata v12\)
 	@echo -make code_checks-.
+	@echo Help files consistent \(smcl, lyx, README.md\)
 	@echo -make package- and bump the version.
 	@echo -make package_checks-
 	@echo Edit the CHANGELOG.md
