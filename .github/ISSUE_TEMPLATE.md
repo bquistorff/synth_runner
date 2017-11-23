@@ -4,6 +4,7 @@ Before submitting an issue, please check (with `x` in brackets) that you:
 - [ ] Have checked that the examples in the help work.
 - [ ] Have read the help ([HTML version](https://rawgit.com/bquistorff/synth_runner/master/code/ado/synth_runner.html)).
 - [ ] Have checked that there is not already an existing issues for what you are reporting.
+- [ ] Have check running synth directly for one of the treated units works.
 
 # Expected behavior and actual behavior
 Described what you expected to see and what you actually see
