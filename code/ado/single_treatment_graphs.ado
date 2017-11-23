@@ -67,7 +67,7 @@ program single_treatment_graphs
 	keep `pvar' `tvar' `depvar'
 	qui reshape wide `depvar', i(`tvar') j(`pvar') //easier in wide format
 	twoway `raw_gline' (line `depvar'`trunit' `tvar', lpattern(solid..) lstyle(foreground..)), ///
-		xline(`=`trperiod'-1') name(`raw_gname', replace) legend(order(`=`n_units'+1' "`treated_name'" 1 "`donors_name'")) ///
+		xline(`=`trperiod'+`trlinediff'') name(`raw_gname', replace) legend(order(`=`n_units'+1' "`treated_name'" 1 "`donors_name'")) ///
 		ylabel(, nogrid) ytitle("`raw_ytitle'") `raw_options'
 	restore
 

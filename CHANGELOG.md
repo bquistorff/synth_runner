@@ -2,6 +2,10 @@
 All notable changes to this project will be documented in this file per [Keep a Changelog](http://keepachangelog.com).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+### Fixed
+ - made `trlinediff` work with all the graphs.
+
 ## [1.6.0]
 ### Added
  - Help files for the graphing commands

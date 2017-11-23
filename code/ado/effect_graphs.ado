@@ -50,7 +50,7 @@ program effect_graphs
 		qui keep if `pvar'==`trunit'
 	}
 
-	twoway (line `effect_var' `tvar'), xline(`=`trperiod'-1') name(`effect_gname', replace) ///
+	twoway (line `effect_var' `tvar'), xline(`=`trperiod'+`trlinediff'') name(`effect_gname', replace) ///
 		ytitle("`effect_ytitle'") `effect_options'
 
 	twoway (line `depvar' `tvar') (line `depvar_synth' `tvar'), ///
