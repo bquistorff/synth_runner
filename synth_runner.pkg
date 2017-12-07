@@ -4,7 +4,7 @@ d   Automation for multiple Synthetic Control estimations.
 d
 d Version 1.6.0
 d
-d Distribution-Date: 20171123
+d Distribution-Date: 20171207
 d Requires: -synth- from SSC
 d Recommends: -parallel- at least version 1.18.2 (available from http://github.com/gvegayon/parallel/)
 d

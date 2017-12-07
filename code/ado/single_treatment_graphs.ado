@@ -52,13 +52,14 @@ program single_treatment_graphs
 		local raw_gline    "`raw_gline' (line `depvar'`n1'-`depvar'`n2' `tvar', lpattern(solid..) lcolor(`do_color'..))"
 		local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
 	}
-	local ind1 = `n_whole_chunks'*10+1
-	local ind2 = `n_units'
-	local n1 : word `ind1' of `units'
-	local n2 : word `ind2' of `units'
-	local raw_gline    "`raw_gline' (line `depvar'`n1'-`depvar'`n2' `tvar', lpattern(solid..) lcolor(`do_color'..))"
-	local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
-
+	if `n_units'>`=`n_whole_chunks'*10' {
+		local ind1 = `n_whole_chunks'*10+1
+		local ind2 = `n_units'
+		local n1 : word `ind1' of `units'
+		local n2 : word `ind2' of `units'
+		local raw_gline    "`raw_gline' (line `depvar'`n1'-`depvar'`n2' `tvar', lpattern(solid..) lcolor(`do_color'..))"
+		local effect_gline "`effect_gline' (line `effect_var'`n1'-`effect_var'`n2'  `tvar', lpattern(solid..) lcolor(`do_color'..))" 
+	}
 	local ylbl : variable label `depvar'
 	if "`raw_ytitle'"=="" local raw_ytitle "`ylbl'"
 	if "`effects_ytitle'"=="" & "`raw_ytitle'"!="" local effects_ytitle "Effects - `ylbl'"

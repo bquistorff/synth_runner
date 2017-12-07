@@ -5,6 +5,8 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ## [Unreleased]
 ### Fixed
  - made `trlinediff` work with all the graphs.
+ - Fixed `single_treatment_graphs` to work when `mod(n units, 10)==0`
+ - Fixed formatting of help.
 
 ## [1.6.0]
 ### Added

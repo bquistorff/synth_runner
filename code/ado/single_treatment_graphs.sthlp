@@ -45,7 +45,8 @@ Creates two graphs when there is a single unit that has been treated. The first 
 {cmd: treated_name} and {cmd:donors_name} can be used to override defaults for the legend on the graphs. The defaults are "Treated" and "Donors" respectively.
 
 {p 4 8 2}
-{cmd:raw_ytitle} and {cmd: effects_ytitle} are used to override the default {it:ytitle} option to {cmd:graph twoway} for the raw and effects graphs respectively. The default for {it:raw_ytitle} is the label for {it:depvar} if that is supplied. 
+{cmd:raw_ytitle} and {cmd: effects_ytitle} are used to override the default {it:ytitle} option to {cmd:graph twoway} for the raw and effects graphs respectively. 
+The default for {it:raw_ytitle} is the label for {it:depvar} if that is supplied. 
 The default for {it:effect_ytitle} is "Effect - " plus the {it:ytitle} of the raw graph.
 
 {p 4 8 2}
