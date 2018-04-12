@@ -1,7 +1,7 @@
 program _sr_do_work_tr
 	syntax anything, data(string) pvar(string) tper_var(string) tvar_vals(string) ///
 		agg_file(string) ever_treated(string) [TREnds training_propr(real 0) pred_prog(string) ///
-		drop_units_prog(string) max_pre(int -1) xperiod_prog(string) mspeperiod_prog(string) *]
+		drop_units_prog(string) max_pre(int -1) xperiod_prog(string) mspeperiod_prog(string) noredo_tr_error *]
 	gettoken depvar cov_predictors : anything
 
 	local num_rep = _N
@@ -45,13 +45,24 @@ program _sr_do_work_tr
 		
 		qui drop if `ever_treated' & `pvar'!=`tr_unit'
 		if "`drop_units_prog'"!="" qui `drop_units_prog' `tr_unit'
-		
-		cap synth_wrapper `depvar' `outcome_pred' `cov_predictors' `add_predictors', `options' ///
-			trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends' `xperiod_opt' `mspeperiod_opt'
+		loc synth_wrapper_cmd synth_wrapper `depvar' `outcome_pred' `cov_predictors' `add_predictors', `options' trunit(`tr_unit') trperiod(`tper') keep(`ind_file') replace `trends' `xperiod_opt' `mspeperiod_opt'
+		cap `synth_wrapper_cmd'
 		if _rc==1 error 1
 		if _rc{
 			di as err "Error estimating treatment effect for unit `tr_unit'"
-			error _rc
+			if "`redo_tr_error'"=="noredo_tr_error"{
+				di as err "Try running -synth- directly on this unit"
+				error _rc
+			}
+			else{
+				* Sync list with synth_wrapper
+				local synth_exp_mats "matout vmat xcomat xtrmat fmat emat"
+				foreach mat_name of local synth_exp_mats{
+					cap mat drop `mat_name'
+				}
+				di as err "Re-running last -synth- command with output/errors un-captured"
+				`synth_wrapper_cmd'
+			}
 		}
 		if `num_rep'>5  _sr_print_dots `g' `num_rep'
 		if `training_propr'>0{

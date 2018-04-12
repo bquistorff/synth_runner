@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file per [Keep a 
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [Unreleased]
+### Added
+ - When synth errors on a treatment unit, change to redoing the analysis uncaptured so that output/errors are visible to help debugging. Add an option `noredo_tr_error` to not do this. 
 ### Fixed
  - made `trlinediff` work with all the graphs.
  - Fixed `single_treatment_graphs` to work when `mod(n units, 10)==0`

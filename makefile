@@ -126,7 +126,7 @@ tests:
     
 
 code/ado/synth_runner.html: code/ado/synth_runner.smcl
-	$(STATABATCH) do gen_html_help.do
+	$(STATABATCH) do code/gen_html_help.do
 
 paper: writeups/synth_runner_sj.pdf
 

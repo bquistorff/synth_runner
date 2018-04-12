@@ -11,6 +11,7 @@ program synth_runner, eclass
 		D(varname) ///
 		ci ///
 		pvals1s ///
+		noredo_tr_error ///
 		TREnds ///
 		training_propr(real 0) ///
 		max_lead(numlist min=1 max=1 int >=0)  ///
@@ -185,7 +186,7 @@ program synth_runner, eclass
 		tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
 		`trends' training_propr(`training_propr') agg_file(`agg_file') pred_prog(`pred_prog') ///
 		drop_units_prog(`drop_units_prog') `max_pre_opt' xperiod_prog(`xperiod_prog') ///
-		mspeperiod_prog(`mspeperiod_prog') `options'
+		mspeperiod_prog(`mspeperiod_prog') `redo_tr_error' `options'
 	sort n
 	mkmat pre_rmspes, matrix(`tr_pre_rmspes')
 	mkmat post_rmspes, matrix(`tr_post_rmspes')

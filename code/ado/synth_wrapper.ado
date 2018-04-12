@@ -8,6 +8,7 @@ program synth_wrapper, eclass
 	local depvar_lbl : variable label `depvar'
 	
 	*-synth- doesn't use tempname sometimes where it should, so it might overwrite someone's mats
+	* Sync list with _sr_do_work_tr
 	local synth_exp_mats "matout vmat xcomat xtrmat fmat emat"
 	foreach mat_name of local synth_exp_mats{
 		cap mat drop `mat_name'

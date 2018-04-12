@@ -18,7 +18,7 @@
 {p 6 8 2}
 {opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt gen:_vars} {opt ci} {opt pvals1s}
  {opt max_lead(int)} {opt noenforce_const_pre_length} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} 
- {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {it:synthsettings} ]
+ {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {opt noredo_tr_error:} {it:synthsettings} ]
 
 {p 4 4 2}
 The dataset must be declared as a (balanced) panel using {help tsset}.
@@ -164,6 +164,11 @@ See {cmd:synth} for more details on the {cmd:xperiod} option. See Example 3 for 
 {cmd: mspeperiod_prog(}{it:string}{cmd:)} allows for setting of {cmd:synth}'s {cmd:mspeperiod} option that varies with the treatment period. 
 The user-written program is passed the treatment period and should return, via {cmd:r(mspeperiod)}, a numlist suitable for {cmd:synth}'s {cmd:mspeperiod} (the period over which the prediction outcome is evaluated). 
 See {cmd:synth} for more details on the {cmd:mspeperiod} option. See Example 3 for usage details.
+
+{p 4 8 2}
+{cmd: noredo_tr_error} By default an error when estimating {cmd:synth} on a treated unit will be redone
+so that the output and error from {cmd:synth} can be seen by the user. Use this option to not redo
+the estimation on error.
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.
