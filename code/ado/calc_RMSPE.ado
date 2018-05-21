@@ -1,6 +1,6 @@
 *Used post -synth- to calculat RMSPE for certain sections of time periods,
 * uses indexes into e(Y_treated) and e(Y_synthetic)
-program calc_RMSPE
+program calc_rmspe
 	version 12 //haven't tested on earlier versions
 	syntax , i_start(int) i_end(int) local(string)
 	tempname pe
