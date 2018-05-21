@@ -21,7 +21,7 @@ _sr_do_work_tr.ado
 _sr_gen_time_locals.ado
 _sr_get_returns.ado
 _sr_print_dots.ado
-calc_RMSPE.ado
+calc_rmspe.ado
 effect_graphs.ado
 effect_graphs.sthlp
 pval_graphs.ado

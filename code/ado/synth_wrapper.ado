@@ -55,7 +55,7 @@ program synth_wrapper, eclass
 	local mat_periods : rownames e(Y_treated)
 	local tper_ind : list posof "`trperiod'" in mat_periods
 	local nper = rowsof(e(Y_treated))
-	calc_RMSPE , i_start(`tper_ind') i_end(`nper') local(post_rmspe)
+	calc_rmspe , i_start(`tper_ind') i_end(`nper') local(post_rmspe)
 	ereturn scalar post_rmspe = `post_rmspe'
 	
 	*these matrices also shouldn've been deleted.

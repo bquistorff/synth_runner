@@ -34,7 +34,7 @@ sj-deliverable:
 	-rm deliverables/sj/*.zip
 	sed 's|code/ado/||' synth_runner.pkg > deliverables/synth_runner.pkg
 	zip -j deliverables/sj/figs.zip fig/eps/cigsale1_raw.eps fig/eps/cigsale1_effects.eps fig/eps/cigsale1_effect.eps fig/eps/cigsale1_tc.eps fig/eps/cigsale1_pval.eps fig/eps/cigsale1_pval_t.eps fig/eps/cigsale2_raw.eps fig/eps/cigsale2_effects.eps fig/eps/cigsale3_effect.eps fig/eps/cigsale3_tc.eps
-	zip -j deliverables/sj/program_files.zip code/ado/_sr_add_keepfile_to_agg.ado code/ado/_sr_do_work_do.ado code/ado/_sr_do_work_tr.ado code/ado/_sr_gen_time_locals.ado code/ado/_sr_get_returns.ado code/ado/_sr_print_dots.ado code/ado/calc_RMSPE.ado code/ado/effect_graphs.ado code/ado/effect_graphs.sthlp code/ado/pval_graphs.ado code/ado/pval_graphs.sthlp code/ado/single_treatment_graphs.ado code/ado/single_treatment_graphs.sthlp code/ado/synth_runner.ado code/ado/synth_runner.sthlp deliverables/synth_runner.pkg code/ado/synth_wrapper.ado code/usage.do stata.toc
+	zip -j deliverables/sj/program_files.zip code/ado/_sr_add_keepfile_to_agg.ado code/ado/_sr_do_work_do.ado code/ado/_sr_do_work_tr.ado code/ado/_sr_gen_time_locals.ado code/ado/_sr_get_returns.ado code/ado/_sr_print_dots.ado code/ado/calc_rmspe.ado code/ado/effect_graphs.ado code/ado/effect_graphs.sthlp code/ado/pval_graphs.ado code/ado/pval_graphs.sthlp code/ado/single_treatment_graphs.ado code/ado/single_treatment_graphs.sthlp code/ado/synth_runner.ado code/ado/synth_runner.sthlp deliverables/synth_runner.pkg code/ado/synth_wrapper.ado code/usage.do stata.toc
 	cp writeups/synth_runner_sj.pdf deliverables/sj
 	@echo "README.txt is already there"
 	@echo "Check that including all figs (see command in makefile)"

@@ -66,7 +66,7 @@ program _sr_do_work_tr
 		}
 		if `num_rep'>5  _sr_print_dots `g' `num_rep'
 		if `training_propr'>0{
-			calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
+			calc_rmspe , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
 				local(val_rmspe)
 			local pfile_post "(`val_rmspe')"
 		}

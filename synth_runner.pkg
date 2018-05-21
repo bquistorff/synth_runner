@@ -20,7 +20,7 @@ f code/ado/_sr_do_work_tr.ado
 f code/ado/_sr_gen_time_locals.ado
 f code/ado/_sr_get_returns.ado
 f code/ado/_sr_print_dots.ado
-f code/ado/calc_RMSPE.ado
+f code/ado/calc_rmspe.ado
 f code/ado/effect_graphs.ado
 f code/ado/effect_graphs.sthlp
 f code/ado/pval_graphs.ado

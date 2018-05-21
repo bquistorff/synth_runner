@@ -9,6 +9,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
  - made `trlinediff` work with all the graphs.
  - Fixed `single_treatment_graphs` to work when `mod(n units, 10)==0`
  - Fixed formatting of help.
+ - Renamed `calc_RMSPE.ado` to `calc_rmspe.ado` because when `net install`ing on Linux all files are made lower-case!
 
 ## [1.6.0]
 ### Added

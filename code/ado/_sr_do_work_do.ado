@@ -40,7 +40,7 @@ program _sr_do_work_do
 			_sr_print_dots `g' `num_reps'
 			local pre_rmspe = e(pre_rmspe)
 			if `training_propr'>0{
-				calc_RMSPE , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
+				calc_rmspe , i_start(`=`ntraining'+1') i_end(`=`ntraining'+`nvalidation'') ///
 					local(val_rmspe)
 				local pfile_post "(`val_rmspe')"
 			}
