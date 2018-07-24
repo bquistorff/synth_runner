@@ -2739,6 +2739,41 @@ key "ADH10"
 \end_inset
 
  for details).
+ 
+\emph on
+Note
+\emph default
+, the first line below may not open the dataset that correctly accompanies
+ the 
+\family typewriter
+synth
+\family default
+ package.
+ At this time, it appears that the SSC overwrote that file with the dataset
+ (of the same name) of the 
+\family typewriter
+network
+\family default
+ package.
+ The original dataset has the first variable 
+\family typewriter
+state
+\family default
+ and is 38 KB in size whereas the current SSC dataset has the first variable
+ 
+\family typewriter
+study
+\family default
+ and is 4 KB in size.
+ If this is the case you can download the correct version from my 
+\begin_inset CommandInset href
+LatexCommand href
+name "here"
+target "https://github.com/bquistorff/synth_runner/raw/master/code/ado/smoking.dta"
+
+\end_inset
+
+ and then load it manually.
 \end_layout
 
 \begin_layout Standard

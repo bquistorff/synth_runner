@@ -29,6 +29,7 @@ You can be notified of new releases by subscribing to notifications of [this iss
 
 Usage
 =======
+Note, the first line below may not open the dataset that correctly accompanies the `synth` package. At this time, it appears that the SSC overwrote that file with the dataset (of the same name) of the `network` package. The original dataset has the first variable `state` and is 38 KB in size whereas the current SSC dataset has the first variable `study` and is 4 KB in size. If this is the case you can download the correct version from my [here](https://github.com/bquistorff/synth_runner/raw/master/code/ado/smoking.dta) and then load it manually.
 ```
 sysuse smoking, clear
 tsset state year
