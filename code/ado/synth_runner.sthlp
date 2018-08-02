@@ -237,11 +237,10 @@ When specifying {cmd:training_propr}, this is the proportion of placebos that ha
 {p 4 4 2}
 The following examples use data from the {cmd:synth} package. Ensure that {cmd:synth} was installed with ancillary files (e.g., {cmd:ssc install synth, all}). This panel dataset contains information for 39 US States for the years 1970-2000
 (see Abadie, Diamond, and Hainmueller (2010) for details).
-{cmd:Note}, the first line below may not open the dataset that correctly accompanies the {cmd:synth} package. 
-At this time, it appears that the SSC overwrote that file with the dataset (of the same name) of the {cmd:network} package. 
-The original dataset has the first variable {it:state} and is 38 KB in size whereas the current SSC dataset has the first variable {it:study} and is 4 KB in size. 
-If this is the case you can download the correct version from my {browse "https://github.com/bquistorff/synth_runner/raw/master/code/ado/smoking.dta":here} and then load it manually.{p_end}
-{p 4 8 2}{stata sysuse smoking}{p_end}
+{cmd:Note}, that the {cmd:synth} package's dataset might have a different name. 
+It was originally uploaded as {it:smoking}, then for a while the dataset installed was incorrect (there was a name collision with another package), and now the dataset is correct and named {it:synth_smoking}.
+{p_end}
+{p 4 8 2}{stata sysuse synth_smoking}{p_end}
 {p 4 8 2}{stata tsset state year}{p_end}
 
 {p 4 8 2}

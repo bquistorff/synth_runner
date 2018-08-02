@@ -6,7 +6,7 @@ Automation for multiple Synthetic Control estimations in Stata.
 Installation
 =======
 
-As a pre-requisite, the `synth` package needs to be installed. (The `all` option is necessary to install the `smoking` dataset used in further examples.)
+As a pre-requisite, the `synth` package needs to be installed. (The `all` option is necessary to install the accompanying dataset used in further examples.)
 
 ```Stata
 . ssc install synth, all
@@ -29,9 +29,9 @@ You can be notified of new releases by subscribing to notifications of [this iss
 
 Usage
 =======
-Note, the first line below may not open the dataset that correctly accompanies the `synth` package. At this time, it appears that the SSC overwrote that file with the dataset (of the same name) of the `network` package. The original dataset has the first variable `state` and is 38 KB in size whereas the current SSC dataset has the first variable `study` and is 4 KB in size. If this is the case you can download the correct version from my [here](https://github.com/bquistorff/synth_runner/raw/master/code/ado/smoking.dta) and then load it manually.
+Note: that the `synth` package's dataset might have a different name. It was originally uploaded as `smoking`, then for a while the dataset installed was incorrect (there was a name collision with another package), and now the dataset is correct and named `synth_smoking`.
 ```
-sysuse smoking, clear
+sysuse synth_smoking, clear
 tsset state year
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), ///
 	trunit(3) trperiod(1989) gen_vars
