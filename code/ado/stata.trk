@@ -1,4 +1,4 @@
-* 00000034
+* 00000035
 *! version 1.0.0
 * Do not erase or edit this file
 * It is used by Stata to track the ado and help
@@ -218,4 +218,42 @@ f p\procenv.plugin
 f p\procexec.plugin
 f p\prockill.plugin
 f p\procwait.plugin
+e
+S http://fmwww.bc.edu/repec/bocode/l
+N log2html.pkg
+D  2 Aug 2018
+U 35
+d 'LOG2HTML': module to produce HTML log files
+d 
+d log2html translates translates Stata's standard SMCL log files to
+d HTML, the language used for web pages. log2html provides greater
+d formatting flexibility than the built-in but undocumented log
+d html, providing preformatted schemes and support for CSS
+d (Cascading Style Sheets). Stata 8 is required. (log2html7 is
+d available for Stata 7.)
+d 
+d KW: log
+d KW: web
+d KW: html
+d KW: translate
+d KW: SMCL
+d KW: CSS
+d 
+d Requires: Stata version 8.0 (7.0 for log2html7)
+d 
+d 
+d Author: Christopher F Baum, Boston College
+d Support: email  baum@@bc.edu
+d 
+d Author: Nicholas J. Cox, Durham University
+d Support: email  N.J.Cox@@durham.ac.uk
+d 
+d Author: Bill Rising, StataCorp
+d Support: email  brising@@stata.com
+d 
+d Distribution-Date: 20080731
+f l\log2html.ado
+f l\log2html.hlp
+f l\log2html7.ado
+f l\log2html7.hlp
 e

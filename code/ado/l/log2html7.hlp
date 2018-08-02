@@ -1,0 +1,137 @@
+{smcl}
+{* 12 Dec 2001/25 March 2003}{...}
+{hline}
+help for {hi:log2html7}{right:SSC distribution 25 March 2003}
+{hline}
+
+{title:Translate a SMCL log file into HTML}
+
+{p 8 12}{cmd:log2html7} 
+{it:smclfile}
+[{cmd:,} 
+{cmd:replace} 
+{cmdab:ti:tle}{cmd:(}{it:string}{cmd:)} 
+{cmdab:in:put}{cmd:(}{it:string}{cmd:)} 
+{cmdab:r:esult}{cmd:(}{it:string}{cmd:)} 
+{cmd:bg(}{it:string}{cmd:)} 
+] 
+
+
+{title:Description} 
+
+{p}
+{cmd:log2html7} is for use after {cmd:log}; see {help log}. If 
+you are using Stata 8 or later, use {cmd:log2html} instead. 
+
+{p} {cmd:log2html7} makes use of an undocumented command in Stata version 7,
+{cmd:log html}, which generates HTML log files from SMCL log files. SMCL, the
+Stata Markup and Control Language {help smcl}, is the default log file format
+introduced with version 7, and contains markup (similar to HTML) around
+elements of the log file. To use {cmd:log2html7}, you must first generate the
+default SMCL log file, not a text log file, with the file extension
+{cmd:.smcl}.  Thus if you have {cmd:set logtype text} to prevent the generation
+of SMCL log files, you must either turn it off or explicitly state that a SMCL
+log file is to be produced, as by {cmd: log using my.smcl}. 
+
+{p} {cmd:log2html7} requires only the base name of the logfile: e.g. {cmd:my},
+if the logfile is named {cmd:my.smcl}. The name of the HTML file produced will
+be this base name with {cmd:.html} appended, e.g. {cmd:my.html}.
+
+{p}  {cmd:log2html7} requires that at least the 6 December 2001 update to Stata
+version 7 be installed. If a message "Invalid syntax" is encountered, please
+ensure that {cmd:query born} returns a date no earlier than 06 Dec 2001.
+
+
+{title:Limitation} 
+
+{p} {cmd:log2html7} cannot reliably echo {it:names} of local or global macros 
+given on command lines in the log. This is because before being passed 
+to the Stata command {cmd:file}, which does most of the hard work within 
+{cmd:log2html7}, they are caught by Stata's parser and substituted with 
+their current {it:contents}, if any. The usual result is to replace macro names
+with empty strings, although on occasion you may be fortunate enough to have
+the correct contents of a macro substituted, or unfortunate enough to 
+have something quite different substituted, if the contents of a macro have
+changed since the log was created. This behavior is outside the 
+control of the program authors, who know of no work-around in Stata 7. 
+The limitation does not apply to {cmd:log2html} used in conjunction 
+with Stata 8 or higher. 
+
+
+{title:Options}
+
+{p 0 4} 
+{cmd:replace} specifies that if the HTML file exists, it is to be replaced.
+
+{p 0 4} 
+{cmd:title()} specifies a string to be placed in the <TITLE> of the HTML page,
+and on the first line of the body of the page, using a <H2> heading.
+
+{p} 
+The remaining options pertain to color choices. By default,
+{cmd:loghtml} produces a complete HTML page (i.e. with <HTML> and <BODY> tags)
+with a white background. Input lines (those resulting from user input) are
+rendered in RGB color "CC6600" (a shade of brown) and highlighted 
+result-window lines are rendered in RGB color "000099" (a shade of blue). 
+The options permit other choices for these three colors. For best results, 
+one of the 216 "web safe" colors that display properly in web browsers on 
+all computers in 256-color mode should be used. Also note that some 
+combinations of colors are not workable; e.g. a black ("000000") background 
+will cause all normally-rendered text to disappear.
+
+{p 0 4} 
+{cmd:input()} allows the specification of a different color for the user input
+lines, in standard RGB notation (three duples of two bytes, each 00-FF).
+
+{p 0 4} 
+{cmd:result()} allows the specification of a different color for the
+ highlighted result lines, in standard RGB notation.
+
+{p 0 4} 
+{cmd:bg()} allows the specification of a different color for the background, in
+standard RGB notation. For convenience, the argument may be given as "gray"
+or "grey", approximating most browsers' default behavior.
+
+
+{title:Examples}
+
+{p 4 8}{inp:. log using autostudy, replace}{p_end}
+{p 4 8}{inp:. use auto}{p_end}
+{p 4 8}{inp:. desc}{p_end}
+{p 4 8}{inp:. summ}{p_end}
+{p 4 8}{inp:. regress price mpg rep78}{p_end}
+{p 4 8}{inp:. log close}
+
+{p 4 8}{inp:. log2html7 autostudy, replace}
+
+{p 4 8}{inp:. log2html7 autostudy, replace ti("Automobile study")}
+
+{p 4 8}{inp:. log2html7 autostudy, replace in(ff3300) res(003333) bg(grey)}
+
+
+{title:Reference}
+
+       Priester, Gary W. 2000. All you need to know about web safe colors. 
+       {browse "http://www.webdevelopersjournal.com/articles/websafe1/websafe_colors.html"}
+
+
+{title:Acknowledgements}
+
+		We acknowledge Ken Higbee's assistance with the documentation of 
+		{cmd:log html} and suggestions for improvement of this routine.
+		
+		
+{title:Authors} 
+
+        Christopher F Baum, Boston College, USA
+        baum@bc.edu
+        
+        Nicholas J. Cox, University of Durham, UK
+        n.j.cox@durham.ac.uk
+
+
+{title:Also see} 
+
+ Manual:  {hi:[R] log}, {hi:[P] smcl}
+On-line:  help for {help log}, {help smcl} 
+
