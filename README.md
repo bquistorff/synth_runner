@@ -25,8 +25,6 @@ For Stata version <13, use the "Download ZIP" button above, unzip to a directory
 . net install synth_runner, from(full_local_path_to_files) replace
 ```
 
-You can be notified of new releases by subscribing to notifications of [this issue](https://github.com/bquistorff/synth_runner/issues/1).
-
 Usage
 =======
 Note: that the `synth` package's dataset might have a different name. It was originally uploaded as `smoking`, then for a while the dataset installed was incorrect (there was a name collision with another package), and now the dataset is correct and named `synth_smoking`.
