@@ -102,7 +102,6 @@ releasehelp:
 	@echo Edit the CHANGELOG.md
 	@echo Push to GitHub
 	@echo Go to https://github.com/bquistorff/synth_runner/releases and make a release
-	@echo Notify the release on https://github.com/bquistorff/synth_runner/issues/1
 
 TESTS_DOS=usage.do test.do
 TESTS_LOGS:= $(TESTS_DOS:.do=.log)
