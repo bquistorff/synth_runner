@@ -28,6 +28,7 @@ program synth_runner, eclass
 		drop_units_prog(string) ///
 		xperiod_prog(string) ///
 		mspeperiod_prog(string) ///
+		aggfile_v(string) aggfile_w(string) ///
 		COUnit(string) FIGure resultsperiod(string)  ///
 		xperiod(numlist min=1 >=0 int sort) mspeperiod(numlist  min=1 >=0 int sort) *]
 		
@@ -81,6 +82,12 @@ program synth_runner, eclass
 		_assert _rc!=199, msg(`"-parallel- must be installed if option used (available from SSC or http://github.com/gvegayon/parallel)."')
 		
 		_assert "$PLL_CLUSTERS"!="", msg("You must use -parallel setclusters XXX- before using the parallel option for -synth_runner-.")
+	}
+	if "`aggfile_v'`aggfile_w'"!="" {
+		_assert "`aggfile_v'"!="", msg("Must specify both aggfile_v and aggfile_w or neither")
+		_assert "`aggfile_w'"!="", msg("Must specify both aggfile_v and aggfile_w or neither")
+		cap erase "`aggfile_v'"
+		cap erase "`aggfile_w'"
 	}
 	
 	tempvar ever_treated tper_var0 tper_var event
@@ -186,7 +193,8 @@ program synth_runner, eclass
 		tper_var(`tper_var') tvar_vals(`tvar_vals') ever_treated(`ever_treated') ///
 		`trends' training_propr(`training_propr') agg_file(`agg_file') pred_prog(`pred_prog') ///
 		drop_units_prog(`drop_units_prog') `max_pre_opt' xperiod_prog(`xperiod_prog') ///
-		mspeperiod_prog(`mspeperiod_prog') `redo_tr_error' `options'
+		mspeperiod_prog(`mspeperiod_prog') aggfile_v(`aggfile_v') aggfile_w(`aggfile_w') ///
+		`redo_tr_error' `options'
 	sort n
 	mkmat pre_rmspes, matrix(`tr_pre_rmspes')
 	mkmat post_rmspes, matrix(`tr_post_rmspes')
@@ -259,7 +267,8 @@ program synth_runner, eclass
 			pvar(`pvar') tper_var(`tper_var') tvar_vals(`tvar_vals') outcome_pred(`outcome_pred') ///
 			ntraining(`ntraining') nvalidation(`nvalidation') tper(`tper') `trends' ///
 			training_propr(`training_propr') `options' agg_file("`agg_file'") fail_file("`fail_file_do_round'") ///
-			drop_units_prog(`drop_units_prog') `xperiod_opt' `mspeperiod_opt' `max_pre_opt'
+			drop_units_prog(`drop_units_prog') aggfile_v(`aggfile_v') aggfile_w(`aggfile_w') ///
+			`xperiod_opt' `mspeperiod_opt' `max_pre_opt'
 		qui append_to, appendage(`fail_file_do_round') body(`fail_file')
 		sort n
 		if _N!=`num_do_units' local failed_o = 1

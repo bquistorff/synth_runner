@@ -60,7 +60,8 @@ keep $orig_vars
 if 1{
 gen byte D = (state==3 & year>=${tper})
 synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, ///
-	trunit(3) trperiod(${tper}) trends training_propr(`=13/19') pre_limit_mult(10) gen_vars
+	trunit(3) trperiod(${tper}) trends training_propr(`=13/19') pre_limit_mult(10) ///
+	gen_vars aggfile_v(aggfile_v.dta) aggfile_w(aggfile_w.dta)
 ereturn list
 di "Proportion of control units that have a higher RMSPE than the treated unit in the validtion period:"
 di round(`e(avg_val_rmspe_p)', 0.001)
@@ -70,6 +71,8 @@ single_treatment_graphs, scaled raw_gname(cigsale2_raw) effects_gname(cigsale2_e
 effect_graphs , scaled tc_gname(cigsale2_tc) effect_gname(cigsale2_effect)
 pval_graphs , pvals_gname(cigsale2_pval) pvals_std_gname(cigsale2_pval_t)
 keep $orig_vars
+erase aggfile_v.dta
+erase aggfile_w.dta
 }
 
 **Now a more complicated example.

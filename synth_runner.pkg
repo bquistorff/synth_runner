@@ -4,7 +4,7 @@ d   Automation for multiple Synthetic Control estimations.
 d
 d Version 1.6.0
 d
-d Distribution-Date: 20180706
+d Distribution-Date: 20200601
 d Requires: -synth- from SSC
 d Recommends: -parallel- at least version 1.18.2 (available from http://github.com/gvegayon/parallel/)
 d
@@ -19,6 +19,7 @@ f code/ado/_sr_do_work_do.ado
 f code/ado/_sr_do_work_tr.ado
 f code/ado/_sr_gen_time_locals.ado
 f code/ado/_sr_get_returns.ado
+f code/ado/_sr_get_w_v.ado
 f code/ado/_sr_print_dots.ado
 f code/ado/calc_rmspe.ado
 f code/ado/effect_graphs.ado

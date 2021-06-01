@@ -1,7 +1,8 @@
 program _sr_do_work_tr
 	syntax anything, data(string) pvar(string) tper_var(string) tvar_vals(string) ///
 		agg_file(string) ever_treated(string) [TREnds training_propr(real 0) pred_prog(string) ///
-		drop_units_prog(string) max_pre(int -1) xperiod_prog(string) mspeperiod_prog(string) noredo_tr_error *]
+		drop_units_prog(string) max_pre(int -1) xperiod_prog(string) mspeperiod_prog(string) ///
+		aggfile_v(string) aggfile_w(string) noredo_tr_error *]
 	gettoken depvar cov_predictors : anything
 
 	local num_rep = _N
@@ -75,6 +76,11 @@ program _sr_do_work_tr
 		_sr_add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
 			tper(`tper') unit(`tr_unit') depvar(`depvar') pre_rmspe(`e(pre_rmspe)') ///
 			post_rmspe(`e(post_rmspe)')
+					
+		if "`aggfile_v'"!="" & "`aggfile_w'"!="" {
+			_sr_get_w_v, keep(`ind_file') ///
+				tper(`tper') unit(`tr_unit') aggfile_v(`aggfile_v') aggfile_w(`aggfile_w')
+		}
 		restore
 	}
 	postclose `phandle'

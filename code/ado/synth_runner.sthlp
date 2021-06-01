@@ -18,7 +18,7 @@
 {p 6 8 2}
 {opt synth_runner} {it:depvar}  {it:predictorvars} , [ {opt tru:nit(#)} {opt trp:eriod(#)} {opt d:(varname)} {opt tre:nds} {opt pre_limit_mult:(real>=1)} {opt training_propr(real)} {opt gen:_vars} {opt ci} {opt pvals1s}
  {opt max_lead(int)} {opt noenforce_const_pre_length} {opt n_pl_avgs:(string)} {opt par:allel} {opt det:erministicout} 
- {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {opt noredo_tr_error:} {it:synthsettings} ]
+ {opt pred_prog:(string)} {opt drop_units_prog:(string)} {opt xperiod_prog:(string)} {opt mspeperiod_prog:(string)} {opt noredo_tr_error:} {opt aggfile_v:(string)} {opt aggfile_w:(string)} {it:synthsettings} ]
 
 {p 4 4 2}
 The dataset must be declared as a (balanced) panel using {help tsset}.
@@ -169,6 +169,13 @@ See {cmd:synth} for more details on the {cmd:mspeperiod} option. See Example 3 f
 {cmd: noredo_tr_error} By default an error when estimating {cmd:synth} on a treated unit will be redone
 so that the output and error from {cmd:synth} can be seen by the user. Use this option to not redo
 the estimation on error.
+
+{p 4 8 2}
+{cmd: aggfile_v(}{it:string}{cmd:)} and {cmd: aggfile_w(}{it:string}{cmd:)} overwrites those filenames with variable weights and unit weights from all the estimations.
+Both must be specified or neither. {it:aggfile_v} will have variables V1-V{it:k}, tr_{it:unit_varname}, and tr_{it:time_varname}, and for each tr_{it:unit_varname}-tr_{it:time_varname} estimation there will be 
+one observation. {it:aggfile_w} has variables _Co_Number, _W_Weight, tr_{it:unit_varname}, and tr_{it:time_varname}, and for each tr_{it:unit_varname}-tr_{it:time_varname} estimation there will be a row for each 
+control donor.
+
 
 {p 4 8 2}
 {cmd: synthsettings} pass-through options sent to {cmd:synth}. See {help synth:{it:help synth}} for more information.  The following which are disallowed: {it:counit}, {it:figure}, {it:resultsperiod}.

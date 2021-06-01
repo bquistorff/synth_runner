@@ -1,7 +1,8 @@
 program _sr_do_work_do
 	syntax anything, data(string) pvar(string) tper_var(string) tvar_vals(string) ///
 		tper(string) agg_file(string) fail_file(string) [outcome_pred(string) ntraining(string) ///
-		nvalidation(string) TREnds training_propr(real 0) drop_units_prog(string) max_pre(int -1) *]
+		nvalidation(string) TREnds training_propr(real 0) drop_units_prog(string) ///
+		aggfile_v(string) aggfile_w(string) max_pre(int -1) *]
 	gettoken depvar cov_predictors : anything
 	
 	local num_reps = _N
@@ -49,6 +50,12 @@ program _sr_do_work_do
 			_sr_add_keepfile_to_agg, keep(`ind_file') aggfile(`agg_file') tper_var(`tper_var') ///
 				tper(`tper') unit(`unit') depvar(`depvar') pre_rmspe(`e(pre_rmspe)') ///
 				post_rmspe(`e(post_rmspe)')
+			
+			if "`aggfile_v'"!="" & "`aggfile_w'"!="" {
+				_sr_get_w_v, keep(`ind_file') ///
+					tper(`tper') unit(`unit') aggfile_v(`aggfile_v') aggfile_w(`aggfile_w')
+			}
+			
 		}
 		else {
 			_sr_print_dots `g' `num_reps' x

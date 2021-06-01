@@ -15,7 +15,7 @@ BODY{background-color: ffffff;
 <body>
 <pre>
 <span class=result>help synth_runner</span> 
---------------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <br><br>
 <span class=result><u>Title</u></span>
 <br><br>
@@ -24,27 +24,24 @@ BODY{background-color: ffffff;
 <br><br>
 <span class=result><u>Syntax</u></span>
 <br><br>
-      <span class=result>synth_runner</span> <i>depvar</i> <i>predictorvars</i> , [ <span class=result><u>tru</u></span><span class=result>nit(</span><i>#</i><span class=result>)</span> <span class=result><u>trp</u></span><span class=result>eriod(</span><i>#</i><span class=result>)</span> <span class=result>d(</span><i>varname</i><span class=result>)</span> <span class=result><u>tre</u></span><span class=result>nds</span> <span class=result>pre_limit_mult(</span><i>real&gt;</i><span class=result>=</span><i>1</i><span class=result>)</span> <span class=result>training_propr(</span><i>real</i><span class=result>)</span> <span class=result><u>gen</u></span><span class=result>_vars</span> <span class=result>ci</span>
-        <span class=result>pvals1s</span> <span class=result>max_lead(</span><i>int</i><span class=result>)</span> <span class=result>noenforce_const_pre_length</span> <span class=result>n_pl_avgs(</span><i>string</i><span class=result>)</span> <span class=result><u>par</u></span><span class=result>allel</span> <span class=result><u>det</u></span><span class=result>erministicout</span> <span class=result>pred_prog(</span><i>string</i><span class=result>)</span> <span class=result>drop_units_prog(</span><i>string</i><span class=result>)</span>
-        <span class=result>xperiod_prog(</span><i>string</i><span class=result>)</span> <span class=result>mspeperiod_prog(</span><i>string</i><span class=result>)</span> <span class=result>noredo_tr_error</span> <i>synthsettings</i> ]
+      <span class=result>synth_runner</span> <i>depvar</i> <i>predictorvars</i> , [ <span class=result><u>tru</u></span><span class=result>nit(</span><i>#</i><span class=result>)</span> <span class=result><u>trp</u></span><span class=result>eriod(</span><i>#</i><span class=result>)</span> <span class=result>d(</span><i>varname</i><span class=result>)</span> <span class=result><u>tre</u></span><span class=result>nds</span> <span class=result>pre_limit_mult(</span><i>real&gt;</i><span class=result>=</span><i>1</i><span class=result>)</span> <span class=result>training_propr(</span><i>real</i><span class=result>)</span> <span class=result><u>gen</u></span><span class=result>_vars</span> <span class=result>ci</span> <span class=result>pvals1s</span> <span class=result>max_lead(</span><i>int</i><span class=result>)</span> <span class=result>noenforce_const_pre_length</span>
+        <span class=result>n_pl_avgs(</span><i>string</i><span class=result>)</span> <span class=result><u>par</u></span><span class=result>allel</span> <span class=result><u>det</u></span><span class=result>erministicout</span> <span class=result>pred_prog(</span><i>string</i><span class=result>)</span> <span class=result>drop_units_prog(</span><i>string</i><span class=result>)</span> <span class=result>xperiod_prog(</span><i>string</i><span class=result>)</span> <span class=result>mspeperiod_prog(</span><i>string</i><span class=result>)</span> <span class=result>noredo_tr_error</span> <span class=result>aggfile_v(</span><i>string</i><span class=result>)</span> <span class=result>aggfile_w(</span><i>string</i><span class=result>)</span>
+        <i>synthsettings</i> ]
 <br><br>
-    The dataset must be declared as a (balanced) panel using tsset.  Variables specified in <i>depvar</i> and <i>predictorvars</i> must be numeric variables;
-    abbreviations are not allowed. The command <span class=result>synth</span> (available in SSC) is required.  Auxiliary commands for generating graphs post-estimation
-    are shown in the examples below.  Finally, the version of the package can be found by running <span class=result>synth_runner version</span> and checking <span class=result>r(version)</span>
-    or viewing the displayed output.
+    The dataset must be declared as a (balanced) panel using tsset.  Variables specified in <i>depvar</i> and <i>predictorvars</i> must be numeric variables; abbreviations are not allowed. The command <span class=result>synth</span>
+    (available in SSC) is required.  Auxiliary commands for generating graphs post-estimation are shown in the examples below.  Finally, the version of the package can be found by running
+    <span class=result>synth_runner version</span> and checking <span class=result>r(version)</span> or viewing the displayed output.
 <br><br>
 <br><br>
 <span class=result><u>Description</u></span>
 <br><br>
-    <span class=result>synth_runner</span> automates the process of running multiple synthetic control estimations by <span class=result>synth</span>. It will run placebo estimates in-space
-    (estimations for the same treatment period but on all the control units).  It will then provide inference (p-values) comparing the estimated
-    main effect to the distribution of placebo effects. It handles the case where several units receive treatment, possibly at different time
-    periods.  If there are multiple treatment periods, then effects are centered around the treatment period so as to be comparable.  The
-    maximum common number of leads and lags that can be achieved in the data given the treated units are used for analysis.  It provides
-    facilities for automatically generating outcome predictors using a training proportion of the pre-treatment period. It also provides
-    diagnostics to assess fit.  <span class=result>synth_runner</span> is designed to accompany <span class=result>synth</span> but not to supersede it.  For more details about single estimations
-    (variable weights, observation weights, covariate balance, and synthetic control outcomes when there are multiple time periods) use <span class=result>synth</span>
-    directly.  See <i>synth</i> and Abadie and Gardeazabal (2003) and Abadie, Diamond, and Hainmueller (2010, 2014) for more details.
+    <span class=result>synth_runner</span> automates the process of running multiple synthetic control estimations by <span class=result>synth</span>. It will run placebo estimates in-space (estimations for the same treatment period but on all the
+    control units).  It will then provide inference (p-values) comparing the estimated main effect to the distribution of placebo effects. It handles the case where several units receive
+    treatment, possibly at different time periods.  If there are multiple treatment periods, then effects are centered around the treatment period so as to be comparable.  The maximum common
+    number of leads and lags that can be achieved in the data given the treated units are used for analysis.  It provides facilities for automatically generating outcome predictors using a
+    training proportion of the pre-treatment period. It also provides diagnostics to assess fit.  <span class=result>synth_runner</span> is designed to accompany <span class=result>synth</span> but not to supersede it.  For more details about
+    single estimations (variable weights, observation weights, covariate balance, and synthetic control outcomes when there are multiple time periods) use <span class=result>synth</span> directly.  See <i>synth</i> and Abadie and
+    Gardeazabal (2003) and Abadie, Diamond, and Hainmueller (2010, 2014) for more details.
 <br><br>
 <span class=result><u>Required Settings</u></span>
 <br><br>
@@ -54,40 +51,36 @@ BODY{background-color: ffffff;
 <br><br>
   For specifying the unit and time-period of treatment, there are two methods. Exactly one of these is required.
 <br><br>
-    <span class=result>trunit(</span><i>#</i><span class=result>)</span> and <span class=result>trperiod(</span><i>#</i><span class=result>)</span>. This syntax (used by <span class=result>synth</span>) can be used when there is a single unit entering treatment.  Since synthetic control
-        methods split time into pre-treatment and treated periods, <span class=result>trperiod</span> is the first of the treated periods and, slightly confusingly, also
-        called post-treatment.
+    <span class=result>trunit(</span><i>#</i><span class=result>)</span> and <span class=result>trperiod(</span><i>#</i><span class=result>)</span>. This syntax (used by <span class=result>synth</span>) can be used when there is a single unit entering treatment.  Since synthetic control methods split time into pre-treatment and treated
+        periods, <span class=result>trperiod</span> is the first of the treated periods and, slightly confusingly, also called post-treatment.
 <br><br>
-    <span class=result>d(</span>varname<span class=result>)</span>. The <span class=result>d</span> variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else.  This allows
-        for multiple units to undergo treatment, possibly at different times.
+    <span class=result>d(</span>varname<span class=result>)</span>. The <span class=result>d</span> variable should be a binary variable which is 1 for treated units in treated periods, and 0 everywhere else.  This allows for multiple units to undergo treatment, possibly at
+        different times.
 <br><br>
 <span class=result><u>Options</u></span>
 <br><br>
-    <span class=result>trends</span> will force <span class=result>synth</span> to match on the trends in the outcome variable. It does this by scaling each unit's outcome variable so that it is 1
-        in the last pre-treatment period.
+    <span class=result>trends</span> will force <span class=result>synth</span> to match on the trends in the outcome variable. It does this by scaling each unit's outcome variable so that it is 1 in the last pre-treatment period.
 <br><br>
-    <span class=result>pre_limit_mult(</span><i>real&gt;=1</i><span class=result>)</span> will not include placebo effects in the pool for inference if the match quality of that control, pre-treatment Root
-        Mean Squared Predictive Error (RMSPE), is greater than <i>pre_limit_mult</i> times the match quality of the treated unit.
+    <span class=result>pre_limit_mult(</span><i>real&gt;=1</i><span class=result>)</span> will not include placebo effects in the pool for inference if the match quality of that control, pre-treatment Root Mean Squared Predictive Error (RMSPE), is greater
+        than <i>pre_limit_mult</i> times the match quality of the treated unit.
 <br><br>
-    <span class=result>training_propr(</span>0&lt;=<i>real</i>&lt;=1<span class=result>)</span> instructs <span class=result>synth_runner</span> to automatically generate the outcome predictors. The default (0) is to not generate any
-        (the user then includes the desired ones in predictorvars).  If set to a number greater than 0, then that initial proportion of the
-        pre-treatment period is used as a training period with the rest being the validation period.  Outcome predictors for every time in the
-        training period will be added to the <span class=result>synth</span> commands. Diagnostics of the fit for the validation period will be outputted.  If the value
-        is between 0 and 1, there will be at least one training period and at least one validation period.  If it is set to 1, then all the
-        pre-treatment period outcome variables will be used as predictors. This will make other covariate predictors redundant.
+    <span class=result>training_propr(</span>0&lt;=<i>real</i>&lt;=1<span class=result>)</span> instructs <span class=result>synth_runner</span> to automatically generate the outcome predictors. The default (0) is to not generate any (the user then includes the desired ones in
+        predictorvars).  If set to a number greater than 0, then that initial proportion of the pre-treatment period is used as a training period with the rest being the validation period.
+        Outcome predictors for every time in the training period will be added to the <span class=result>synth</span> commands. Diagnostics of the fit for the validation period will be outputted.  If the value is between 0
+        and 1, there will be at least one training period and at least one validation period.  If it is set to 1, then all the pre-treatment period outcome variables will be used as predictors.
+        This will make other covariate predictors redundant.
 <br><br>
-    <span class=result>ci</span> outputs confidence intervals from randomization inference for raw effect estimates. These should only be used if the treatment is
-        randomly assigned (conditional on covariates and interactive fixed-effects).  If treatment is not randomly assigned then these
-        confidence intervals do not have a straight-forward interpretation (in contrast to p-values which do).
+    <span class=result>ci</span> outputs confidence intervals from randomization inference for raw effect estimates. These should only be used if the treatment is randomly assigned (conditional on covariates and
+        interactive fixed-effects).  If treatment is not randomly assigned then these confidence intervals do not have a straight-forward interpretation (in contrast to p-values which do).
 <br><br>
     <span class=result>pvals1s</span> outputs one-sided p-values in addition to the two-sided p-values.
 <br><br>
-    <span class=result>gen_vars</span> generates variables in the dataset from estimation.  This is only allowed if there is a single period in which unit(s) enter
-        treatment. If <span class=result>gen_vars</span> is specified, it will generate the following variables:
+    <span class=result>gen_vars</span> generates variables in the dataset from estimation.  This is only allowed if there is a single period in which unit(s) enter treatment. If <span class=result>gen_vars</span> is specified, it will generate the
+        following variables:
 <br><br>
         <span class=result>lead:</span>
-            A variable that contains the respective time period relative to treatment. <i>Lead=1</i> specifies the first period of
-            treatment. This is to match Cavallo et al. (2013) and in effect is the offset from the last non-treatment period.
+            A variable that contains the respective time period relative to treatment. <i>Lead=1</i> specifies the first period of treatment. This is to match Cavallo et al. (2013) and in
+            effect is the offset from the last non-treatment period.
 <br><br>
         <i>depvar</i><span class=result>_synth:</span>
             A variable that contains the unit's synthetic control outcome for that time period.
@@ -99,136 +92,119 @@ BODY{background-color: ffffff;
             A variable, constant for a unit, containing the pre-treatment match quality in terms of RMSPE.
 <br><br>
         <span class=result>post_rmspe:</span>
-            A variable, constant for a unit, containing a measure of the post-treatment effect (jointly over all post-treatment
-            time periods) in terms of RMSPE.
+            A variable, constant for a unit, containing a measure of the post-treatment effect (jointly over all post-treatment time periods) in terms of RMSPE.
 <br><br>
         <i>depvar</i><span class=result>_scaled:</span>
-            If the match was done on trends, this is the unit's outcome variable normalized so that its last pre-treatment period
-            outcome is 1.
+            If the match was done on trends, this is the unit's outcome variable normalized so that its last pre-treatment period outcome is 1.
 <br><br>
         <i>depvar</i><span class=result>_scaled_synth:</span>
             If the match was done on trends, this is the unit's synthetic control's (scaled) outcome variable.
 <br><br>
         <span class=result>effect_scaled:</span>
-            If the match was done on trends, this is the difference between the unit's (scaled) outcome and its (scaled) synthetic
-            control for that time period.
+            If the match was done on trends, this is the difference between the unit's (scaled) outcome and its (scaled) synthetic control for that time period.
 <br><br>
-    <span class=result>n_pl_avgs(</span><i>string</i><span class=result>)</span> controls the number of placebo averages to compute for inference. The total possible grows exponentially with the number
-        of treated events.  If omitted, the default behavior is cap the number of averages computed at 1,000,000 and if the total is more than
-        that to sample (with replacement) the full distribution.  The option<span class=result> n_pl_avgs(</span><i>all</i><span class=result>)</span> can be used to override this behavior and compute
-        all the possible averages.  The option<span class=result> n_pl_avgs(</span><i>#</i><span class=result>)</span> can be used to specify a specific number less than the total number of averages
-        possible.
+    <span class=result>n_pl_avgs(</span><i>string</i><span class=result>)</span> controls the number of placebo averages to compute for inference. The total possible grows exponentially with the number of treated events.  If omitted, the default behavior
+        is cap the number of averages computed at 1,000,000 and if the total is more than that to sample (with replacement) the full distribution.  The option<span class=result> n_pl_avgs(</span><i>all</i><span class=result>)</span> can be used to
+        override this behavior and compute all the possible averages.  The option<span class=result> n_pl_avgs(</span><i>#</i><span class=result>)</span> can be used to specify a specific number less than the total number of averages possible.
 <br><br>
-    <span class=result>max_lead(</span><i>int</i><span class=result>)</span> will limit the number of post-treatment periods analyzed. The default is the maximum number of leads that is available for all
-        treatment periods.
+    <span class=result>max_lead(</span><i>int</i><span class=result>)</span> will limit the number of post-treatment periods analyzed. The default is the maximum number of leads that is available for all treatment periods.
 <br><br>
-    <span class=result>noenforce_const_pre_length</span> - When there are multiple periods, estimations at later treatment dates will have more pre-treatment history
-        available.  By default, these histories are trimmed on the early side so that all estimations have the same amount of history.  If
-        instead, maximal histories are desired at each estimation stage, use <span class=result>noenforce_const_pre_length</span>.
+    <span class=result>noenforce_const_pre_length</span> - When there are multiple periods, estimations at later treatment dates will have more pre-treatment history available.  By default, these histories are trimmed on
+        the early side so that all estimations have the same amount of history.  If instead, maximal histories are desired at each estimation stage, use <span class=result>noenforce_const_pre_length</span>.
 <br><br>
-    <span class=result>parallel</span> will enable parallel processing if the <span class=result>parallel</span> command is installed and configured. Version 1.18.2 is needed at a minimum
-        (available via https://github.com/gvegayon/parallel/).
+    <span class=result>parallel</span> will enable parallel processing if the <span class=result>parallel</span> command is installed and configured. Version 1.18.2 is needed at a minimum (available via https://github.com/gvegayon/parallel/).
 <br><br>
-    <span class=result>deterministicoutput</span> eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so
-        that log files can be easily compared across runs.
+    <span class=result>deterministicoutput</span> eliminates displayed output that would vary depending on the machine (e.g. timers and number of parallel clusters) so that log files can be easily compared across runs.
 <br><br>
-    <span class=result>pred_prog(</span><i>string</i><span class=result>)</span> is a method to allow time-contingent predictor sets.  The user writes a program that takes as input a time period and
-        outputs via <span class=result>r(predictors)</span> a <span class=result>synth</span>-style predictor string.  If one is not using <span class=result>training_propr</span> then <span class=result>pred_program</span> could be used to
-        dynamically include outcome predictors. See Example 3 for usage details.
+    <span class=result>pred_prog(</span><i>string</i><span class=result>)</span> is a method to allow time-contingent predictor sets.  The user writes a program that takes as input a time period and outputs via <span class=result>r(predictors)</span> a <span class=result>synth</span>-style predictor
+        string.  If one is not using <span class=result>training_propr</span> then <span class=result>pred_program</span> could be used to dynamically include outcome predictors. See Example 3 for usage details.
 <br><br>
-    <span class=result>drop_units_prog(</span><i>string</i><span class=result>)</span> is the name of a program that, when passed the unit to be considered treated, will drop other units that should not
-        be considered when forming the synthetic control.  Commonly this is because they are neighboring or interfering units. See Example 3 for
+    <span class=result>drop_units_prog(</span><i>string</i><span class=result>)</span> is the name of a program that, when passed the unit to be considered treated, will drop other units that should not be considered when forming the synthetic control.
+        Commonly this is because they are neighboring or interfering units. See Example 3 for usage details.
+<br><br>
+    <span class=result>xperiod_prog(</span><i>string</i><span class=result>)</span> allows for setting of <span class=result>synth</span>'s <span class=result>xperiod</span> option that varies with the treatment period.  The user-written program is passed the treatment period and should return, via
+        <span class=result>r(xperiod)</span>, a numlist suitable for <span class=result>synth</span>'s <span class=result>xperiod</span> (the period over which generic predictor variables are averaged).  See <span class=result>synth</span> for more details on the <span class=result>xperiod</span> option. See Example 3 for
         usage details.
 <br><br>
-    <span class=result>xperiod_prog(</span><i>string</i><span class=result>)</span> allows for setting of <span class=result>synth</span>'s <span class=result>xperiod</span> option that varies with the treatment period.  The user-written program is passed
-        the treatment period and should return, via <span class=result>r(xperiod)</span>, a numlist suitable for <span class=result>synth</span>'s <span class=result>xperiod</span> (the period over which generic predictor
-        variables are averaged).  See <span class=result>synth</span> for more details on the <span class=result>xperiod</span> option. See Example 3 for usage details.
+    <span class=result>mspeperiod_prog(</span><i>string</i><span class=result>)</span> allows for setting of <span class=result>synth</span>'s <span class=result>mspeperiod</span> option that varies with the treatment period.  The user-written program is passed the treatment period and should return, via
+        <span class=result>r(mspeperiod)</span>, a numlist suitable for <span class=result>synth</span>'s <span class=result>mspeperiod</span> (the period over which the prediction outcome is evaluated).  See <span class=result>synth</span> for more details on the <span class=result>mspeperiod</span> option. See Example 3
+        for usage details.
 <br><br>
-    <span class=result>mspeperiod_prog(</span><i>string</i><span class=result>)</span> allows for setting of <span class=result>synth</span>'s <span class=result>mspeperiod</span> option that varies with the treatment period.  The user-written program is
-        passed the treatment period and should return, via <span class=result>r(mspeperiod)</span>, a numlist suitable for <span class=result>synth</span>'s <span class=result>mspeperiod</span> (the period over which the
-        prediction outcome is evaluated).  See <span class=result>synth</span> for more details on the <span class=result>mspeperiod</span> option. See Example 3 for usage details.
+    <span class=result>noredo_tr_error</span> By default an error when estimating <span class=result>synth</span> on a treated unit will be redone so that the output and error from <span class=result>synth</span> can be seen by the user. Use this option to not redo the
+        estimation on error.
 <br><br>
-    <span class=result>noredo_tr_error</span> By default an error when estimating <span class=result>synth</span> on a treated unit will be redone so that the output and error from <span class=result>synth</span> can be
-        seen by the user. Use this option to not redo the estimation on error.
+    <span class=result>aggfile_v(</span><i>string</i><span class=result>)</span> and<span class=result> aggfile_w(</span><i>string</i><span class=result>)</span> overwrites those filenames with variable weights and unit weights from all the estimations.  Both must be specified or neither. <i>aggfile_v</i> will have
+        variables V1-V<i>k</i>, tr_<i>unit_varname</i>, and tr_<i>time_varname</i>, and for each tr_<i>unit_varname</i>-tr_<i>time_varname</i> estimation there will be one observation. <i>aggfile_w</i> has variables _Co_Number, _W_Weight,
+        tr_<i>unit_varname</i>, and tr_<i>time_varname</i>, and for each tr_<i>unit_varname</i>-tr_<i>time_varname</i> estimation there will be a row for each control donor.
 <br><br>
-    <span class=result>synthsettings</span> pass-through options sent to <span class=result>synth</span>. See <i>help synth</i> for more information.  The following which are disallowed: <i>counit</i>, <i>figure</i>,
-        <i>resultsperiod</i>.
 <br><br>
-  ------------------------------------------------------------------------------------------------------------------------------------------------
+    <span class=result>synthsettings</span> pass-through options sent to <span class=result>synth</span>. See <i>help synth</i> for more information.  The following which are disallowed: <i>counit</i>, <i>figure</i>, <i>resultsperiod</i>.
+<br><br>
+  ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 <br><br>
 <span class=result><u>Saved Results</u></span>
 <br><br>
     <span class=result>synth_runner</span> returns the following scalars and matrices.
 <br><br>
         <span class=result>e(treat_control) :</span>
-          A matrix with the average treatment outcome (centered around treatment) and the average of the outcome of those unit's synthetic
-          controls for the pre- and post-treatment periods.
+          A matrix with the average treatment outcome (centered around treatment) and the average of the outcome of those unit's synthetic controls for the pre- and post-treatment periods.
 <br><br>
         <span class=result>e(b):</span>
           A vector with the per-period effects (unit's actual outcome minus the outcome of its synthetic control) for post-treatment periods.
 <br><br>
         <span class=result>e(n_pl):</span>
-          The number of placebo averages used for comparison. For single treatment setups, this can be used to calculate purely randomized
-          p-values.
+          The number of placebo averages used for comparison. For single treatment setups, this can be used to calculate purely randomized p-values.
 <br><br>
         <span class=result>e(pvals):</span>
           A vector of the proportions of placebo effects that are at least as large as the main effect for each post-treatment period.
 <br><br>
         <span class=result>e(pvals_std):</span>
-          A vector of the proportions of placebo standardized effects that are at least as large as the main standardized effect for each
-          post-treatment period.
+          A vector of the proportions of placebo standardized effects that are at least as large as the main standardized effect for each post-treatment period.
 <br><br>
         <span class=result>e(pval_joint_post):</span>
           The proportion of placebos that have a post-treatment RMSPE at least as large as the average for the treated units.
 <br><br>
         <span class=result>e(pval_joint_post_std):</span>
-          The proportion of placebos that have a ratio of post-treatment RMSPE over pre-treatment RMSPE at least as large as the average ratio
-          for the treated units.
+          The proportion of placebos that have a ratio of post-treatment RMSPE over pre-treatment RMSPE at least as large as the average ratio for the treated units.
 <br><br>
         <span class=result>e(avg_pre_rmspe_p):</span>
-          The proportion of placebos that have a pre-treatment RMSPE at least as large as the average of the treated units. A measure of fit.
-          Concerning if significant.
+          The proportion of placebos that have a pre-treatment RMSPE at least as large as the average of the treated units. A measure of fit. Concerning if significant.
 <br><br>
         <span class=result>e(failed_opt_targets):</span>
-          Errors when constructing the synthetic controls for non-treated units are handled gracefully. If any are detected they will be listed
-          in this matrix.  (Errors when constructing the synthetic control for treated units will abort the method.)
+          Errors when constructing the synthetic controls for non-treated units are handled gracefully. If any are detected they will be listed in this matrix.  (Errors when constructing the
+          synthetic control for treated units will abort the method.)
 <br><br>
         <span class=result>e(avg_val_rmspe_p):</span>
-          When specifying <span class=result>training_propr</span>, this is the proportion of placebos that have a RMSPE for the validation period at least as large as
-          the average of the treated units. A measure of fit. Concerning if significant.
+          When specifying <span class=result>training_propr</span>, this is the proportion of placebos that have a RMSPE for the validation period at least as large as the average of the treated units. A measure of fit.
+          Concerning if significant.
 <br><br>
 <br><br>
 <span class=result><u>Examples</u></span>
 <br><br>
-    The following examples use data from the <span class=result>synth</span> package. Ensure that <span class=result>synth</span> was installed with ancillary files (e.g., <span class=result>ssc install synth, all</span>).
-    This panel dataset contains information for 39 US States for the years 1970-2000 (see Abadie, Diamond, and Hainmueller (2010) for details).
-    <span class=result>Note</span>, that the <span class=result>synth</span> package's dataset might have a different name.  It was originally uploaded as <i>smoking</i>, then for a while the dataset
-    installed was incorrect (there was a name collision with another package), and now the dataset is correct and named <i>synth_smoking</i>.
+    The following examples use data from the <span class=result>synth</span> package. Ensure that <span class=result>synth</span> was installed with ancillary files (e.g., <span class=result>ssc install synth, all</span>). This panel dataset contains information for 39 US
+    States for the years 1970-2000 (see Abadie, Diamond, and Hainmueller (2010) for details).  <span class=result>Note</span>, that the <span class=result>synth</span> package's dataset might have a different name.  It was originally uploaded as
+    <i>smoking</i>, then for a while the dataset installed was incorrect (there was a name collision with another package), and now the dataset is correct and named <i>synth_smoking</i>.
     sysuse synth_smoking
     tsset state year
 <br><br>
     Example 1 - Reconstruct the initial <span class=result>synth</span> example plus graphs:
-    synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3)
-        trperiod(1989) gen_vars
+    synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24 cigsale(1988) cigsale(1980) cigsale(1975), trunit(3) trperiod(1989) gen_vars
     single_treatment_graphs, trlinediff(-1) effects_ylabels(-30(10)30) effects_ymax(35) effects_ymin(-35)
     effect_graphs , trlinediff(-1)
     pval_graphs
-        In this example, <span class=result>synth_runner</span> conducts all the estimations and inference. Since there was only a single treatment period we can save the
-        output into the dataset. Then we can create the various graphs.  Note the option <i>trlinediff</i> allows the offset of a vertical treatment
-        line.  Likely options include values in the range from (first treatment period - last post-treatment period) to 0 and the default value
-        is -1 (to match Abadie et al. 2010).
+        In this example, <span class=result>synth_runner</span> conducts all the estimations and inference. Since there was only a single treatment period we can save the output into the dataset. Then we can create the
+        various graphs.  Note the option <i>trlinediff</i> allows the offset of a vertical treatment line.  Likely options include values in the range from (first treatment period - last post-treatment
+        period) to 0 and the default value is -1 (to match Abadie et al. 2010).
 <br><br>
     Example 2 - Same treatment, but a bit more complicated setup:
     cap drop pre_rmspe post_rmspe lead effect cigsale_synth
     gen byte D = (state==3 &amp; year&gt;=1989)
-    synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18')
-        gen_vars pre_limit_mult(10)
+    synth_runner cigsale beer(1984(1)1988) lnincome(1972(1)1988) retprice age15to24, trunit(3) trperiod(1989) trends training_propr(`=13/18') gen_vars pre_limit_mult(10)
     single_treatment_graphs, scaled
     effect_graphs , scaled
     pval_graphs
-        Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we (a) specify the
-        treated units/periods with a binary variable, (b) generate the outcome predictors automatically using the initial 13 periods of the
-        pre-treatment era (the rest is the "validation" period), and (c) we match on trends.
+        Again there is a single treatment period, so output can be saved and merged back into the dataset. In this setting we (a) specify the treated units/periods with a binary variable, (b)
+        generate the outcome predictors automatically using the initial 13 periods of the pre-treatment era (the rest is the "validation" period), and (c) we match on trends.
 <br><br>
     Example 3 - Multiple treatments at different time periods:
 <br><br>
@@ -253,20 +229,18 @@ BODY{background-color: ffffff;
         return local mspeperiod "`=`tyear'-12'(1)`=`tyear'-1'"
     end
     gen byte D = (state==3 &amp; year&gt;=1989) | (state==7 &amp; year&gt;=1988)
-    synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units))
-        xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)
+    synth_runner cigsale retprice age15to24, d(D) pred_prog(my_pred) trends training_propr(`=13/18') drop_units_prog(my_drop_units)) xperiod_prog(my_xperiod) mspeperiod_prog(my_mspeperiod)
     effect_graphs
     pval_graphs
-        We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened
-        in Georgia in 1987. Now that we have several treatment periods we can not merge in a simple file.  Some of the graphs (of
-        <span class=result>single_treatment_graphs</span>) can no longer be made.  We also show how predictors, unit dropping, <span class=result>xperiod</span>, and <span class=result>mspeperiod</span> can be dynamically
-        generated depending on the treatment year.
+        We extend Example 2 by considering a control state now to be treated (Georgia in addition to California). No treatment actually happened in Georgia in 1987. Now that we have several
+        treatment periods we can not merge in a simple file.  Some of the graphs (of <span class=result>single_treatment_graphs</span>) can no longer be made.  We also show how predictors, unit dropping, <span class=result>xperiod</span>, and
+        <span class=result>mspeperiod</span> can be dynamically generated depending on the treatment year.
 <br><br>
 <span class=result><u>Development</u></span>
 <br><br>
-If you encounter a bug in the program, please ensure your are running the most recent version from the GitHub site.  If the problem persists, see
-if the bug has been previously reported at https://github.com/bquistorff/synth_runner/issues.  If not, file a new 'issue' there and list (a) the
-steps causing the problem (with output) and (b) the version of <span class=result>synth_runner</span> used (found from <span class=result>which synth_runner</span>).
+If you encounter a bug in the program, please ensure your are running the most recent version from the GitHub site.  If the problem persists, see if the bug has been previously reported at
+https://github.com/bquistorff/synth_runner/issues.  If not, file a new 'issue' there and list (a) the steps causing the problem (with output) and (b) the version of <span class=result>synth_runner</span> used (found from
+<span class=result>which synth_runner</span>).
 <br><br>
 Contributions may also be made via a pull request from the GitHub page.
 <br><br>
@@ -276,8 +250,8 @@ To be notified of new releases, subscribe to notifications of this issue .
 <br><br>
 <span class=result>synth_runner</span> is not an official Stata command. It is a free contribution to the research community, like a paper. Please cite it as such:
 <br><br>
-    Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate synthetic control estimation using synth, August
-        2017. https://github.com/bquistorff/synth_runner. Version 1.6.0.
+    Brian Quistorff and Sebastian Galiani. The synth_runner package: Utilities to automate synthetic control estimation using synth, August 2017. https://github.com/bquistorff/synth_runner.
+        Version 1.6.0.
 <br><br>
 And in bibtex format:
 <br><br>
@@ -292,17 +266,14 @@ And in bibtex format:
 <br><br>
 <span class=result><u>References</u></span>
 <br><br>
-    Abadie, A., Diamond, A., and Hainmueller, J. 2014. Comparative Politics and the Synthetic Control Method.<i>  American Journal of Political</i>
-        <i>Science</i>, 59(2):495–510, Apr 2014.
+    Abadie, A., Diamond, A., and Hainmueller, J. 2014. Comparative Politics and the Synthetic Control Method.<i>  American Journal of Political Science</i>, 59(2):495–510, Apr 2014.
 <br><br>
-    Abadie, A., Diamond, A., and Hainmueller, J. 2010. Synthetic Control Methods for Comparative Case Studies: Estimating the Effect of
-        California's Tobacco Control Program.<i>  Journal of the American Statistical Association</i> 105(490): 493-505.
+    Abadie, A., Diamond, A., and Hainmueller, J. 2010. Synthetic Control Methods for Comparative Case Studies: Estimating the Effect of California's Tobacco Control Program.<i>  Journal of the</i>
+        <i>American Statistical Association</i> 105(490): 493-505.
 <br><br>
-    Abadie, A. and Gardeazabal, J. 2003. Economic Costs of Conflict: A Case Study of the Basque Country.<i>  American Economic Review</i> 93(1):
-        113-132.
+    Abadie, A. and Gardeazabal, J. 2003. Economic Costs of Conflict: A Case Study of the Basque Country.<i>  American Economic Review</i> 93(1): 113-132.
 <br><br>
-    Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural disasters and economic growth.<i>  Review of Economics and</i>
-        <i>Statistics</i>, 95(5):1549–1561, Dec 2013.
+    Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural disasters and economic growth.<i>  Review of Economics and Statistics</i>, 95(5):1549–1561, Dec 2013.
 <br><br>
 <span class=result><u>Authors</u></span>
 <br><br>
