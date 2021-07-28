@@ -9,20 +9,20 @@ Installation
 As a pre-requisite, the `synth` package needs to be installed. (The `all` option is necessary to install the accompanying dataset used in further examples.)
 
 ```Stata
-. ssc install synth, all
+ssc install synth, all
 ```
 
 To install the `synth_runner` package with Stata v13 or greater
 
 ```Stata
-. cap ado uninstall synth_runner //in-case already installed
-. net install synth_runner, from(https://raw.github.com/bquistorff/synth_runner/master/) replace
+cap ado uninstall synth_runner //in-case already installed
+net install synth_runner, from(https://raw.github.com/bquistorff/synth_runner/master/) replace
 ```
 
 For Stata version <13, use the "Download ZIP" button above, unzip to a directory, and then replace the above `net install` with
 
 ```Stata
-. net install synth_runner, from(full_local_path_to_files) replace
+net install synth_runner, from(full_local_path_to_files) replace
 ```
 
 Usage
