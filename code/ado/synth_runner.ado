@@ -1,4 +1,4 @@
-*! version 1.6.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.6.0 Brian Quistorff
 *! Automates the process of conducting many synthetic control estimations
 program synth_runner, eclass
 	version 12 //haven't tested on earlier versions

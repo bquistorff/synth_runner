@@ -1,4 +1,4 @@
-*! version 1.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.0 Brian Quistorff
 *! Produces p-value graphs for post-treatment per-period effects
 program pval_graphs
 	version 12 //haven't tested on earlier versions

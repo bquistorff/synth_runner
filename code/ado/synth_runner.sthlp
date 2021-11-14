@@ -352,7 +352,7 @@ Cavallo, E., Galiani, S., Noy, I., and Pantano, J. 2013. Catastrophic natural di
 
 {title:Authors}
 
-      Brian Quistorff, Brian.Quistorff@microsoft.com (corresponding author, see Development section for reportings bugs)
-      Microsoft Research
+      Brian Quistorff, brian-work@quistorff.com (corresponding author, see Development section for reportings bugs)
+      Bureau of Economic Analysis
       Sebastian Galiani
       University of Maryland

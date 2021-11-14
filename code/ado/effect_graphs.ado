@@ -1,4 +1,4 @@
-*! version 1.0 Brian Quistorff <Brian.Quistorff@microsoft.com>
+*! version 1.0 Brian Quistorff
 *! Produces an 'effect' and 'treatment vs control' graphs
 program effect_graphs
 	version 12 //haven't tested on earlier versions
